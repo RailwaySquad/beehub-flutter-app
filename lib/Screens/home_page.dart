@@ -1,5 +1,4 @@
 import 'package:beehub_flutter_app/Provider/db_provider.dart';
-import 'package:beehub_flutter_app/Utils/page_navigator.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
