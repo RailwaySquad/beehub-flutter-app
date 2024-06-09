@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:beehub_flutter_app/Constants/url.dart';
 import 'package:beehub_flutter_app/Provider/db_provider.dart';
+import 'package:beehub_flutter_app/Screens/Administrator/admin_dashboard.dart';
 import 'package:beehub_flutter_app/Screens/Authentication/login.dart';
 import 'package:beehub_flutter_app/Screens/home_page.dart';
 import 'package:beehub_flutter_app/Utils/page_navigator.dart';
@@ -94,9 +95,16 @@ class AuthenticationProvider extends ChangeNotifier {
         ///Save users data and then navigate to homepage
         final userId = res['id'];
         final token = res['token'];
+        final role = res['roles'][0];
         DatabaseProvider().saveToken(token);
         DatabaseProvider().saveUserId(userId);
-        PageNavigator(ctx: context).nextPageOnly(page: const HomePage());
+        DatabaseProvider().saveRole(role);
+        String admin = "ROLE_ADMIN";
+        if (role == admin) {
+          PageNavigator(ctx: context).nextPageOnly(page: const Dashboard());
+        } else {
+          PageNavigator(ctx: context).nextPageOnly(page: const HomePage());
+        }
       } else {
         final res = json.decode(req.body);
 

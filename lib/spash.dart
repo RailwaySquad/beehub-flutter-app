@@ -1,4 +1,5 @@
 import 'package:beehub_flutter_app/Provider/db_provider.dart';
+import 'package:beehub_flutter_app/Screens/Administrator/admin_dashboard.dart';
 import 'package:beehub_flutter_app/Screens/Authentication/login.dart';
 import 'package:beehub_flutter_app/Screens/home_page.dart';
 import 'package:beehub_flutter_app/Utils/page_navigator.dart';
@@ -31,7 +32,13 @@ class _SplashScreenState extends State<SplashScreen> {
         if (value == '') {
           PageNavigator(ctx: context).nextPageOnly(page: const LoginPage());
         } else {
-          PageNavigator(ctx: context).nextPageOnly(page: const HomePage());
+          DatabaseProvider().getRole().then((role) {
+            if (role == 'ROLE_ADMIN') {
+              PageNavigator(ctx: context).nextPageOnly(page: const Dashboard());
+            } else {
+              PageNavigator(ctx: context).nextPageOnly(page: const HomePage());
+            }
+          });
         }
       });
     });

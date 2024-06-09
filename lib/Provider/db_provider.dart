@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class DatabaseProvider extends ChangeNotifier {
   static const tokenKey = 'TOKEN';
   static const userIdKey = 'ID';
+  static const roleKey = 'ROLE';
 
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
@@ -13,9 +14,13 @@ class DatabaseProvider extends ChangeNotifier {
 
   int _userId = -1;
 
+  String _role = '';
+
   String get token => _token;
 
   int get userId => _userId;
+
+  String get role => _role;
 
   void saveToken(String token) async {
     SharedPreferences prefs = await _prefs;
@@ -25,6 +30,11 @@ class DatabaseProvider extends ChangeNotifier {
   void saveUserId(int id) async {
     SharedPreferences prefs = await _prefs;
     prefs.setInt(userIdKey, id);
+  }
+
+  void saveRole(String role) async {
+    SharedPreferences prefs = await _prefs;
+    prefs.setString(roleKey, role);
   }
 
   Future<String> getToken() async {
@@ -54,6 +64,21 @@ class DatabaseProvider extends ChangeNotifier {
       _userId = -1;
       notifyListeners();
       return -1;
+    }
+  }
+
+  Future<String> getRole() async {
+    SharedPreferences prefs = await _prefs;
+    
+    if (prefs.containsKey(roleKey)) {
+      String data = prefs.getString(roleKey)!;
+      _role = data;
+      notifyListeners();
+      return data;
+    } else {
+      _role = '';
+      notifyListeners();
+      return '';
     }
   }
 
