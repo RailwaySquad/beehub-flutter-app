@@ -1,8 +1,11 @@
 import 'package:beehub_flutter_app/Provider/db_provider.dart';
+import 'package:beehub_flutter_app/Provider/user_provider.dart';
 import 'package:beehub_flutter_app/Screens/activity_screen.dart';
 import 'package:beehub_flutter_app/Screens/following_screen.dart';
+import 'package:beehub_flutter_app/Screens/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -12,8 +15,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-   final controller = Get.put(NavigationController());
-
+  final controller = Get.put(NavigationController());
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      Provider.of<UserProvider>(context, listen: false).getUsername();
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,11 +62,10 @@ class NavigationController extends GetxController{
   final Rx<int> selectedIndex = 0.obs;
   
   final screens = [
-    // const ProfileScreen(),
     const ActivityScreen(),
     const FollowingScreen(),
-    Container(color: Colors.greenAccent,),
     Container(color: Colors.orangeAccent,),
+    const ProfilePage(),
     // Container(color: Colors.redAccent,),
   ];
 }
