@@ -13,7 +13,7 @@ import 'package:http/http.dart' as http;
 
 class AuthenticationProvider extends ChangeNotifier {
   final authUrl = AppUrl.authPath;
-
+  // final authUrl = "192.168.1.9"
   bool _isLoading = false;
   String _resMessage = '';
 
