@@ -17,10 +17,12 @@ class UserProvider extends ChangeNotifier{
   Future fetchFriends()async{
     isLoading = true;
     notifyListeners();
-    List<User> fetchUser= await THttpHelper.getListFriend();
+    List<User>? fetchUser= await THttpHelper.getListFriend();
+    if(fetchUser!=null){
     _friends = fetchUser;
     isLoading=false;
     notifyListeners();
+    }
   }
   List<Group> get groups {
     return _groups;
@@ -28,10 +30,12 @@ class UserProvider extends ChangeNotifier{
   Future fetchGroups() async{
     isLoading = true;
     notifyListeners();
-    List<Group> listGr = await THttpHelper.getGroups();
-    _groups = listGr;
-    isLoading = false;
-    notifyListeners();
+    List<Group>? listGr = await THttpHelper.getGroups();
+    if(listGr!=null){
+      _groups = listGr;
+      isLoading = false;
+      notifyListeners();
+    }
   }
   Future getUsername() async{
     _username ??= await THttpHelper.getUsername();

@@ -46,7 +46,7 @@ class Profile {
     };
   } 
   factory Profile.fromJson(Map<String, dynamic> json) {
-    final id = json['id'] as num;
+    final id = json['id'] ;
     final username = json['username'] ?? '';
     final email = json['email'] ??'';
     final fullname = json['fullname'] ??'';
@@ -60,7 +60,7 @@ class Profile {
     final activeAt= json['active_at']!=null? DateTime.parse(json['active_at']):null;
     final isBanned = json['_banned'] as bool;
     final phone = json['phone'] as String;
-    final List<Group> groups = json['groups']!=null? List.from(json['groups'].map((e) => Group.fromJson(e))):[];
+    final List<Group> groups = json['group_joined']!=null? List.from(json['group_joined'].map((e) => Group.fromJson(e))):[];
     final List<Post> posts = json['posts']!=null? List.from(json['posts'].map((e)=> Post.fromJson(e))):[];
     final List<UserSetting> userSetting = json['user_settings']!=null?List.from(json['user_settings'].map((e)=> UserSetting.fromJson(e))):[];
     final List<User> relationships = json['relationships']!=null? List.from(json['relationships'].map((e)=> User.fromJson(e))):[];

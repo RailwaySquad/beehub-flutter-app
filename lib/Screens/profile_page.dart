@@ -32,35 +32,46 @@ class _ProfilePageState extends State<ProfilePage> {
         child: Column(
           children: [
             SizedBox(
-              height: 200,
+              height: 180,
               child: Container(
                 color:TColors.darkerGrey,
                 ),
             ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(15.0),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Positioned(
-                          top: -10,
-                          child: SizedBox(
-                            width: 80,
-                            height: 80,
-                            child: CircleAvatar(
-                              child: Image.asset("assets/avatar/fuxuan.png",height: 80, width: 80,fit: BoxFit.fill,),
-                            ),
-                          ),
-                        ),
-                        Text(profile.fullname, style:  Theme.of(context).textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold),)
-                      ],
-                    )
-                  ],
-                  ),
-              )
-              )
+            // Stack(
+              // alignment: AlignmentDirectional.topStart,
+              // clipBehavior: Clip.none,
+              // children: <Widget> [
+              //   Positioned(
+              //     top: 0, 
+              //     left: 20,
+              //     child: SizedBox(
+              //       width: 80,
+              //       height: 80,
+              //       child: CircleAvatar(
+              //         child: Image.asset("assets/avatar/fuxuan.png",height: 80, width: 80,fit: BoxFit.fill,),
+              //       ),
+              //     ),
+              //   ),
+                // Column(
+                //   children: [
+                //     Expanded(
+                //       child: Column(
+                    
+                //         children: [
+                //           Row(
+                //             children: [
+                //               Text(profile.fullname, style:  Theme.of(context).textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold),)
+                //             ],
+                //           ),
+                          
+                //         ],
+                //       ),
+                //     ),
+                //   ],
+                // ),
+                
+          //       ],
+          //   )
           ],
         ),
       ),

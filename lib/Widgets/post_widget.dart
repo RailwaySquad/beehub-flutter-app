@@ -9,15 +9,15 @@ import 'package:flutter/material.dart';
 class PostWidget extends StatelessWidget {
   const PostWidget({super.key, required this.post,});
   final Post post;
-  Widget? getMedia (height,width){
-    if(post.media!=null){
+  Widget getMedia (height,width){
+    if(post.medias!=null){
       return SizedBox(
         height: height,
         width: width,
-        child: Image.network(post.media!),
+        child: Image.network(post.medias!),
       );
     }
-    return null;
+    return const SizedBox(height: 0);
   }
   @override
   Widget build(BuildContext context) {
@@ -86,11 +86,12 @@ class PostWidget extends StatelessWidget {
                             child: ExpandedWidget(text: post.text)))
                       ],
                     ),
+                    const SizedBox(height: 10,),
                     //Image?
-                    // getMedia(size.height,size.width)!
+                    getMedia(200.0,400.0)
                   ],),
               ),
-              const SizedBox(height: 8,),
+              const SizedBox(height: 10,),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 mainAxisSize: MainAxisSize.max,

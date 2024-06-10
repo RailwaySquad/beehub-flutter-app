@@ -1,12 +1,12 @@
 class Gallery{
-  final num id;
-  final num userId;
+  final num? id;
+  final num? userId;
   final num? postId; 
   final String media;
   final String mediaType;
-  final DateTime createAt;
+  final DateTime? createAt;
 
-  Gallery({required this.id, required this.userId, this.postId, required this.media, required this.mediaType, required this.createAt});
+  Gallery({ this.id, this.userId, this.postId, required this.media, required this.mediaType,  this.createAt});
   
   Map<String, dynamic> toJson(){
     return {
@@ -19,12 +19,12 @@ class Gallery{
     };
   }
   factory Gallery.fromJson(Map<String, dynamic> json){
-    final id = json['id'] as int;
-    final user = json['user_id'] as num;
-    final post = json['post_is'] as num;
+    final id = json['id'] ;
+    final user = json['user_id'];
+    final post = json['post_is'];
     final media = json['media'] as String;
     final mediaType = json['media_type'] as String;
-    final createAt = DateTime.parse(json['create_at'] );
+    final createAt = json["create_at"] !=null ? DateTime.parse(json["create_at"]):null;
     return Gallery(
           id:id,
           userId:user, 
