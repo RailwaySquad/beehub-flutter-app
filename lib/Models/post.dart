@@ -1,6 +1,6 @@
 import 'dart:core';
 class Post {
-  final int? id;
+  final int id;
   final String text;
   final String userFullname;
   final String userUsername;
@@ -14,7 +14,7 @@ class Post {
   final String? background;
   final String? media;
 
-  Post({this.id, required this.text, required this.userFullname, required this.userUsername, this.userImage, required this.userGender, required this.groupName, required this.publicGroup, this.groupImage, required this.settingType, this.color, this.background,this.media});
+  Post({ required this.id, required this.text, required this.userFullname, required this.userUsername, this.userImage, required this.userGender, required this.groupName, required this.publicGroup, this.groupImage, required this.settingType, this.color, this.background,this.media});
 
   Map<String, dynamic> toJson() {
     return {
@@ -30,7 +30,7 @@ class Post {
       'setting_type': settingType,
       'color':color,
       'background':background,
-      'media': media
+      'media': media,
     };
   } 
   factory Post.fromJson(Map<String, dynamic> json) {
@@ -46,7 +46,7 @@ class Post {
     final settingType = json['setting_type'] ?? '';
     final color= json['color'] ?? '';
     final background= json['background'] ?? '' ;
-    final media = json['media']??'';
+    final media = json['medias']??'';
     return Post(
           id:id,
           text:text, 
@@ -60,7 +60,7 @@ class Post {
           settingType: settingType,
           color: color,
           background: background,
-          media: media
+          media: media,
           );
   }
 }
