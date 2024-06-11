@@ -148,7 +148,7 @@ class _ShowCommentState extends State<ShowComment> {
                     height: 400.0,
                     width: double.infinity,
                     child: Image.network(
-                      widget.post.media!,
+                      widget.post.medias!,
                       fit: BoxFit.cover,
                     ),
                   ),

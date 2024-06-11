@@ -123,10 +123,10 @@ class PostWidget extends StatelessWidget {
                     )
                   ],),
               ),
-              if (post.media != null && post.media!.isNotEmpty)
+              if (post.medias != null && post.medias!.isNotEmpty)
               Container(
                 child: Image.network(
-                  post.media!,
+                  post.medias!,
                   fit: BoxFit.cover,
                 ),
               ),
