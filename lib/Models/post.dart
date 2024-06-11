@@ -1,7 +1,7 @@
 import 'dart:core';
 
 class Post {
-  final int? id;
+  final int id;
   final String text;
   final num userId;
   final String userFullname;

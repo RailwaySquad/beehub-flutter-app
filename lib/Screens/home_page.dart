@@ -39,6 +39,7 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       body: Obx(()=>controller.screens[controller.selectedIndex.value]),
+      
       bottomNavigationBar: Obx(
         ()=> NavigationBar(
           height: 80,

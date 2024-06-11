@@ -27,7 +27,7 @@ class THttpHelper {
       );
      int status = response.statusCode;
      log(status.toString());
-     
+     print(response.body);
      if(status == 200){
       log("Connect database successful: $status");
       String json = response.body;
