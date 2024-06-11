@@ -15,8 +15,9 @@ class Post {
   final String? color;
   final String? background;
   final String? medias;
+  final DateTime? createAt;
 
-  Post({this.id, required this.text, required this.userId,required this.userFullname, required this.userUsername, this.userImage, required this.userGender, required this.groupName, required this.publicGroup, this.groupImage, required this.settingType, this.color, this.background,this.medias});
+  Post({this.id, required this.text, required this.userId,required this.userFullname, required this.userUsername, this.userImage, required this.userGender, required this.groupName, required this.publicGroup, this.groupImage, required this.settingType, this.color, this.background,this.medias, this.createAt});
 
   Map<String, dynamic> toJson() {
     return {
@@ -50,6 +51,7 @@ class Post {
     final color= json['color'] ?? '';
     final background= json['background'] ?? '' ;
     final medias =json["medias"];
+    final createAt =DateTime.parse(json['create_at']);
     return Post(
           id:id,
           text:text,
@@ -64,7 +66,8 @@ class Post {
           settingType: settingType,
           color: color,
           background: background,
-          medias: medias
+          medias: medias,
+          createAt: createAt
           );
   }
 }

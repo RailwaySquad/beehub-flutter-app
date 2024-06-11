@@ -1,5 +1,6 @@
 
 import 'package:beehub_flutter_app/Constants/color.dart';
+import 'package:beehub_flutter_app/Provider/db_provider.dart';
 import 'package:beehub_flutter_app/Screens/activity_tabs/group_posts.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -55,6 +56,18 @@ class _ActivityScreenState extends State<ActivityScreen> {
     var size = MediaQuery.of(context).size;
     return Column(
           children: [
+            AppBar(
+              title: const Text('Beehub'),
+                actions: [
+                  IconButton(onPressed: (){}, icon:const Icon(Icons.search)),
+                  IconButton(
+                      icon: const Icon(Icons.exit_to_app),
+                      onPressed: () {
+                        ///logout
+                        DatabaseProvider().logOut(context);
+                      }),
+                ],
+            ),
             SizedBox(
               width: size.width,
               height: size.height*0.05,

@@ -5,6 +5,7 @@ import 'package:beehub_flutter_app/Utils/helper/helper_functions.dart';
 import 'package:beehub_flutter_app/Utils/shadow/shadows.dart';
 import 'package:beehub_flutter_app/Widgets/expanded/expanded_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class PostWidget extends StatelessWidget {
   const PostWidget({super.key, required this.post,});
@@ -49,17 +50,29 @@ class PostWidget extends StatelessWidget {
                       //Fullname
                         SizedBox(
                           child: post.groupName!=null&& post.groupName!.isNotEmpty
-                              ? Row(
-                               children: [
+                              ? Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Row(
+                                   children: [
+                                    Text(post.userFullname,style:  Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold),overflow: TextOverflow.ellipsis,maxLines: 1,textAlign: TextAlign.left,),
+                                    Text.rich( TextSpan(
+                                      text: " in ",
+                                      children: <InlineSpan>[
+                                        TextSpan(text: post.groupName!, style: const TextStyle(fontWeight: FontWeight.bold),)
+                                      ] )
+                                    )
+                                   ]),
+                                   Text(DateFormat("dd/MM/YYYY hh:mm").format(post.createAt!),style: Theme.of(context).textTheme.bodySmall,)
+                                ],
+                              )
+                               : Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
                                 Text(post.userFullname,style:  Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold),overflow: TextOverflow.ellipsis,maxLines: 1,textAlign: TextAlign.left,),
-                               Text.rich( TextSpan(
-                                  text: " in ",
-                                  children: <InlineSpan>[
-                                    TextSpan(text: post.groupName!, style: const TextStyle(fontWeight: FontWeight.bold),)
-                                  ] )
-                               )])
-                               : Row(children: [
-                                Text(post.userFullname,style:  Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold),overflow: TextOverflow.ellipsis,maxLines: 1,textAlign: TextAlign.left,)
+                                Text(DateFormat("dd/MM/YYYY hh:mm").format(post.createAt!),style: Theme.of(context).textTheme.bodySmall,)
                                ],)
                               )
                       ],

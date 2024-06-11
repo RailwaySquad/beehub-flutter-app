@@ -26,18 +26,18 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Beehub'),
-        actions: [
-          IconButton(onPressed: (){}, icon:const Icon(Icons.search)),
-          IconButton(
-              icon: const Icon(Icons.exit_to_app),
-              onPressed: () {
-                ///logout
-                DatabaseProvider().logOut(context);
-              }),
-        ],
-      ),
+      // appBar: AppBar(
+      //   title: const Text('Beehub'),
+      //   actions: [
+      //     IconButton(onPressed: (){}, icon:const Icon(Icons.search)),
+      //     IconButton(
+      //         icon: const Icon(Icons.exit_to_app),
+      //         onPressed: () {
+      //           ///logout
+      //           DatabaseProvider().logOut(context);
+      //         }),
+      //   ],
+      // ),
       body: Obx(()=>controller.screens[controller.selectedIndex.value]),
       bottomNavigationBar: Obx(
         ()=> NavigationBar(
@@ -60,7 +60,6 @@ class _HomePageState extends State<HomePage> {
 }
 class NavigationController extends GetxController{
   final Rx<int> selectedIndex = 0.obs;
-  
   final screens = [
     const ActivityScreen(),
     const FollowingScreen(),
