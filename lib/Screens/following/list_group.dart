@@ -22,8 +22,8 @@ class ListGroup extends StatelessWidget {
       itemBuilder: ( context, index){
         return ListTile(
           contentPadding: const EdgeInsets.symmetric(vertical: 5),
-          leading: list[index].imageGroup.isNotEmpty
-            ?Image.network(list[index].imageGroup)
+          leading: list[index].imageGroup!=null
+            ?Image.network(list[index].imageGroup!)
             : Image.asset( "assets/avatar/group_image.png"),
           title: Text(list[index].groupname),
         );
