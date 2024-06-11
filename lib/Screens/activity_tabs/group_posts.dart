@@ -22,26 +22,35 @@ class _GroupPostsState extends State<GroupPosts> {
   int page = 0;
   bool isLoading=false;
   int selectGroup = 0;
+  bool errorConnect = false;
   Future fetchGroup() async{
     if(isLoading) return;
     isLoading = true;
-    List<Group> listGr = await THttpHelper.getGroups();
+    List<Group>? listGr = await THttpHelper.getGroups();
     setState(() {
       isLoading = false;
-      groups.addAll(listGr);
-      fetchGroupPosts (listGr[0].id, page);
+      if(listGr==null){
+        errorConnect = true;
+      }else{
+        groups.addAll(listGr);
+        fetchGroupPosts (listGr[0].id!, page);
+      }
     });
   }
   Future fetchGroupPosts (num idSelect, int pageX) async{
     if(isLoading) return;
     isLoading = true;
-    List<Post> fetchPost = await THttpHelper.getGroupPosts(idSelect, pageX);
+    List<Post>? fetchPost = await THttpHelper.getGroupPosts(idSelect, pageX);
     setState(() {
       isLoading = false;
-      if(fetchPost.length<5){
-        hasMore = false;
+      if(fetchPost == null){
+        errorConnect = true;
+      }else{
+        if(fetchPost.length<5){
+          hasMore = false;
+        }
+        listPosts.addAll(fetchPost);
       }
-      listPosts.addAll(fetchPost);
     });
   }
   Future refresh () async{
@@ -51,7 +60,7 @@ class _GroupPostsState extends State<GroupPosts> {
       page=0;
       listPosts.clear();
     });
-    fetchGroupPosts(groups[selectGroup].id,page);
+    fetchGroupPosts(groups[selectGroup].id!,page);
   }
   
 @override
@@ -64,7 +73,7 @@ class _GroupPostsState extends State<GroupPosts> {
         setState(() {
           page++;
         });
-        fetchGroupPosts (groups[selectGroup].id, page);
+        fetchGroupPosts (groups[selectGroup].id!, page);
       }
     });
   }
@@ -76,6 +85,9 @@ class _GroupPostsState extends State<GroupPosts> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
+    if(errorConnect){
+      return const Text("Error connect Server");
+    }
     return Column(
           children: [
             SizedBox(
@@ -95,7 +107,7 @@ class _GroupPostsState extends State<GroupPosts> {
                               page=0;
                               listPosts.clear();
                             });
-                            fetchGroupPosts(groups[selectGroup].id,page);
+                            fetchGroupPosts(groups[selectGroup].id!,page);
                           },
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
@@ -115,8 +127,8 @@ class _GroupPostsState extends State<GroupPosts> {
                                               ),
                                               child: CircleAvatar(
                                                 backgroundColor: TColors.white,
-                                                child: groups[index].imageGroup.isNotEmpty 
-                                                      ? Image.network(groups[index].imageGroup)
+                                                child: groups[index].imageGroup!=null
+                                                      ? Image.network(groups[index].imageGroup!)
                                                       : Image.asset("assets/avatar/group_image.png"),
                                                 ),
                                             ),

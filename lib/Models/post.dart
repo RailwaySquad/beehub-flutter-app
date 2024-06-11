@@ -1,7 +1,9 @@
 import 'dart:core';
+
 class Post {
   final int id;
   final String text;
+  final num userId;
   final String userFullname;
   final String userUsername;
   final String? userImage;
@@ -12,9 +14,9 @@ class Post {
   final String settingType;
   final String? color;
   final String? background;
-  final String? media;
+  final String? medias;
 
-  Post({ required this.id, required this.text, required this.userFullname, required this.userUsername, this.userImage, required this.userGender, required this.groupName, required this.publicGroup, this.groupImage, required this.settingType, this.color, this.background,this.media});
+  Post({this.id, required this.text, required this.userId,required this.userFullname, required this.userUsername, this.userImage, required this.userGender, required this.groupName, required this.publicGroup, this.groupImage, required this.settingType, this.color, this.background,this.medias});
 
   Map<String, dynamic> toJson() {
     return {
@@ -30,7 +32,7 @@ class Post {
       'setting_type': settingType,
       'color':color,
       'background':background,
-      'media': media,
+      'medias': medias
     };
   } 
   factory Post.fromJson(Map<String, dynamic> json) {
@@ -38,6 +40,7 @@ class Post {
     final text = json['text'] ?? '';
     final fullname = json['user_fullname'] ??'';
     final userName = json['user_username'] ??'';
+    final userId = json["user_id"];
     final userimage = json['user_image'];
     final userGender = json['user_gender'] ?? '';
     final groupName = json['group_name'];
@@ -46,10 +49,11 @@ class Post {
     final settingType = json['setting_type'] ?? '';
     final color= json['color'] ?? '';
     final background= json['background'] ?? '' ;
-    final media = json['medias']??'';
+    final medias =json["medias"];
     return Post(
           id:id,
-          text:text, 
+          text:text,
+          userId: userId,
           userFullname: fullname,
           userUsername:userName,
           userImage: userimage,
@@ -60,7 +64,7 @@ class Post {
           settingType: settingType,
           color: color,
           background: background,
-          media: media,
+          medias: medias
           );
   }
 }

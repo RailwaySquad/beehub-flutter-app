@@ -19,19 +19,24 @@ class _PopularPostsState extends State<PopularPosts> {
   List<Post> list = [];
   bool hasMore = true;
   int page = 0;
-  bool isLoading = false;
-
-  Future fetchPost() async {
-    if (isLoading) return;
+  bool isLoading=false;
+  bool errorConnect = false;
+ 
+  Future fetchPost ()async{
+    if(isLoading) return;
     isLoading = true;
-    List<Post> addPosts = await THttpHelper.getPopularPosts(page);
+    List<Post>? addPosts =await THttpHelper.getPopularPosts(page);
     setState(() {
       page++;
       isLoading = false;
-      if (addPosts.length < 5) {
-        hasMore = false;
+      if(addPosts!=null &&addPosts.length<5){
+        hasMore=false;
       }
-      list.addAll(addPosts);
+      if(addPosts==null){
+        errorConnect = true;
+      }else{
+        list.addAll(addPosts);
+      }
     });
   }
 
@@ -64,6 +69,9 @@ class _PopularPostsState extends State<PopularPosts> {
 
   @override
   Widget build(BuildContext context) {
+    if(errorConnect){
+      return const Text("Error connect Server");
+    }
     return RefreshIndicator(
       onRefresh: refresh,
       child: ListView.builder(

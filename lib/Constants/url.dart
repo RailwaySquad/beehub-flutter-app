@@ -3,5 +3,6 @@ class AppUrl {
   static String api = "$base/api";
 
   static String authPath = "$api/auth";
+  static String adminPath = "$api/admin";
 
 }
