@@ -1,24 +1,59 @@
-import 'dart:io';
 import 'package:beehub_flutter_app/Models/post.dart';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 import 'package:beehub_flutter_app/Models/postMe.dart';
 import 'package:beehub_flutter_app/Provider/db_provider.dart';
 import 'package:beehub_flutter_app/Utils/api_connection/http_post.dart';
-import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-
-class CreatePostPage extends StatefulWidget {
+class EditPostPage extends StatefulWidget {
+  final Post post;
   final void Function() onUpdatePostList;
-   const CreatePostPage({Key? key, required this.onUpdatePostList}) : super(key: key);
+  const EditPostPage({Key? key, required this.post, required this.onUpdatePostList}): super(key: key);
+
   @override
-  _CreatePostPageState createState() => _CreatePostPageState();
+  State<EditPostPage> createState() => _EditPostPageState();
 }
 
-class _CreatePostPageState extends State<CreatePostPage> {
+class _EditPostPageState extends State<EditPostPage> {
   final TextEditingController _textController = TextEditingController();
   Color _containerColor = Colors.black;
   Color _containerBackground = Colors.white;
   File? _selectedFile;
-  bool  _isButtonEnabled = false;
+  @override
+  void initState(){
+    super.initState();
+    _textController.text = widget.post.text;
+    _containerColor = parseColor(widget.post.color);
+    _containerBackground =  parseBackGround(widget.post.background);
+  }
+  Color parseColor(String? colorString) {
+      if (colorString == null || colorString.isEmpty) {
+        return Colors.transparent;
+      } else if (colorString == "inherit") {
+        return Colors.black;
+      }else if (colorString == "ff000000") {
+        return Colors.black;
+      }else {
+        if (colorString.startsWith('#')) {
+          colorString = 'ff' + colorString.substring(1);
+        }
+        return Color(int.parse(colorString, radix: 16) + 0xFF000000);
+      }
+    }
+    Color parseBackGround(String? colorString) {
+      if (colorString == null || colorString.isEmpty) {
+        return Colors.transparent;
+      } else if (colorString == "inherit") {
+        return Colors.white;
+      }else if (colorString == "ffffffff") {
+        return Colors.white;
+      }else {
+        if (colorString.startsWith('#')) {
+          colorString = 'ff' + colorString.substring(1);
+        }
+        return Color(int.parse(colorString, radix: 16) + 0xFF000000);
+      }
+    }
   void _changeContainerColor(Color color, Color background) {
     setState(() {
       _containerColor = color;
@@ -32,7 +67,6 @@ class _CreatePostPageState extends State<CreatePostPage> {
       if (pickedFile != null) {
         setState(() {
           _selectedFile = File(pickedFile.path);
-          _isButtonEnabled = true;
         });
       } else {
         print('No file selected.');
@@ -42,27 +76,17 @@ class _CreatePostPageState extends State<CreatePostPage> {
     }
   }
   @override
-  void initState(){
-    super.initState();
-    _textController.addListener(_checkInput);
-  }
-  void _checkInput(){
-    setState(() {
-      _isButtonEnabled = _textController.text.isNotEmpty;
-    });
-  }
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurpleAccent,
         centerTitle: true,
         title: const Text(
-          'Create new post',
+          'Edit post',
           style: TextStyle(color: Colors.white),
         ),
       ),
-      body: SingleChildScrollView(
+      body:SingleChildScrollView(
         child: Container(
           child: Column(
             children: <Widget>[
@@ -82,7 +106,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
                   ? 
                   Container(
                       padding: EdgeInsets.only(left: 10),
-                      height: _selectedFile != null ? 20.0 : 200.0,
+                      height: _selectedFile != null || widget.post.medias != null ? 20.0 : 200.0,
                       child: TextField(
                         controller: _textController,
                         decoration: InputDecoration(
@@ -113,6 +137,16 @@ class _CreatePostPageState extends State<CreatePostPage> {
                       padding: EdgeInsets.all(10),
                       child: Image.file(
                         _selectedFile!,
+                        height: 300,
+                        width: 370,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    if(_selectedFile ==null && widget.post.medias != null)
+                    Container(
+                      padding: EdgeInsets.all(10),
+                      child: Image.network(
+                        widget.post.medias!,
                         height: 300,
                         width: 370,
                         fit: BoxFit.cover,
@@ -321,29 +355,34 @@ class _CreatePostPageState extends State<CreatePostPage> {
                   child: SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: _isButtonEnabled ? () async {
+                      onPressed: () async {
                         try {
                           DatabaseProvider db = new DatabaseProvider();
                           int userId = await db.getUserId();
-
+                          int postId = widget.post.id;
+                          int groupId = 0;
                           PostMe newPost = PostMe(
-                            text: _textController.text,
-                            color: _containerColor.value.toRadixString(16),
-                            background: _containerBackground.value.toRadixString(16),
-                            user: userId,
-                          );
-                          PostMe createdPost;
+                              id: postId,
+                              text: _textController.text,
+                              color: _containerColor.value.toRadixString(16),
+                              background:
+                                  _containerBackground.value.toRadixString(16),
+                              user: userId,
+                              group:groupId);
+                          PostMe editPost;
                           if (_selectedFile != null) {
-                            createdPost = await ApiService.createPost(newPost, file: _selectedFile);
+                            editPost = await ApiService.editPost(newPost,
+                                file: _selectedFile);
                           } else {
-                            createdPost = await ApiService.createPost(newPost);
+                            editPost = await ApiService.editPost(newPost);
                           }
-                          widget.onUpdatePostList();
-                          Navigator.pop(context);
+                          
                         } catch (e) {
                           print('Error creating post: $e');
                         }
-                      }:null,
+                        widget.onUpdatePostList();
+                        Navigator.pop(context);
+                      },
                       child: const Text(
                         'Post',
                         style: TextStyle(color: Colors.white),
@@ -351,15 +390,14 @@ class _CreatePostPageState extends State<CreatePostPage> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.deepPurpleAccent,
                       ),
-                    )
+                    ),
                   ),
                 ),
               ),
             ],
           ),
         ),
-      ),
-      
+      ), 
     );
   }
 }

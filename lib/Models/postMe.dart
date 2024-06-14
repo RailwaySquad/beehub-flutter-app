@@ -4,10 +4,11 @@ class PostMe {
   final String text;
   final String? color;
   final String? background;
-  final String? media;
+  final String? medias;
   final int user;
+  final int? group;
 
-  PostMe({this.id, required this.text, this.color, this.background,this.media,required this.user});
+  PostMe({this.id, required this.text, this.color, this.background,this.medias,required this.user, this.group});
 
   Map<String, dynamic> toJson() {
     return {
@@ -15,8 +16,9 @@ class PostMe {
       'text': text,
       'color':color,
       'background':background,
-      'media': media,
-      'user':user
+      'medias': medias,
+      'user':user,
+      'group':group
     };
   } 
   factory PostMe.fromJson(Map<String, dynamic> json) {
@@ -24,15 +26,17 @@ class PostMe {
     final text = json['text'] ?? '';
     final color= json['color'] ?? '';
     final background= json['background'] ?? '' ;
-    final media = json['media']??'';
+    final medias = json['medias']??'';
     final user = json['user'] as int;
+    final group = json['group'] as int;
     return PostMe(
           id:id,
           text:text, 
           color: color,
           background: background,
-          media: media,
-          user: user
+          medias: medias,
+          user: user,
+          group:group
           );
   }
 }

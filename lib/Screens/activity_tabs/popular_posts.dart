@@ -39,7 +39,14 @@ class _PopularPostsState extends State<PopularPosts> {
       }
     });
   }
-
+  void updatePostList(){
+    setState(() {
+      page = 0;
+      list.clear();
+      hasMore = true;
+      fetchPost();
+    });
+  }
   Future refresh() async {
     setState(() {
       isLoading = false;
@@ -114,7 +121,7 @@ class _PopularPostsState extends State<PopularPosts> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => CreatePostPage(),
+                            builder: (context) => CreatePostPage(onUpdatePostList: updatePostList),
                           ),
                         );
                       },
@@ -124,7 +131,7 @@ class _PopularPostsState extends State<PopularPosts> {
               ),
             );
           } else if (index <= list.length) {
-            return PostWidget(post: list[index - 1]); // Adjust index for header
+            return PostWidget(post: list[index - 1],onUpdatePostList: updatePostList); // Adjust index for header
           } else {
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 32),
