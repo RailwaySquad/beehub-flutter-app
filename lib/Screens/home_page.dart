@@ -1,8 +1,11 @@
-import 'package:beehub_flutter_app/Provider/db_provider.dart';
-import 'package:beehub_flutter_app/Screens/activity_screen.dart';
-import 'package:beehub_flutter_app/Screens/following_screen.dart';
+import 'package:beehub_flutter_app/Provider/user_provider.dart';
+import 'package:beehub_flutter_app/Screens/Activity/activity_screen.dart';
+import 'package:beehub_flutter_app/Screens/Following/following_screen.dart';
+import 'package:beehub_flutter_app/Screens/notifications_screen.dart';
+import 'package:beehub_flutter_app/Screens/Profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -12,24 +15,19 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-   final controller = Get.put(NavigationController());
-
+  final controller = Get.put(NavigationController());
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      Provider.of<UserProvider>(context, listen: false).getUsername();
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Beehub'),
-        actions: [
-          IconButton(onPressed: (){}, icon:const Icon(Icons.search)),
-          IconButton(
-              icon: const Icon(Icons.exit_to_app),
-              onPressed: () {
-                ///logout
-                DatabaseProvider().logOut(context);
-              }),
-        ],
-      ),
       body: Obx(()=>controller.screens[controller.selectedIndex.value]),
+      
       bottomNavigationBar: Obx(
         ()=> NavigationBar(
           height: 80,
@@ -38,6 +36,7 @@ class _HomePageState extends State<HomePage> {
           onDestinationSelected: (index){
             controller.selectedIndex.value = index;
           },
+          // labelBehavior:  NavigationDestinationLabelBehavior.alwaysHide,
           destinations: const [
             NavigationDestination(icon: Icon(Icons.home), label: "Home"),
             NavigationDestination(icon: Icon(Icons.favorite), label: "Following"),
@@ -51,13 +50,11 @@ class _HomePageState extends State<HomePage> {
 }
 class NavigationController extends GetxController{
   final Rx<int> selectedIndex = 0.obs;
-  
   final screens = [
-    // const ProfileScreen(),
     const ActivityScreen(),
     const FollowingScreen(),
-    Container(color: Colors.greenAccent,),
-    Container(color: Colors.orangeAccent,),
+    const NotificationsScreen(),
+    const ProfileScreen(),
     // Container(color: Colors.redAccent,),
   ];
 }

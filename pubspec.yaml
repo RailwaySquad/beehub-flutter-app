@@ -42,7 +42,7 @@ dependencies:
   form_validation: ^3.1.1+5
   intl: ^0.19.0
   get: ^4.6.6
-
+  image_picker: ^0.8.4+7
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -72,8 +72,6 @@ flutter:
     - assets/avatar/user_male.png
     - assets/logo/logo-icon.png
     - assets/logo/logo-vertical.png
-    - assets/avatar/fuxuan.png
-    - assets/avatar/jade.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
