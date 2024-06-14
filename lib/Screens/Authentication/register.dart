@@ -1,7 +1,10 @@
+import 'package:beehub_flutter_app/Provider/auth_provider.dart';
 import 'package:beehub_flutter_app/Screens/Authentication/login.dart';
 import 'package:beehub_flutter_app/Utils/page_navigator.dart';
+import 'package:beehub_flutter_app/Utils/snack_message.dart';
 import 'package:flutter/material.dart';
 import 'package:form_validation/form_validation.dart';
+import 'package:provider/provider.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -12,58 +15,48 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
-  final usernameController = TextEditingController();
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-
-  Future handleSignUp() async {
-    if (_formKey.currentState!.validate()) {
-      // await DatabaseProvider().authenticate(emailController.text, passwordController.text);
-      
-      // ScaffoldMessenger.of(context)
-      //     .showSnackBar(const SnackBar(content: Text('Processing Data')));
-    }
-  }
+  final _username = TextEditingController();
+  final _fullName = TextEditingController();
+  final _email = TextEditingController();
+  final _password = TextEditingController();
+  final _confirm = TextEditingController();
 
   String? _usernameValidator(String? value) {
-    final validator = Validator(
-      validators: [
-        const RequiredValidator(),
-        const MinLengthValidator(length: 6),
-        const MaxLengthValidator(length: 20)
-      ]
-    );
+    final validator = Validator(validators: [
+      const RequiredValidator(),
+      const MinLengthValidator(length: 6),
+      const MaxLengthValidator(length: 20)
+    ]);
     return validator.validate(label: 'Username', value: value);
   }
 
   String? _emailValidator(String? value) {
     final validator = Validator(
-      validators: [
-        const RequiredValidator(),
-        const EmailValidator()
-      ]
-    );
+        validators: [const RequiredValidator(), const EmailValidator()]);
     return validator.validate(label: 'Email', value: value);
   }
 
   String? _passwordValidator(String? value) {
-    final validator = Validator(
-      validators: [
-        const RequiredValidator(),
-        const MinLengthValidator(length: 6),
-        const MaxLengthValidator(length: 30)
-      ]
-    );
+    final validator = Validator(validators: [
+      const RequiredValidator(),
+      const MinLengthValidator(length: 6),
+      const MaxLengthValidator(length: 30)
+    ]);
     if (!_containsNumber(value)) return "Password required at least 1 number";
     return validator.validate(label: 'Password', value: value);
   }
-  
+
+  String? _confirmValidator(String? value) {
+    final validator = Validator(validators: [const RequiredValidator()]);
+    if (_password.text != _confirm.text)
+      return "Password confirm does not match";
+    return validator.validate(label: 'Confirm', value: value);
+  }
+
   bool _containsNumber(String? value) {
     if (value == null || value.isEmpty) return false;
     return value.contains(RegExp(r'[0-9]'));
   }
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -114,13 +107,42 @@ class _RegisterPageState extends State<RegisterPage> {
       child: Column(
         children: [
           const SizedBox(height: 50),
-          _inputField('Username', usernameController, validator: _usernameValidator),
+          _inputField('Username', _username, validator: _usernameValidator),
           const SizedBox(height: 20),
-          _inputField('Email', emailController, validator: _emailValidator),
+          _inputField('Username', _fullName, validator: _usernameValidator),
           const SizedBox(height: 20),
-          _inputField('Password', passwordController, isPassword: true, validator: _passwordValidator),
+          _inputField('Email', _email, validator: _emailValidator),
+          const SizedBox(height: 20),
+          _inputField('Password', _password,
+              isPassword: true, validator: _passwordValidator),
+          const SizedBox(height: 20),
+          _inputField('Confirm', _confirm,
+              isPassword: true, validator: _confirmValidator),
           const SizedBox(height: 40),
-          _registerButton(),
+          Consumer<AuthenticationProvider>(
+            // Signin section
+            builder: (context, auth, child) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (auth.resMessage != '') {
+                  showMessage(message: auth.resMessage, context: context);
+                  auth.clear(); // Clear the response message to avoid duplicate
+                }
+              });
+              return _registerButton(
+                  text: 'Sign in',
+                  tap: () {
+                    if (_formKey.currentState!.validate()) {
+                      auth.registerUser(
+                          username: _username.text,
+                          fullName: _fullName.text,
+                          email: _email.text,
+                          password: _password.text,
+                          context: context);
+                    }
+                  },
+                  status: auth.isLoading);
+            },
+          ),
           const SizedBox(height: 20),
           _extraText(),
           const SizedBox(height: 50),
@@ -143,18 +165,22 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  Widget _registerButton() {
+  Widget _registerButton(
+      {VoidCallback? tap,
+      bool? status = false,
+      String? text = 'Sign up',
+      BuildContext? context}) {
     return ElevatedButton(
-      onPressed: handleSignUp,
+      onPressed: status == true ? null : tap,
       style: ElevatedButton.styleFrom(
           shape: const StadiumBorder(),
           padding: const EdgeInsets.symmetric(vertical: 16)),
-      child: const SizedBox(
+      child: SizedBox(
           width: double.infinity,
           child: Text(
-            'Sign in',
+            status == false ? text! : 'Please wait...',
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 18),
+            style: const TextStyle(fontSize: 18),
           )),
     );
   }
@@ -170,8 +196,7 @@ class _RegisterPageState extends State<RegisterPage> {
         const SizedBox(width: 4),
         GestureDetector(
             onTap: () {
-              PageNavigator(ctx: context)
-                .nextPage(page: const LoginPage());
+              PageNavigator(ctx: context).nextPage(page: const LoginPage());
             },
             child: const Text("Signin now",
                 style:

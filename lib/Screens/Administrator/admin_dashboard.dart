@@ -11,6 +11,7 @@ import 'package:beehub_flutter_app/Screens/Administrator/admin_users.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -40,15 +41,17 @@ class _DashboardState extends State<Dashboard> {
       admin = Admin.fromJson(jsonDecode(response.body));
     } catch (e) {
       print(e);
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.clear();
     }
   }
 
   static const List<Widget> _widgetOptions = <Widget>[
     Overview(),
     Reports(),
-    Users(),
-    Groups(),
-    Posts(),
+    AdminUsers(),
+    AdminGroups(),
+    AdminPosts(),
     Shop()
   ];
 

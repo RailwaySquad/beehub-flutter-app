@@ -18,15 +18,6 @@ class _LoginPageState extends State<LoginPage> {
   final _email = TextEditingController();
   final _password = TextEditingController();
 
-  Future handleSignIn() async {
-    if (_formKey.currentState!.validate()) {
-      // await DatabaseProvider().authenticate(emailController.text, passwordController.text);
-
-      // ScaffoldMessenger.of(context)
-      //     .showSnackBar(const SnackBar(content: Text('Processing Data')));
-    }
-  }
-
   String? _emailValidator(String? value) {
     final validator = Validator(
         validators: [const RequiredValidator(), const EmailValidator()]);
@@ -102,14 +93,13 @@ class _LoginPageState extends State<LoginPage> {
           _inputField('Password', _password,
               isPassword: true, validator: _passwordValidator),
           const SizedBox(height: 40),
-          Consumer<AuthenticationProvider>(
+
+          Consumer<AuthenticationProvider>( // Signin section
             builder: (context, auth, child) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 if (auth.resMessage != '') {
                   showMessage(message: auth.resMessage, context: context);
-
-                  ///Clear the response message to avoid duplicate
-                  auth.clear();
+                  auth.clear(); // Clear the response message to avoid duplicate
                 }
               });
               return _loginButton(
@@ -125,6 +115,7 @@ class _LoginPageState extends State<LoginPage> {
                   status: auth.isLoading);
             },
           ),
+
           const SizedBox(height: 20),
           _extraText(),
           const SizedBox(height: 50),

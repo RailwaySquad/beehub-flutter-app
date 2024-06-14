@@ -10,7 +10,6 @@ import 'package:beehub_flutter_app/Utils/page_navigator.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-
 class AuthenticationProvider extends ChangeNotifier {
   final authUrl = AppUrl.authPath;
 
@@ -20,12 +19,12 @@ class AuthenticationProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String get resMessage => _resMessage;
 
-  void registerUser({
-    required String username,
-    required String email,
-    required String password,
-    BuildContext? context
-  }) async {
+  void registerUser(
+      {required String username,
+      required String fullName,
+      required String email,
+      required String password,
+      BuildContext? context}) async {
     _isLoading = true;
     notifyListeners();
 
@@ -33,13 +32,15 @@ class AuthenticationProvider extends ChangeNotifier {
 
     final body = {
       "username": username,
+      "fullName": fullName,
       "email": email,
       "password": password
     };
 
     try {
-      http.Response req =
-        await http.post(Uri.parse(url), body: jsonEncode(body));
+      http.Response req = await http.post(Uri.parse(url),
+          body: jsonEncode(body),
+          headers: {'Content-Type': 'application/json; charset=UTF-8'});
 
       if (req.statusCode == 200 || req.statusCode == 201) {
         _isLoading = false;
@@ -80,10 +81,9 @@ class AuthenticationProvider extends ChangeNotifier {
     final body = {"email": email, "password": password};
 
     try {
-      http.Response req =
-          await http.post(Uri.parse(url), body: json.encode(body), headers: {
-            'Content-Type': 'application/json; charset=UTF-8'
-          });
+      http.Response req = await http.post(Uri.parse(url),
+          body: json.encode(body),
+          headers: {'Content-Type': 'application/json; charset=UTF-8'});
 
       if (req.statusCode == 200 || req.statusCode == 201) {
         final res = json.decode(req.body);
