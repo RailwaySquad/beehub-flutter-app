@@ -1,4 +1,3 @@
-
 import 'package:beehub_flutter_app/Models/group.dart';
 import 'package:beehub_flutter_app/Models/profile.dart';
 import 'package:beehub_flutter_app/Models/user.dart';
@@ -11,6 +10,7 @@ class UserProvider extends ChangeNotifier{
   List<Group> _groups = [];
   String? _username;
   Profile? profile;
+  Group? _group;
   List<User> get friends {
     return _friends;
   }
@@ -44,14 +44,29 @@ class UserProvider extends ChangeNotifier{
   String? get username {
     return _username;
   }
-  Future fetchProfile()async{
+  void setUsername(String usern){
+    _username = usern;
+  }
+  Future fetchProfile(isUserLogin)async{
     isLoading=true;
-    if(username==null){
+    notifyListeners();
+    if(username==null || isUserLogin){
       await getUsername();
     }else{
-      profile = await THttpHelper.getProfile(username!); 
+      profile = await THttpHelper.getProfile(username!);
       isLoading = false;
       notifyListeners();
     }
+  }
+  Group? get group{
+    return _group;    
+  }
+  Future fetchGroup(num idGroup)async{
+    isLoading = true;
+    notifyListeners();
+    Group? findGroup = await THttpHelper.getGroup(idGroup);
+    _group = findGroup;
+    isLoading = false;
+    notifyListeners();
   }
 }

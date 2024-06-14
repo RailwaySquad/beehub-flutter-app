@@ -1,11 +1,13 @@
-
-import 'package:beehub_flutter_app/Constants/color.dart';
 import 'package:beehub_flutter_app/Models/post.dart';
-import 'package:beehub_flutter_app/Utils/helper/helper_functions.dart';
+import 'package:beehub_flutter_app/Provider/user_provider.dart';
+import 'package:beehub_flutter_app/Screens/user_page.dart';
 import 'package:beehub_flutter_app/Utils/shadow/shadows.dart';
 import 'package:beehub_flutter_app/Widgets/expanded/expanded_widget.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class PostWidget extends StatelessWidget {
   const PostWidget({super.key, required this.post,});
@@ -22,11 +24,10 @@ class PostWidget extends StatelessWidget {
   }
   @override
   Widget build(BuildContext context) {
-    final dark = THelperFunction.isDarkMode(context);
     return Container(
       decoration:BoxDecoration(
-        color: dark?TColors.darkerGrey:Colors.white,
-        boxShadow: [dark? TShadowStyle.postShadowDark: TShadowStyle.postShadowLight]
+        color: Colors.white,
+        boxShadow: [ TShadowStyle.postShadowLight]
         ),
       
       child: Padding(
@@ -60,20 +61,29 @@ class PostWidget extends StatelessWidget {
                                     Text.rich( TextSpan(
                                       text: " in ",
                                       children: <InlineSpan>[
-                                        TextSpan(text: post.groupName!, style: const TextStyle(fontWeight: FontWeight.bold),)
+                                        TextSpan(text: post.groupName!, style: const TextStyle(fontWeight: FontWeight.bold),recognizer: TapGestureRecognizer()..onTap = () => Get.toNamed("/group/${post.groupId!}"),)
                                       ] )
                                     )
                                    ]),
-                                   Text(DateFormat("dd/MM/YYYY hh:mm").format(post.createAt!),style: Theme.of(context).textTheme.bodySmall,)
+                                   Text(DateFormat("dd/MM/yyyy hh:mm").format(post.createAt!),style: Theme.of(context).textTheme.bodySmall,)
                                 ],
                               )
-                               : Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                Text(post.userFullname,style:  Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold),overflow: TextOverflow.ellipsis,maxLines: 1,textAlign: TextAlign.left,),
-                                Text(DateFormat("dd/MM/YYYY hh:mm").format(post.createAt!),style: Theme.of(context).textTheme.bodySmall,)
-                               ],)
+                               : InkWell(
+                                onTap: (){
+                                  Provider.of<UserProvider>(context, listen: false).setUsername(post.userUsername);
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => const UserPage())
+                                  );
+                                },
+                                 child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                  Text(post.userFullname,style:  Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold),overflow: TextOverflow.ellipsis,maxLines: 1,textAlign: TextAlign.left,),
+                                  Text(DateFormat("dd/MM/yyyy hh:mm").format(post.createAt!),style: Theme.of(context).textTheme.bodySmall,)
+                                 ],),
+                               )
                               )
                       ],
                     ),

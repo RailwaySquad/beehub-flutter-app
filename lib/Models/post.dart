@@ -8,8 +8,9 @@ class Post {
   final String userUsername;
   final String? userImage;
   final String userGender;
+  final num? groupId;
   final String? groupName;
-  final bool publicGroup;
+  final bool? publicGroup;
   final String? groupImage;
   final String settingType;
   final String? color;
@@ -17,7 +18,7 @@ class Post {
   final String? medias;
   final DateTime? createAt;
 
-  Post({this.id, required this.text, required this.userId,required this.userFullname, required this.userUsername, this.userImage, required this.userGender, required this.groupName, required this.publicGroup, this.groupImage, required this.settingType, this.color, this.background,this.medias, this.createAt});
+  Post({this.id, required this.text, required this.userId,required this.userFullname, required this.userUsername, this.userImage, required this.userGender, this.groupId ,this.groupName, this.publicGroup, this.groupImage, required this.settingType, this.color, this.background,this.medias, this.createAt});
 
   Map<String, dynamic> toJson() {
     return {
@@ -27,6 +28,7 @@ class Post {
       'user_username': userUsername,
       'user_image' : userImage,
       'user_gender':userGender,
+      'group_id': groupId,
       'group_name':groupName,
       'public_group': publicGroup,
       'group_image': groupImage,
@@ -44,6 +46,7 @@ class Post {
     final userId = json["user_id"];
     final userimage = json['user_image'];
     final userGender = json['user_gender'] ?? '';
+    final groupId = json["group_id"];
     final groupName = json['group_name'];
     final public = json['public_group'] ==1 ? true:false;
     final groupImage = json['group_image'] ;
@@ -60,6 +63,7 @@ class Post {
           userUsername:userName,
           userImage: userimage,
           userGender: userGender,
+          groupId: groupId,
           groupImage: groupImage,
           groupName: groupName,
           publicGroup: public,

@@ -72,8 +72,6 @@ flutter:
     - assets/avatar/user_male.png
     - assets/logo/logo-icon.png
     - assets/logo/logo-vertical.png
-    - assets/avatar/fuxuan.png
-    - assets/avatar/jade.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

@@ -1,9 +1,5 @@
-import 'dart:convert';
-import 'dart:developer';
-
 import 'package:beehub_flutter_app/Models/gallery.dart';
 import 'package:beehub_flutter_app/Models/group.dart';
-import 'package:beehub_flutter_app/Models/post.dart';
 import 'package:beehub_flutter_app/Models/user.dart';
 import 'package:beehub_flutter_app/Models/user_setting.dart';
 
@@ -23,10 +19,10 @@ class Profile {
   final bool isBanned;
   final String phone;
   final List<Group>? groupJoined;
-  final List<Post>? posts;
   final List<Gallery>? galleries;
   final List<UserSetting>? userSettings;
   final List<User>? relationships;
+  final DateTime? createdAt;
   Map<String, dynamic> toJson() {
     return {
       'id': id,  
@@ -58,10 +54,10 @@ class Profile {
     final isActive = json['_active'] as bool ;
     final relationshipWithUser= json['relationship_with_user'] ??'';
     final activeAt= json['active_at']!=null? DateTime.parse(json['active_at']):null;
+    final createdAt = json['createdAt']!=null?DateTime.parse(json['createdAt']):null;
     final isBanned = json['_banned'] as bool;
     final phone = json['phone'] as String;
     final List<Group> groups = json['group_joined']!=null? List.from(json['group_joined'].map((e) => Group.fromJson(e))):[];
-    final List<Post> posts = json['posts']!=null? List.from(json['posts'].map((e)=> Post.fromJson(e))):[];
     final List<UserSetting> userSetting = json['user_settings']!=null?List.from(json['user_settings'].map((e)=> UserSetting.fromJson(e))):[];
     final List<User> relationships = json['relationships']!=null? List.from(json['relationships'].map((e)=> User.fromJson(e))):[];
     final List<Gallery> galliries = json["galleries"]!=null? List.from(json["galleries"].map((e)=> Gallery.fromJson(e))):[]; 
@@ -81,12 +77,12 @@ class Profile {
           background: background,
           isBanned: isBanned,
           groupJoined:  groups,
-          posts: posts,
           galleries: galliries,
           relationships: relationships,
-          userSettings: userSetting
+          userSettings: userSetting,
+          createdAt: createdAt
           );
   }
 
-  Profile({required this.id, required this.username, required this.email, required this.fullname, required this.gender, this.image, this.background, this.bio, required this.birthday, required this.isActive, this.relationshipWithUser, required this.activeAt, required this.isBanned, required this.phone, this.groupJoined, this.posts, this.galleries,  this.userSettings, this.relationships});
+  Profile({required this.id, required this.username, required this.email, required this.fullname, required this.gender, this.image, this.background, this.bio, required this.birthday, required this.isActive, this.relationshipWithUser, required this.activeAt, required this.isBanned, required this.phone, this.groupJoined, this.galleries,  this.userSettings, this.relationships, this.createdAt});
 }
