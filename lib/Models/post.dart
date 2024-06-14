@@ -1,7 +1,7 @@
 import 'dart:core';
 
 class Post {
-  final int? id;
+  final int id;
   final String text;
   final num userId;
   final String userFullname;
@@ -16,9 +16,9 @@ class Post {
   final String? color;
   final String? background;
   final String? medias;
-  final DateTime? createAt;
+  final DateTime? createdAt;
 
-  Post({this.id, required this.text, required this.userId,required this.userFullname, required this.userUsername, this.userImage, required this.userGender, this.groupId ,this.groupName, this.publicGroup, this.groupImage, required this.settingType, this.color, this.background,this.medias, this.createAt});
+  Post({ required this.id, required this.text, required this.userId,required this.userFullname, required this.userUsername, this.userImage, required this.userGender, this.groupId, required this.groupName, required this.publicGroup, this.groupImage, required this.settingType, this.color, this.background,this.medias,this.createdAt});
 
   Map<String, dynamic> toJson() {
     return {
@@ -35,7 +35,8 @@ class Post {
       'setting_type': settingType,
       'color':color,
       'background':background,
-      'medias': medias
+      'medias': medias,
+      'createdAt':createdAt?.toIso8601String()
     };
   } 
   factory Post.fromJson(Map<String, dynamic> json) {
@@ -43,7 +44,7 @@ class Post {
     final text = json['text'] ?? '';
     final fullname = json['user_fullname'] ??'';
     final userName = json['user_username'] ??'';
-    final userId = json["user_id"];
+    final userId = json["user_id"] ?? json["user"];
     final userimage = json['user_image'];
     final userGender = json['user_gender'] ?? '';
     final groupId = json["group_id"];
@@ -53,8 +54,12 @@ class Post {
     final settingType = json['setting_type'] ?? '';
     final color= json['color'] ?? '';
     final background= json['background'] ?? '' ;
-    final medias =json["medias"];
-    final createAt =DateTime.parse(json['create_at']);
+    final medias =json["medias"] ?? json["mediaUrl"];
+    final createdAtString = json['createdAt'] as String?;
+    DateTime? createdAt;
+    if (createdAtString != null) {
+      createdAt = DateTime.parse(createdAtString);
+    }
     return Post(
           id:id,
           text:text,
@@ -71,7 +76,7 @@ class Post {
           color: color,
           background: background,
           medias: medias,
-          createAt: createAt
+          createdAt: createdAt,
           );
   }
 }
