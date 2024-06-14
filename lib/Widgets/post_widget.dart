@@ -1,10 +1,8 @@
-import 'dart:async';
+import 'package:beehub_flutter_app/Models/post.dart';
 
 import 'package:beehub_flutter_app/Constants/color.dart';
 import 'package:beehub_flutter_app/Models/like.dart';
-import 'package:beehub_flutter_app/Models/post.dart';
 import 'package:beehub_flutter_app/Provider/db_provider.dart';
-import 'package:beehub_flutter_app/Utils/api_connection/http_client.dart';
 import 'package:beehub_flutter_app/Utils/api_connection/http_post.dart';
 import 'package:beehub_flutter_app/Utils/helper/helper_functions.dart';
 import 'package:beehub_flutter_app/Utils/shadow/shadows.dart';
@@ -15,7 +13,7 @@ import 'package:flutter/material.dart';
 
 class PostWidget extends StatefulWidget {
   final void Function() onUpdatePostList;
-  const PostWidget({Key? key,required this.post,required this.onUpdatePostList}) : super(key: key);
+  const PostWidget({super.key,required this.post,required this.onUpdatePostList});
   final Post post;
   @override
   _PostWidgetState createState() => _PostWidgetState();
@@ -82,7 +80,7 @@ class _PostWidgetState extends State<PostWidget> {
         return Colors.transparent;
       } else {
         if (colorString.startsWith('#')) {
-          colorString = 'ff' + colorString.substring(1);
+          colorString = 'ff${colorString.substring(1)}';
         }
         return Color(int.parse(colorString, radix: 16) + 0xFF000000);
       }
@@ -227,11 +225,9 @@ class _PostWidgetState extends State<PostWidget> {
                 ),
                 if (widget.post.medias != null &&
                     widget.post.medias!.isNotEmpty)
-                  Container(
-                    child: Image.network(
-                      widget.post.medias!,
-                      fit: BoxFit.cover,
-                    ),
+                  Image.network(
+                    widget.post.medias!,
+                    fit: BoxFit.cover,
                   ),
                 const SizedBox(
                   height: 8,
@@ -265,11 +261,11 @@ class _PostWidgetState extends State<PostWidget> {
                                       print('Error to add Like: $e');
                                     }
                                   },
-                                  icon: Text('👍'))
+                                  icon: const Text('👍'))
                                   :IconButton(
                                   onPressed: () async{
                                     try{
-                                      DatabaseProvider db = new DatabaseProvider();
+                                      DatabaseProvider db = DatabaseProvider();
                                       int userid = await db.getUserId();
                                       int postid = widget.post.id;
                                       Like like = Like(
@@ -312,6 +308,14 @@ class _PostWidgetState extends State<PostWidget> {
                                 );
                               });
                             },
+                            
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.zero,
+                              backgroundColor: Colors.transparent, // Bỏ màu nền mặc định
+                              elevation: 0, // Bỏ shadow
+                              shadowColor: Colors.transparent, // Bỏ shadow màu
+                              side: BorderSide.none, // Bỏ border
+                            ),
                             child: Row(
                               children: [
                                 IconButton(
@@ -320,13 +324,6 @@ class _PostWidgetState extends State<PostWidget> {
                                         Icons.messenger_outline_rounded),color: Colors.black,),
                                 const Text("Comment",style: TextStyle(color: Colors.black),)
                               ],
-                            ),
-                            style: TextButton.styleFrom(
-                              padding: EdgeInsets.zero,
-                              backgroundColor: Colors.transparent, // Bỏ màu nền mặc định
-                              elevation: 0, // Bỏ shadow
-                              shadowColor: Colors.transparent, // Bỏ shadow màu
-                              side: BorderSide.none, // Bỏ border
                             ),
                           )
                         ],
@@ -352,7 +349,7 @@ class _PostWidgetState extends State<PostWidget> {
                 top: 40,
                 right: 0,
                 child: Container(
-                  padding: EdgeInsets.only(left: 10),
+                  padding: const EdgeInsets.only(left: 10),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(10), // Tạo viền tròn
@@ -382,19 +379,19 @@ class _PostWidgetState extends State<PostWidget> {
                             );
                           });
                         },
-                        child: Row(
-                          children: [
-                            Icon(Icons.edit),
-                            SizedBox(width: 10),
-                            Text('Edit')
-                          ],
-                        ),
                         style: TextButton.styleFrom(
                           padding: EdgeInsets.zero,
                           backgroundColor: Colors.transparent, // Bỏ màu nền mặc định
                           elevation: 0, // Bỏ shadow
                           shadowColor: Colors.transparent, // Bỏ shadow màu
                           side: BorderSide.none, // Bỏ border
+                        ),
+                        child: const Row(
+                          children: [
+                            Icon(Icons.edit),
+                            SizedBox(width: 10),
+                            Text('Edit')
+                          ],
                         ),
                       ),
                       ElevatedButton(
@@ -404,19 +401,19 @@ class _PostWidgetState extends State<PostWidget> {
                             builder: (BuildContext context){
                               return AlertDialog(
                                 title: const Text('Confirm Delete'),
-                                content: Text('Are you sure you want to delete post ?'),
+                                content: const Text('Are you sure you want to delete post ?'),
                                 actions: [
                                   TextButton(
                                     onPressed: (){
                                       Navigator.of(context).pop(false);
                                     }, 
-                                    child: Text('Cancel'),
+                                    child: const Text('Cancel'),
                                   ),
                                   TextButton(
                                     onPressed: (){
                                       Navigator.of(context).pop(true);
                                     }, 
-                                    child: Text('Ok')
+                                    child: const Text('Ok')
                                   )
                                 ],
                               );
@@ -429,19 +426,20 @@ class _PostWidgetState extends State<PostWidget> {
                             });
                           }
                         },
-                        child: Row(
-                          children: const [
-                            Icon(Icons.delete),
-                            SizedBox(width: 10),
-                            Text('Delete')
-                          ],
-                        ),
+                        
                         style: TextButton.styleFrom(
                           padding: EdgeInsets.zero,
                           backgroundColor: Colors.transparent, // Bỏ màu nền mặc định
                           elevation: 0, // Bỏ shadow
                           shadowColor: Colors.transparent, // Bỏ shadow màu
                           side: BorderSide.none, // Bỏ border
+                        ),
+                        child: const Row(
+                          children: [
+                            Icon(Icons.delete),
+                            SizedBox(width: 10),
+                            Text('Delete')
+                          ],
                         ),
                       ),
                     ],
@@ -449,19 +447,19 @@ class _PostWidgetState extends State<PostWidget> {
                     children: [
                       ElevatedButton(
                         onPressed: () {},
-                        child: Row(
-                          children: [
-                            Icon(Icons.report),
-                            SizedBox(width: 10),
-                            Text('Report')
-                          ],
-                        ),
                         style: TextButton.styleFrom(
                           padding: EdgeInsets.zero,
                           backgroundColor: Colors.transparent, // Bỏ màu nền mặc định
                           elevation: 0, // Bỏ shadow
                           shadowColor: Colors.transparent, // Bỏ shadow màu
                           side: BorderSide.none, // Bỏ border
+                        ),
+                        child: const Row(
+                          children: [
+                            Icon(Icons.report),
+                            SizedBox(width: 10),
+                            Text('Report')
+                          ],
                         ),
                       ),
                     ],

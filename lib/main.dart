@@ -1,6 +1,8 @@
 import 'package:beehub_flutter_app/Provider/auth_provider.dart';
 import 'package:beehub_flutter_app/Provider/db_provider.dart';
 import 'package:beehub_flutter_app/Provider/user_provider.dart';
+import 'package:beehub_flutter_app/Screens/Group/group_page.dart';
+import 'package:beehub_flutter_app/Screens/user_page.dart';
 import 'package:beehub_flutter_app/spash.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -34,7 +36,8 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       getPages: [
         GetPage(name: '/', page: ()=> const SplashScreen()),
-        // GetPage(name: '/profile', page: ()=> const ProfilePage())
+        GetPage(name: '/userpage', page: ()=> const UserPage()),
+        GetPage(name: "/group/:idGroup", page: ()=> const GroupPage())
       ]
     );
   }
