@@ -15,8 +15,9 @@ class Post {
   final String? color;
   final String? background;
   final String? medias;
+  final DateTime? createdAt;
 
-  Post({this.id, required this.text, required this.userId,required this.userFullname, required this.userUsername, this.userImage, required this.userGender, required this.groupName, required this.publicGroup, this.groupImage, required this.settingType, this.color, this.background,this.medias});
+  Post({ required this.id, required this.text, required this.userId,required this.userFullname, required this.userUsername, this.userImage, required this.userGender, required this.groupName, required this.publicGroup, this.groupImage, required this.settingType, this.color, this.background,this.medias,this.createdAt});
 
   Map<String, dynamic> toJson() {
     return {
@@ -32,7 +33,8 @@ class Post {
       'setting_type': settingType,
       'color':color,
       'background':background,
-      'medias': medias
+      'medias': medias,
+      'createdAt':createdAt?.toIso8601String()
     };
   } 
   factory Post.fromJson(Map<String, dynamic> json) {
@@ -40,7 +42,7 @@ class Post {
     final text = json['text'] ?? '';
     final fullname = json['user_fullname'] ??'';
     final userName = json['user_username'] ??'';
-    final userId = json["user_id"];
+    final userId = json["user_id"] ?? json["user"];
     final userimage = json['user_image'];
     final userGender = json['user_gender'] ?? '';
     final groupName = json['group_name'];
@@ -49,7 +51,12 @@ class Post {
     final settingType = json['setting_type'] ?? '';
     final color= json['color'] ?? '';
     final background= json['background'] ?? '' ;
-    final medias =json["medias"];
+    final medias =json["medias"] ?? json["mediaUrl"];
+    final createdAtString = json['createdAt'] as String?;
+    DateTime? createdAt;
+    if (createdAtString != null) {
+      createdAt = DateTime.parse(createdAtString);
+    }
     return Post(
           id:id,
           text:text,
@@ -64,7 +71,8 @@ class Post {
           settingType: settingType,
           color: color,
           background: background,
-          medias: medias
+          medias: medias,
+          createdAt: createdAt,
           );
   }
 }

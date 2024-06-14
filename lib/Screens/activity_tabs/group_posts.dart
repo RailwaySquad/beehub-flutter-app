@@ -62,7 +62,14 @@ class _GroupPostsState extends State<GroupPosts> {
     });
     fetchGroupPosts(groups[selectGroup].id!,page);
   }
-  
+  void updatePostList(){
+    setState(() {
+      page = 0;
+      listPosts.clear();
+      hasMore = true;
+      fetchGroup();
+    });
+  }
 @override
   void initState() {
     super.initState();
@@ -155,7 +162,7 @@ class _GroupPostsState extends State<GroupPosts> {
                   itemBuilder: (context, index){
                    
                     if(index<listPosts.length){
-                    return PostWidget(post: listPosts[index]);                  
+                    return PostWidget(post: listPosts[index],onUpdatePostList: updatePostList);                  
                     }else{
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 32),

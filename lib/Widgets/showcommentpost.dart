@@ -4,11 +4,14 @@ import 'package:beehub_flutter_app/Provider/db_provider.dart';
 import 'package:beehub_flutter_app/Utils/api_connection/http_post.dart';
 import 'package:beehub_flutter_app/Widgets/bulidcomment.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get_rx/src/rx_typedefs/rx_typedefs.dart';
+import 'package:intl/intl.dart';
 
 
 class ShowComment extends StatefulWidget {
   final Post post;
-  const ShowComment({super.key, required this.post});
+  final VoidCallback fetchCountComment; 
+  const ShowComment({Key? key, required this.post, required this.fetchCountComment}) : super(key: key);
 
   @override
   State<ShowComment> createState() => _ShowCommentState();
@@ -18,6 +21,8 @@ class _ShowCommentState extends State<ShowComment> {
   var _userNameController1 = TextEditingController();
   var _userNameController2 = TextEditingController();
   bool _isButtonDisabled = true;
+  bool _isKeyboardVisible = false;
+  late Future<List<Comment>> _commentsFuture;
   final List<Map<String, dynamic>> _allUsers = [
     {"id": 1, "name": "Andy", "age": 29},
     {"id": 2, "name": "Aragon", "age": 40},
@@ -32,7 +37,26 @@ class _ShowCommentState extends State<ShowComment> {
   ];
   List<Map<String, dynamic>> _foundUsers = [];
   String? _activeTextField;
-
+  String formatDate(DateTime? date){
+    if(date == null) return '';
+    final now = DateTime.now();
+    final difference = now.difference(date);
+    if(difference.inDays > 365){
+      final years = (difference.inDays / 365).floor();
+      return '$years year ago'; 
+    }else if(difference.inDays >= 30){
+      final months = (difference.inDays / 30).floor();
+      return '$months month ago';
+    }else if(difference.inDays >= 1){
+      return '${difference.inDays} day ago';
+    }else if(difference.inHours >= 1){
+      return '${difference.inHours} hours ago';
+    }else if(difference.inMinutes >= 1){
+      return '${difference.inMinutes} minutes ago';
+    }else{
+      return 'Now' ;
+    }
+  }
   @override
   void initState() {
     super.initState();
@@ -43,6 +67,12 @@ class _ShowCommentState extends State<ShowComment> {
       }
     });
     _userNameController1.addListener(_onTextChanged);
+    _commentsFuture = ApiService.getComment(widget.post.id);
+  }
+  void _handleFocusChange(bool hasFocus){
+    setState(() {
+      _isKeyboardVisible = hasFocus;
+    });
   }
   void _onTextChanged(){
     setState(() {
@@ -54,7 +84,7 @@ class _ShowCommentState extends State<ShowComment> {
     try{
       DatabaseProvider db = new DatabaseProvider();
       int userId = await db.getUserId();
-      int postId = widget.post.id;
+      int postId = widget.post.id!;
       Comment newComment = Comment(
         comment: _userNameController1.text, 
         post: postId, 
@@ -62,6 +92,7 @@ class _ShowCommentState extends State<ShowComment> {
       );
       await ApiService.createComment(newComment);
       _userNameController1.clear();
+      
     }catch(e){
       print('Error create comment: $e');
     }
@@ -69,6 +100,8 @@ class _ShowCommentState extends State<ShowComment> {
       _userNameController1.clear();
       _isButtonDisabled = true; // Disable the button again
     });
+    _refreshComments();
+    widget.fetchCountComment();
   }
   bool _showList = false;
   void _runFilter(String enteredKeyword) {
@@ -96,7 +129,11 @@ class _ShowCommentState extends State<ShowComment> {
       _foundUsers = results;
     });
   }
-
+  void _refreshComments() {
+    setState(() {
+      _commentsFuture = ApiService.getComment(widget.post.id);
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -113,18 +150,19 @@ class _ShowCommentState extends State<ShowComment> {
                 Padding(padding: EdgeInsets.only(right: 1.0)),
                 Icon(
                   Icons.account_circle,
-                  size: 60.0,
+                  size: 50.0,
                 ),
                 SizedBox(
                   width: 10.0,
                 ),
                 Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       widget.post.userFullname,
-                      style: TextStyle(fontSize: 18.0),
+                      style: TextStyle(fontSize: 15.0),
                     ),
-                    Text('Time', style: TextStyle(fontSize: 18.0))
+                    Text(formatDate(widget.post.createdAt), style: TextStyle(fontSize: 15.0))
                   ],
                 )
               ],
@@ -140,10 +178,11 @@ class _ShowCommentState extends State<ShowComment> {
                     padding: EdgeInsets.only(right: 320.0),
                     child: Text(
                       widget.post.text,
-                      style: TextStyle(fontSize: 20.0,backgroundColor: Colors.amber),
+                      style: TextStyle(fontSize: 18.0),
                     ),
                   ),
                   SizedBox(height: 10.0),
+                  if(widget.post.medias != null)
                   Container(
                     height: 400.0,
                     width: double.infinity,
@@ -172,10 +211,11 @@ class _ShowCommentState extends State<ShowComment> {
                   Container(
                     child: const Row(
                       children: <Widget>[
+                        SizedBox(width: 10,),
                         Center(
                           child: Row(
                             children: <Widget>[
-                              Icon(Icons.favorite,
+                              Icon(Icons.thumb_up_alt_outlined,
                                   size: 25.0, color: Colors.deepPurpleAccent),
                               Text('Like')
                             ],
@@ -185,7 +225,7 @@ class _ShowCommentState extends State<ShowComment> {
                         Center(
                           child: Row(
                             children: <Widget>[
-                              Icon(Icons.comment,
+                              Icon(Icons.messenger_outline_rounded,
                                   size: 25.0, color: Colors.deepPurpleAccent),
                               Text('Comment')
                             ],
@@ -212,11 +252,12 @@ class _ShowCommentState extends State<ShowComment> {
                   ),
                   Container(
                     child: SizedBox(
-                      height: 200.0, // Đặt kích thước cố định
+                      height: widget.post.medias!=null ? 200: 350.0, // Đặt kích thước cố định
                       child: SingleChildScrollView(
                         child: Column(
                           children: <Widget>[
-                            BuildComment(postId:widget.post.id),
+                            BuildComment(postId:widget.post.id!, onFocusChange: _handleFocusChange,commentsFuture:_commentsFuture,
+                            refreshComments:_refreshComments,formatDate:formatDate,CountComment:widget.fetchCountComment),
                           ],
                         ),
                       ),
@@ -232,48 +273,41 @@ class _ShowCommentState extends State<ShowComment> {
             ),
           ],
         ),
-      ),bottomNavigationBar: Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
-        child: BottomAppBar(
-          color: Colors.white,
-          child: Padding(
-            padding: const EdgeInsets.only(right: 5.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _userNameController1,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20.0),
-                          ),
-                          hintText: 'Input Comment',
-                          contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-                        ),
-                      ),
-                    ),
-                    ElevatedButton(
-                      style: TextButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
+      ),bottomNavigationBar: Container(
+        color: Colors.white,
+        child: Padding(
+          padding: EdgeInsets.only(
+            bottom: _isKeyboardVisible ? 0 : MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: BottomAppBar(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _userNameController1,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20.0),
                         ),
+                        hintText: 'Input Comment',
+                        contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
                       ),
-                      onPressed: _isButtonDisabled ? null : _sendComment,
-                      child: Icon(Icons.send),
                     ),
-                  ],
-                ),
-              ],
+                  ),
+                  SizedBox(width: 10.0),
+                  ElevatedButton(
+                    onPressed: _isButtonDisabled ? null : _sendComment,
+                    child: Icon(Icons.send),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
       ),
+        
     );
   }
 
