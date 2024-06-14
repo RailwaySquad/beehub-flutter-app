@@ -109,7 +109,7 @@ class _RegisterPageState extends State<RegisterPage> {
           const SizedBox(height: 50),
           _inputField('Username', _username, validator: _usernameValidator),
           const SizedBox(height: 20),
-          _inputField('Username', _fullName, validator: _usernameValidator),
+          _inputField('Full name', _fullName, validator: _usernameValidator),
           const SizedBox(height: 20),
           _inputField('Email', _email, validator: _emailValidator),
           const SizedBox(height: 20),
