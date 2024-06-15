@@ -56,7 +56,7 @@ class Profile {
     final activeAt= json['active_at']!=null? DateTime.parse(json['active_at']):null;
     final createdAt = json['createdAt']!=null?DateTime.parse(json['createdAt']):null;
     final isBanned = json['_banned'] as bool;
-    final phone = json['phone'] as String;
+    final phone = json['phone'] ??"";
     final List<Group> groups = json['group_joined']!=null? List.from(json['group_joined'].map((e) => Group.fromJson(e))):[];
     final List<UserSetting> userSetting = json['user_settings']!=null?List.from(json['user_settings'].map((e)=> UserSetting.fromJson(e))):[];
     final List<User> relationships = json['relationships']!=null? List.from(json['relationships'].map((e)=> User.fromJson(e))):[];

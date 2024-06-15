@@ -1,15 +1,21 @@
-import 'package:beehub_flutter_app/Models/post.dart';
+import 'dart:developer';
 
+import 'package:beehub_flutter_app/Models/post.dart';
 import 'package:beehub_flutter_app/Constants/color.dart';
 import 'package:beehub_flutter_app/Models/like.dart';
 import 'package:beehub_flutter_app/Provider/db_provider.dart';
+import 'package:beehub_flutter_app/Provider/user_provider.dart';
 import 'package:beehub_flutter_app/Utils/api_connection/http_post.dart';
 import 'package:beehub_flutter_app/Utils/helper/helper_functions.dart';
 import 'package:beehub_flutter_app/Utils/shadow/shadows.dart';
 import 'package:beehub_flutter_app/Widgets/editpost_widget.dart';
 import 'package:beehub_flutter_app/Widgets/expanded/expanded_widget.dart';
 import 'package:beehub_flutter_app/Widgets/showcommentpost.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class PostWidget extends StatefulWidget {
   final void Function() onUpdatePostList;
@@ -85,7 +91,6 @@ class _PostWidgetState extends State<PostWidget> {
         return Color(int.parse(colorString, radix: 16) + 0xFF000000);
       }
     }
-
     final dark = THelperFunction.isDarkMode(context);
     return Container(
       decoration: BoxDecoration(
@@ -123,29 +128,44 @@ class _PostWidgetState extends State<PostWidget> {
                           SizedBox(
                               child: widget.post.groupName != null &&
                                       widget.post.groupName!.isNotEmpty
-                                  ? Row(children: [
-                                      Text(
-                                        widget.post.userFullname,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleMedium!
-                                            .copyWith(
-                                                fontWeight: FontWeight.bold),
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 1,
-                                        textAlign: TextAlign.left,
-                                      ),
-                                      Text.rich(TextSpan(
-                                          text: " in ",
-                                          children: <InlineSpan>[
-                                            TextSpan(
-                                              text: widget.post.groupName!,
-                                              style: const TextStyle(
-                                                  fontWeight: FontWeight.bold),
-                                            )
-                                          ]))
-                                    ])
-                                  : Row(
+                                  ? Column(
+                                     crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Row(children: [
+                                          Text(
+                                            widget.post.userFullname,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .titleMedium!
+                                                .copyWith(
+                                                    fontWeight: FontWeight.bold),
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 1,
+                                            textAlign: TextAlign.left,
+                                          ),
+                                          Text.rich(TextSpan(
+                                              text: " in ",
+                                              children: <InlineSpan>[
+                                                TextSpan(
+                                                  text: widget.post.groupName!,
+                                                  style: const TextStyle(
+                                                      fontWeight: FontWeight.bold),recognizer: TapGestureRecognizer()..onTap = () => Get.toNamed("/group/${widget.post.groupId!}")
+                                                )
+                                              ]))
+                                        ]),
+                                        widget.post.createdAt!=null?Text(DateFormat("dd/MM/yyyy hh:mm").format(widget.post.createdAt!),style: Theme.of(context).textTheme.bodySmall,):const SizedBox()
+                                    ],
+                                  )
+                                  : InkWell(
+                                     onTap: (){
+                                      Provider.of<UserProvider>(context, listen: false).setUsername(widget.post.userUsername);
+                                      log(Provider.of<UserProvider>(context, listen: false).username!);
+                                      Get.toNamed("/userpage/${widget.post.userUsername}");
+                                    },
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.start,
                                       children: [
                                         Text(
                                           widget.post.userFullname,
@@ -157,9 +177,11 @@ class _PostWidgetState extends State<PostWidget> {
                                           overflow: TextOverflow.ellipsis,
                                           maxLines: 1,
                                           textAlign: TextAlign.left,
-                                        )
+                                        ),
+                                        widget.post.createdAt!=null?Text(DateFormat("dd/MM/yyyy hh:mm").format(widget.post.createdAt!),style: Theme.of(context).textTheme.bodySmall,):const SizedBox()
                                       ],
-                                    ))
+                                    ),
+                                  ))
                         ],
                       ),
                     ),

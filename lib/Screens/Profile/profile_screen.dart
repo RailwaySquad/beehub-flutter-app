@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:beehub_flutter_app/Constants/color.dart';
 import 'package:beehub_flutter_app/Models/profile.dart';
 import 'package:beehub_flutter_app/Provider/user_provider.dart';
@@ -65,6 +67,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       Provider.of<UserProvider>(context, listen: false).fetchProfile(true);
+      String? user = Provider.of<UserProvider>(context, listen: false).username;
+      log("User : "+user.toString());
     }); 
   }
   @override
@@ -154,7 +158,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 8),
-                        child: Text("Active at ${DateFormat.yMMMMd('en_US').format(profile.createdAt!)}"),
+                        child: profile.createdAt!=null? Text("Created at ${DateFormat.yMMMMd('en_US').format(profile.createdAt!)}"): const Text(""),
                       ),
                       SizedBox(
                         child: Row(

@@ -75,7 +75,7 @@ class ProfileAbout extends StatelessWidget {
                         child: Text("Active at: ", style: Theme.of(context).textTheme.bodyLarge)),
                       Container(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(DateFormat.yMMMMd('en_US').format(profile.activeAt!), style: Theme.of(context).textTheme.bodyLarge))
+                        child: profile.createdAt!=null? Text(DateFormat.yMMMMd('en_US').format(profile.createdAt!), style: Theme.of(context).textTheme.bodyLarge): const Text(""))
                     ]
                   ),
                 ],

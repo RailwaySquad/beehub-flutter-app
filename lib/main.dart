@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       getPages: [
         GetPage(name: '/', page: ()=> const SplashScreen()),
-        GetPage(name: '/userpage', page: ()=> const UserPage()),
+        GetPage(name: '/userpage/:user', page: ()=> const UserPage()),
         GetPage(name: "/group/:idGroup", page: ()=> const GroupPage())
       ]
     );
