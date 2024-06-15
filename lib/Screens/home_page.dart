@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:beehub_flutter_app/Provider/user_provider.dart';
 import 'package:beehub_flutter_app/Screens/Activity/activity_screen.dart';
 import 'package:beehub_flutter_app/Screens/Following/following_screen.dart';

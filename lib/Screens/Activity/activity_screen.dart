@@ -3,7 +3,6 @@ import 'package:beehub_flutter_app/Constants/color.dart';
 import 'package:beehub_flutter_app/Provider/db_provider.dart';
 import 'package:beehub_flutter_app/Screens/Activity/group_posts.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'popular_posts.dart';
@@ -61,7 +60,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
               title: const Text('Beehub'),
                 actions: [
                   IconButton(onPressed: (){
-                    Get.toNamed("/search");
+                    showSearch(context:context, delegate: BeehubSearchDelegate());
                   }, icon:const Icon(Icons.search)),
                   IconButton(
                       icon: const Icon(Icons.exit_to_app),
@@ -129,6 +128,56 @@ class _ActivityScreenState extends State<ActivityScreen> {
             
           ],
         );
+  }
+}
+
+class BeehubSearchDelegate extends SearchDelegate {
+  List<String> list=[];
+  
+  @override
+  List<Widget>? buildActions(BuildContext context) {
+    return [
+      IconButton(onPressed: (){
+        query="";
+      }, icon: const Icon(Icons.clear)),
+    ];
+  }
+  
+  @override
+  Widget? buildLeading(BuildContext context) {
+    return IconButton(
+      onPressed: (){
+        close(context,null);
+      }, 
+      icon: const Icon(Icons.arrow_back));
+  }
+  
+  @override
+  Widget buildResults(BuildContext context) =>Container();
+  @override
+  void showResults(BuildContext context) {
+    Navigator.of(context).popAndPushNamed(
+      '/search',
+      arguments: query,
+    );
+    super.showResults(context);
+  }
+  
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    List<String> matchQuery=[];
+    for(var item in list){
+      if(item.toLowerCase().contains(query.toLowerCase())){
+        matchQuery.add(item);
+      }
+    }
+    return ListView.builder(
+      itemCount: matchQuery.length,
+      itemBuilder: (context,index){
+        return ListTile(
+          title: Text(list[index]),
+        );
+      });
   }
 }
 

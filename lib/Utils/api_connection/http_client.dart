@@ -51,10 +51,8 @@ THttpHelper {
     }
     );
     int status = response.statusCode;
-    log(status.toString());
     
     if(status == 200){
-      log("Connect database successful: $status");
       String json = response.body;
       List<dynamic> listGr = jsonDecode(json);
       try {
@@ -77,11 +75,8 @@ THttpHelper {
     }
     );
     int status = response.statusCode;
-    log(status.toString());
     if(status == 200){
-      log("Connect database successful: $status");
       String json = response.body;
-      log(json);
       List<dynamic> listPost = jsonDecode(json);
       try {
         return List.from(listPost.map((e) => Post.fromJson(e)));
@@ -103,9 +98,7 @@ THttpHelper {
     }
     );
     int status = response.statusCode;
-    log(status.toString());    
     if(status == 200){
-        log("Connect database successful: $status");
         String json = response.body;
         List<dynamic> listFriends = jsonDecode(json);
         try {
@@ -124,14 +117,12 @@ THttpHelper {
     DatabaseProvider db =  DatabaseProvider();
     String token = await db.getToken();
     num  idUser= id?? await db.getUserId();
-    log("Id: "+idUser.toString());
     Response response = await get(Uri.parse("$BaseUrl/user/get-username/$idUser"),
       headers: {
         HttpHeaders.authorizationHeader: 'Bearer $token'
       }
     );
     if(response.statusCode==200){
-      log(response.body);
       return response.body;
     }
     return "";
@@ -147,7 +138,6 @@ THttpHelper {
     }
     );
     int status = response.statusCode;
-    log(status.toString());    
     if(status == 200){
       log("Connect database successful: $status");
       String json = response.body;
@@ -175,7 +165,6 @@ THttpHelper {
     );
     int status = response.statusCode;
     if(status == 200){
-      log("Connect database successful: $status");
       String json = response.body;
       dynamic post = jsonDecode(json);
       try {
@@ -201,7 +190,6 @@ THttpHelper {
     );
     int status = response.statusCode;
     if(status == 200){
-      log("Connect database successful: $status");
       String json = response.body;
       dynamic requirement= jsonDecode(json);
       try {
@@ -226,9 +214,7 @@ THttpHelper {
     );
     int status = response.statusCode;
     if(status == 200){
-      log("Connect database successful: $status");
       String json = response.body;
-      log(json);
       dynamic group= jsonDecode(json);
       try {
         return Group.fromJson(group);
@@ -238,6 +224,37 @@ THttpHelper {
       }
     }else{
       return null;
+    }
+  }
+  ///user/{id}/search_all
+  ///List<PostDto> posts
+  ///List<UserDto> people
+  ///List<GroupDto> groups
+  static Future<Map<String, dynamic>> getSearchResult(String search) async{
+    DatabaseProvider db= DatabaseProvider();
+    int userId = await db.getUserId();
+    String token = await db.getToken();
+    Response response = await get(Uri.parse("$BaseUrl/user/$userId/search_all?search=$search"),
+      headers: {
+        HttpHeaders.authorizationHeader: 'Bearer $token'
+      }
+    );
+    int status = response.statusCode;
+    Map<String ,dynamic>  result =  <String, dynamic>{};
+    if(status == 200){
+      String json = response.body;
+      dynamic res= jsonDecode(json);
+      try {
+        result["posts"]= List.from(res["posts"].map((e)=> Post.fromJson(e)));
+        result["groups"]=List.from(res["groups"].map((e)=> Group.fromJson(e)));
+        result["people"]=List.from(res["people"].map((e)=> User.fromJson(e)));
+        return result;
+      } catch (e) {
+        log(e.toString());
+        throw Exception(e);
+      }
+    }else{
+      return result;
     }
   }
 }

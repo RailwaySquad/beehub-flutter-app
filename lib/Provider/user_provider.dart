@@ -11,6 +11,7 @@ class UserProvider extends ChangeNotifier{
   String? _username;
   Profile? profile;
   Group? _group;
+  Map<String,dynamic> _resultSearch=<String,dynamic>{}; 
   List<User> get friends {
     return _friends;
   }
@@ -70,5 +71,16 @@ class UserProvider extends ChangeNotifier{
     _group = findGroup;
     isLoading = false;
     notifyListeners();
+  }
+  Future fetchSearch(String search)async{
+    isLoading = true;
+    notifyListeners();
+    var result = await THttpHelper.getSearchResult(search);
+    _resultSearch = result;
+    isLoading = false;
+    notifyListeners();
+  }
+  Map<String,dynamic> get resultSearch{
+    return _resultSearch;
   }
 }

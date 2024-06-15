@@ -80,6 +80,12 @@ class _PostWidgetState extends State<PostWidget> {
     });
   }
   @override
+  void setState(fn) {
+    if(mounted) {
+      super.setState(fn);
+    }
+  }
+  @override
   Widget build(BuildContext context) {
     Color parseColor(String? colorString) {
       if (colorString == null || colorString.isEmpty) {
