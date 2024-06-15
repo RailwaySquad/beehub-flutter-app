@@ -55,11 +55,7 @@ class Post {
     final color= json['color'] ?? '';
     final background= json['background'] ?? '' ;
     final medias =json["medias"] ?? json["mediaUrl"];
-    final createdAtString = json['createdAt'] as String?;
-    DateTime? createdAt;
-    if (createdAtString != null) {
-      createdAt = DateTime.parse(createdAtString);
-    }
+    final createAt = json['create_at'] !=null ? DateTime.parse(json['create_at']):null;
     return Post(
           id:id,
           text:text,
@@ -76,7 +72,7 @@ class Post {
           color: color,
           background: background,
           medias: medias,
-          createdAt: createdAt,
+          createdAt: createAt,
           );
   }
 }

@@ -27,7 +27,6 @@ THttpHelper {
       );
      int status = response.statusCode;
      log(status.toString());
-     print(response.body);
      if(status == 200){
       log("Connect database successful: $status");
       String json = response.body;
@@ -125,6 +124,7 @@ THttpHelper {
     DatabaseProvider db =  DatabaseProvider();
     String token = await db.getToken();
     num  idUser= id?? await db.getUserId();
+    log("Id: "+idUser.toString());
     Response response = await get(Uri.parse("$BaseUrl/user/get-username/$idUser"),
       headers: {
         HttpHeaders.authorizationHeader: 'Bearer $token'

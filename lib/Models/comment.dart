@@ -8,6 +8,8 @@ class Comment {
   final String? username;
   final DateTime? createdAt;
   final String? fullname;
+  final String? userimage;
+  final String? usergender;
   Comment({
     this.id,
     required this.comment,
@@ -15,7 +17,9 @@ class Comment {
     required this.user,
     this.username,
     this.createdAt,
-    this.fullname
+    this.fullname,
+    this.userimage,
+    this.usergender
   });
 
   Map<String, dynamic> toJson() {
@@ -26,7 +30,9 @@ class Comment {
       'user': user,
       'username': username,
       'createdAt': createdAt?.toIso8601String(), // Convert to ISO 8601 string
-      'fullname' : fullname
+      'fullname' : fullname,
+      'userimage': userimage,
+      'usergender':usergender
     };
   }
 
@@ -37,6 +43,8 @@ class Comment {
     final userid = json['user'] as int;
     final username = json['username'] ?? '';
     final fullname = json['fullname'] ?? '';
+    final userimage = json['userimage'] ?? '';
+    final usergender = json['usergender'] ?? '';
     final createdAtString = json['createdAt'] as String?;
     DateTime? createdAt;
 
@@ -51,6 +59,8 @@ class Comment {
       user: userid,
       username: username,
       fullname: fullname,
+      userimage:userimage,
+      usergender:usergender,
       createdAt: createdAt,
     );
   }

@@ -146,7 +146,7 @@ class _PopularPostsState extends State<PopularPosts> {
               child: Center(
                 child: hasMore
                     ? const CircularProgressIndicator()
-                    : const Text("No more post"),
+                    : const Text("No more post found"),
               ),
             );
           }

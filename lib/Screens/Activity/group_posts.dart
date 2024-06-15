@@ -34,7 +34,9 @@ class _GroupPostsState extends State<GroupPosts> {
         errorConnect = true;
       }else{
         groups.addAll(listGr);
-        fetchGroupPosts (listGr[0].id!, page);
+        if(groups.isNotEmpty){
+          fetchGroupPosts (listGr[0].id!, page);
+        }
       }
     });
   }
@@ -78,10 +80,12 @@ class _GroupPostsState extends State<GroupPosts> {
     
     controller.addListener((){
       if(controller.position.maxScrollExtent == controller.offset ){
-        setState(() {
-          page++;
-        });
-        fetchGroupPosts (groups[selectGroup].id!, page);
+        if(groups.isNotEmpty){
+          setState(() {
+            page++;
+          });
+          fetchGroupPosts (groups[selectGroup].id!, page);
+        }
       }
     });
   }
@@ -100,7 +104,7 @@ class _GroupPostsState extends State<GroupPosts> {
           children: [
             SizedBox(
               width: size.width,
-              height: size.height*0.09,
+              height: size.height*0.12,
               //List Group
               child: ListView.separated(
                       scrollDirection: Axis.horizontal,
@@ -164,7 +168,11 @@ class _GroupPostsState extends State<GroupPosts> {
                   itemCount: listPosts.length+1,
                   physics: const AlwaysScrollableScrollPhysics(),
                   itemBuilder: (context, index){
-                   
+                    if(listPosts.isEmpty){
+                      return const Center(
+                        child: Text("Not found the group joined"),
+                      );
+                    }
                     if(index<listPosts.length){
                     return PostWidget(post: listPosts[index],onUpdatePostList: updatePostList);                  
                     }else{

@@ -1,15 +1,21 @@
-import 'package:beehub_flutter_app/Models/post.dart';
+import 'dart:developer';
 
+import 'package:beehub_flutter_app/Models/post.dart';
 import 'package:beehub_flutter_app/Constants/color.dart';
 import 'package:beehub_flutter_app/Models/like.dart';
 import 'package:beehub_flutter_app/Provider/db_provider.dart';
+import 'package:beehub_flutter_app/Provider/user_provider.dart';
 import 'package:beehub_flutter_app/Utils/api_connection/http_post.dart';
 import 'package:beehub_flutter_app/Utils/helper/helper_functions.dart';
 import 'package:beehub_flutter_app/Utils/shadow/shadows.dart';
 import 'package:beehub_flutter_app/Widgets/editpost_widget.dart';
 import 'package:beehub_flutter_app/Widgets/expanded/expanded_widget.dart';
 import 'package:beehub_flutter_app/Widgets/showcommentpost.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class PostWidget extends StatefulWidget {
   final void Function() onUpdatePostList;
@@ -41,6 +47,26 @@ class _PostWidgetState extends State<PostWidget> {
     _fetchCheckLike();
     _fetchCountLike();
     _initializeUser();
+  }
+  String formatDate(DateTime? date){
+    if(date == null) return '';
+    final now = DateTime.now();
+    final difference = now.difference(date);
+    if(difference.inDays > 365){
+      final years = (difference.inDays / 365).floor();
+      return '$years year ago'; 
+    }else if(difference.inDays >= 30){
+      final months = (difference.inDays / 30).floor();
+      return '$months month ago';
+    }else if(difference.inDays >= 1){
+      return '${difference.inDays} day ago';
+    }else if(difference.inHours >= 1){
+      return '${difference.inHours} hours ago';
+    }else if(difference.inMinutes >= 1){
+      return '${difference.inMinutes} minutes ago';
+    }else{
+      return 'Now' ;
+    }
   }
   Widget getMedia(height, width) {
     if (widget.post.medias != null) {
@@ -85,7 +111,6 @@ class _PostWidgetState extends State<PostWidget> {
         return Color(int.parse(colorString, radix: 16) + 0xFF000000);
       }
     }
-
     final dark = THelperFunction.isDarkMode(context);
     return Container(
       decoration: BoxDecoration(
@@ -123,29 +148,44 @@ class _PostWidgetState extends State<PostWidget> {
                           SizedBox(
                               child: widget.post.groupName != null &&
                                       widget.post.groupName!.isNotEmpty
-                                  ? Row(children: [
-                                      Text(
-                                        widget.post.userFullname,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleMedium!
-                                            .copyWith(
-                                                fontWeight: FontWeight.bold),
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 1,
-                                        textAlign: TextAlign.left,
-                                      ),
-                                      Text.rich(TextSpan(
-                                          text: " in ",
-                                          children: <InlineSpan>[
-                                            TextSpan(
-                                              text: widget.post.groupName!,
-                                              style: const TextStyle(
-                                                  fontWeight: FontWeight.bold),
-                                            )
-                                          ]))
-                                    ])
-                                  : Row(
+                                  ? Column(
+                                     crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Row(children: [
+                                          Text(
+                                            widget.post.userFullname,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .titleMedium!
+                                                .copyWith(
+                                                    fontWeight: FontWeight.bold),
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 1,
+                                            textAlign: TextAlign.left,
+                                          ),
+                                          Text.rich(TextSpan(
+                                              text: " in ",
+                                              children: <InlineSpan>[
+                                                TextSpan(
+                                                  text: widget.post.groupName!,
+                                                  style: const TextStyle(
+                                                      fontWeight: FontWeight.bold),recognizer: TapGestureRecognizer()..onTap = () => Get.toNamed("/group/${widget.post.groupId!}")
+                                                )
+                                              ]))
+                                        ]),
+                                        Text(formatDate(widget.post.createdAt))
+                                    ],
+                                  )
+                                  : InkWell(
+                                     onTap: (){
+                                      Provider.of<UserProvider>(context, listen: false).setUsername(widget.post.userUsername);
+                                      log(Provider.of<UserProvider>(context, listen: false).username!);
+                                      Get.toNamed("/userpage/${widget.post.userUsername}");
+                                    },
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.start,
                                       children: [
                                         Text(
                                           widget.post.userFullname,
@@ -157,9 +197,11 @@ class _PostWidgetState extends State<PostWidget> {
                                           overflow: TextOverflow.ellipsis,
                                           maxLines: 1,
                                           textAlign: TextAlign.left,
-                                        )
+                                        ),
+                                        Text(formatDate(widget.post.createdAt))
                                       ],
-                                    ))
+                                    ),
+                                  ))
                         ],
                       ),
                     ),

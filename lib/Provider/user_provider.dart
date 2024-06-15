@@ -47,11 +47,14 @@ class UserProvider extends ChangeNotifier{
   void setUsername(String usern){
     _username = usern;
   }
-  Future fetchProfile(isUserLogin)async{
+  Future fetchProfile(isUserLogin,{user=""})async{
     isLoading=true;
     notifyListeners();
-    if(username==null || !isUserLogin){
-      await getUsername();
+    if(!isUserLogin){
+      profile = await THttpHelper.getProfile(user);
+      isLoading = false;
+      notifyListeners();
+    }else{
       profile = await THttpHelper.getProfile(username!);
       isLoading = false;
       notifyListeners();

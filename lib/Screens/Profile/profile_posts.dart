@@ -37,7 +37,21 @@ class _ProfilePostsState extends State<ProfilePosts> {
       }
     });
   }
-
+  Future updatePostList() async {
+    setState(() {
+      isLoading = false;
+      page = 0;
+      posts.clear();
+      hasMore = true;
+      fetchProfilePost();
+    });
+  }
+  @override
+  void setState(fn) {
+    if(mounted) {
+      super.setState(fn);
+    }
+  }
   @override
   void initState() {
     super.initState();
@@ -66,14 +80,14 @@ class _ProfilePostsState extends State<ProfilePosts> {
 
   @override
   Widget build(BuildContext context) {
-    void updatePostList() {
-      setState(() {
-        page = 0;
-        posts.clear();
-        hasMore = true;
-        fetchProfilePost();
-      });
-    }
+    // void updatePostList() {
+    //   setState(() {
+    //     page = 0;
+    //     posts.clear();
+    //     hasMore = true;
+    //     fetchProfilePost();
+    //   });
+    // }
 
     if (posts.isEmpty) {
       return const SliverToBoxAdapter(

@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:beehub_flutter_app/Constants/color.dart';
 import 'package:beehub_flutter_app/Models/profile.dart';
 import 'package:beehub_flutter_app/Provider/user_provider.dart';
@@ -6,6 +7,7 @@ import 'package:beehub_flutter_app/Screens/Profile/profile_gallery.dart';
 import 'package:beehub_flutter_app/Screens/Profile/profile_posts.dart';
 import 'package:beehub_flutter_app/Widgets/expanded/expanded_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -64,7 +66,7 @@ class _UserPageState extends State<UserPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      Provider.of<UserProvider>(context, listen: false).fetchProfile(false);
+      Provider.of<UserProvider>(context, listen: false).fetchProfile(false,user: Get.parameters["user"]);
     }); 
   }
   @override
@@ -73,8 +75,11 @@ class _UserPageState extends State<UserPage> {
     var size = MediaQuery.of(context).size;
     bool isLoading = Provider.of<UserProvider>(context).isLoading;
     if(isLoading || profile==null){
-      return const Center(
-        child: CircularProgressIndicator(),
+      return Scaffold(
+        
+        body: const Center(
+          child: CircularProgressIndicator(),
+        ),
       );
     }
     return Scaffold(
