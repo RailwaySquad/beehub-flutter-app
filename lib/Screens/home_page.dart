@@ -23,8 +23,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       Provider.of<UserProvider>(context, listen: false).getUsername();
-      String? user = Provider.of<UserProvider>(context, listen: false).username;
-      log(user.toString());
+      
     });
   }
   @override

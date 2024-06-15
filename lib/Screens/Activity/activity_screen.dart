@@ -3,6 +3,7 @@ import 'package:beehub_flutter_app/Constants/color.dart';
 import 'package:beehub_flutter_app/Provider/db_provider.dart';
 import 'package:beehub_flutter_app/Screens/Activity/group_posts.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'popular_posts.dart';
@@ -59,7 +60,9 @@ class _ActivityScreenState extends State<ActivityScreen> {
             AppBar(
               title: const Text('Beehub'),
                 actions: [
-                  IconButton(onPressed: (){}, icon:const Icon(Icons.search)),
+                  IconButton(onPressed: (){
+                    Get.toNamed("/search");
+                  }, icon:const Icon(Icons.search)),
                   IconButton(
                       icon: const Icon(Icons.exit_to_app),
                       onPressed: () {

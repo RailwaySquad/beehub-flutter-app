@@ -104,7 +104,7 @@ class _GroupPostsState extends State<GroupPosts> {
           children: [
             SizedBox(
               width: size.width,
-              height: size.height*0.09,
+              height: size.height*0.12,
               //List Group
               child: ListView.separated(
                       scrollDirection: Axis.horizontal,
