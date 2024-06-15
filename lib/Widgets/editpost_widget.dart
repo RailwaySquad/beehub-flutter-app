@@ -90,15 +90,23 @@ class _EditPostPageState extends State<EditPostPage> {
         child: Container(
           child: Column(
             children: <Widget>[
-              const Row(
-                children: <Widget>[
-                  Icon(
-                    Icons.account_circle,
-                    size: 60.0,
-                  ),
-                  Text('Name')
-                ],
-              ),
+              Container(
+                margin: EdgeInsets.only(top: 10),
+                child: Row(
+                  children: <Widget>[
+                    CircleAvatar(radius: 25,
+                      child: widget.post.userImage != null &&
+                              widget.post.userImage!.isNotEmpty
+                          ? Image.network(widget.post.userImage!)
+                          : Image.asset(widget.post.userGender == "female"
+                              ? "assets/avatar/user_female.png"
+                              : "assets/avatar/user_male.png")
+                    ),
+                    SizedBox(width: 5.0),
+                    Text(widget.post.userFullname)
+                  ],
+                ),
+              ),       
               SizedBox(
                 height: 15.0,
               ),

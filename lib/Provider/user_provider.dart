@@ -50,9 +50,8 @@ class UserProvider extends ChangeNotifier{
   Future fetchProfile(isUserLogin)async{
     isLoading=true;
     notifyListeners();
-    if(username==null || isUserLogin){
+    if(username==null || !isUserLogin){
       await getUsername();
-    }else{
       profile = await THttpHelper.getProfile(username!);
       isLoading = false;
       notifyListeners();

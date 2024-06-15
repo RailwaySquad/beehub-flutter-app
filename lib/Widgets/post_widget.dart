@@ -248,7 +248,7 @@ class _PostWidgetState extends State<PostWidget> {
                           ),
                           Row(
                             children: [
-                              _checkLike == false ?
+                              _checkLike == true ?
                               IconButton(
                                   onPressed: () async{
                                     try{
@@ -256,10 +256,11 @@ class _PostWidgetState extends State<PostWidget> {
                                       int userid = await db.getUserId();
                                       int postid = widget.post.id;
                                       await ApiService.removeLike(userid, postid);
-                                      _fetchCheckLike();
                                     }catch(e){
-                                      print('Error to add Like: $e');
+                                      print('Error to remove Like: $e');
                                     }
+                                    _fetchCheckLike();
+                                    _fetchCountLike();
                                   },
                                   icon: const Text('👍'))
                                   :IconButton(
@@ -274,10 +275,11 @@ class _PostWidgetState extends State<PostWidget> {
                                         post: postid
                                       );
                                       await ApiService.addLike(like);
-                                      _fetchCheckLike();
                                     }catch(e){
                                       print('Error to add Like: $e');
                                     }
+                                    _fetchCheckLike();
+                                    _fetchCountLike();
                                   },
                                   icon: const Icon(
                                     Icons.thumb_up_alt_outlined)) ,
@@ -303,7 +305,7 @@ class _PostWidgetState extends State<PostWidget> {
                                   isScrollControlled: true,
                                   context: context,
                                   builder: (BuildContext context) {
-                                    return ShowComment(post: post,fetchCountComment:_fetchCountComment); // Gọi StatefulWidget mới
+                                    return ShowComment(post: post,fetchCountComment:_fetchCountComment,fetchCheckLike:_fetchCheckLike,fetchCountLike:_fetchCountLike,countLike:_countLike,checkLike:_checkLike); // Gọi StatefulWidget mới
                                   },
                                 );
                               });

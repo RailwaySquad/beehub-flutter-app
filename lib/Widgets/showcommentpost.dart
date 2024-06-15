@@ -1,4 +1,5 @@
 import 'package:beehub_flutter_app/Models/comment.dart';
+import 'package:beehub_flutter_app/Models/like.dart';
 import 'package:beehub_flutter_app/Models/post.dart';
 import 'package:beehub_flutter_app/Provider/db_provider.dart';
 import 'package:beehub_flutter_app/Utils/api_connection/http_post.dart';
@@ -10,8 +11,12 @@ import 'package:intl/intl.dart';
 
 class ShowComment extends StatefulWidget {
   final Post post;
+  final int countLike;
+  final bool checkLike;
   final VoidCallback fetchCountComment; 
-  const ShowComment({Key? key, required this.post, required this.fetchCountComment}) : super(key: key);
+  final VoidCallback fetchCheckLike;
+  final VoidCallback fetchCountLike;
+  const ShowComment({Key? key, required this.post, required this.fetchCountComment, required this.fetchCheckLike,required this.fetchCountLike, required this.countLike, required this.checkLike}) : super(key: key);
 
   @override
   State<ShowComment> createState() => _ShowCommentState();
@@ -68,6 +73,8 @@ class _ShowCommentState extends State<ShowComment> {
     });
     _userNameController1.addListener(_onTextChanged);
     _commentsFuture = ApiService.getComment(widget.post.id);
+    widget.fetchCheckLike();
+    widget.fetchCountLike();
   }
   void _handleFocusChange(bool hasFocus){
     setState(() {
@@ -148,10 +155,14 @@ class _ShowCommentState extends State<ShowComment> {
             Row(
               children: [
                 Padding(padding: EdgeInsets.only(right: 1.0)),
-                Icon(
-                  Icons.account_circle,
-                  size: 50.0,
-                ),
+                CircleAvatar(radius: 25,
+                            child: widget.post.userImage != null &&
+                                    widget.post.userImage!.isNotEmpty
+                                ? Image.network(widget.post.userImage!)
+                                : Image.asset(widget.post.userGender == "female"
+                                    ? "assets/avatar/user_female.png"
+                                    : "assets/avatar/user_male.png"),
+                          ),
                 SizedBox(
                   width: 10.0,
                 ),
@@ -192,13 +203,11 @@ class _ShowCommentState extends State<ShowComment> {
                     ),
                   ),
                   Container(
-                    child: const Row(
+                    child: Row(
                       children: <Widget>[
-                        Icon(
-                          Icons.favorite,
-                          size: 15.0,
-                        ),
-                        Text('1000')
+                        Text('👍'),
+                        SizedBox(width: 5),
+                        Text('${widget.countLike}')
                       ],
                     ),
                   ),
@@ -209,20 +218,52 @@ class _ShowCommentState extends State<ShowComment> {
                     ),
                   ),
                   Container(
-                    child: const Row(
+                    child:  Row(
                       children: <Widget>[
-                        SizedBox(width: 10,),
                         Center(
                           child: Row(
                             children: <Widget>[
-                              Icon(Icons.thumb_up_alt_outlined,
-                                  size: 25.0, color: Colors.deepPurpleAccent),
-                              Text('Like')
+                              widget.checkLike == true?
+                              IconButton(
+                                  onPressed: () async{
+                                    try{
+                                      DatabaseProvider db = new DatabaseProvider();
+                                      int userid = await db.getUserId();
+                                      int postid = widget.post.id;
+                                      await ApiService.removeLike(userid, postid);
+                                    }catch(e){
+                                      print('Error to remove Like: $e');
+                                    }
+                                    widget.fetchCheckLike();
+                                    widget.fetchCountLike();
+                                  },
+                                  icon: const Text('👍'))
+                                  :IconButton(
+                                  onPressed: () async{
+                                    try{
+                                      DatabaseProvider db = DatabaseProvider();
+                                      int userid = await db.getUserId();
+                                      int postid = widget.post.id;
+                                      Like like = Like(
+                                        enumEmo: '👍',
+                                        user: userid,
+                                        post: postid
+                                      );
+                                      await ApiService.addLike(like);
+                                    }catch(e){
+                                      print('Error to add Like: $e');
+                                    }
+                                    widget.fetchCheckLike();
+                                    widget.fetchCountLike();
+                                  },
+                                  icon: const Icon(
+                                    Icons.thumb_up_alt_outlined),color:Colors.deepPurpleAccent ,) ,
+                              const Text("Like")
                             ],
                           ),
                         ),
-                        SizedBox(width: 95.0),
-                        Center(
+                        SizedBox(width: 85.0),
+                        const Center(
                           child: Row(
                             children: <Widget>[
                               Icon(Icons.messenger_outline_rounded,
@@ -231,7 +272,7 @@ class _ShowCommentState extends State<ShowComment> {
                             ],
                           ),
                         ),
-                        SizedBox(width: 95.0),
+                        SizedBox(width: 85.0),
                         Center(
                           child: Row(
                             children: <Widget>[

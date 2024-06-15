@@ -5,10 +5,35 @@ import 'package:beehub_flutter_app/Models/comment.dart';
 import 'package:beehub_flutter_app/Models/like.dart';
 import 'package:beehub_flutter_app/Models/post.dart';
 import 'package:beehub_flutter_app/Models/postMe.dart';
+import 'package:beehub_flutter_app/Models/user.dart';
 import 'package:beehub_flutter_app/Provider/db_provider.dart';
 import 'package:http/http.dart' as http;
 class ApiService  {
   static final String BaseUrl= AppUrl.api;
+  static Future<User> getUserById(int id) async{
+    try{
+      DatabaseProvider db = DatabaseProvider();
+      String token = await db.getToken(); 
+      http.Response response = await http.get(Uri.parse('$BaseUrl/user/$id'),
+       headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token'
+       });
+      print(response.body);
+      if(response.statusCode == 200){
+        Map<String, dynamic> body = json.decode(response.body);
+        User user = User.fromJson(body);
+        return user;
+      }
+      else{
+        print('Failed to load user: ${response.statusCode}');
+        throw Exception('Failed to load user');
+      }
+    }catch(e){
+      print('Error getUser by id: $e');
+      throw Exception('Failed to load user');
+    }
+  }
   static Future<Post> getPostById(int id) async{
     try{
       DatabaseProvider db = DatabaseProvider();
@@ -18,8 +43,6 @@ class ApiService  {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token'
        });
-      print(response.body);
-      
       if(response.statusCode == 200){
         Map<String, dynamic> body = json.decode(response.body);
         Post post = Post.fromJson(body);
@@ -343,7 +366,8 @@ class ApiService  {
           'Authorization': 'Bearer $token'
         });
       if (response.statusCode == 200) {
-        return true;
+        bool isLikie = json.decode(response.body);
+        return isLikie;
       }else{
         print('Failed to check Like: ${response.statusCode}');
         throw Exception('Failed to check Like');
