@@ -74,9 +74,8 @@ class _UserPageState extends State<UserPage> {
     var size = MediaQuery.of(context).size;
     bool isLoading = Provider.of<UserProvider>(context).isLoading;
     if(isLoading || profile==null){
-      return Scaffold(
-        
-        body: const Center(
+      return const  Scaffold(
+        body: Center(
           child: CircularProgressIndicator(),
         ),
       );

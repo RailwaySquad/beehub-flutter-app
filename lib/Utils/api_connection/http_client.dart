@@ -7,11 +7,11 @@ import 'package:beehub_flutter_app/Models/group.dart';
 import 'package:beehub_flutter_app/Models/post.dart';
 import 'package:beehub_flutter_app/Models/profile.dart';
 import 'package:beehub_flutter_app/Models/requirement.dart';
+import 'package:beehub_flutter_app/Models/requirementForm.dart';
 import 'package:beehub_flutter_app/Models/user.dart';
 import 'package:beehub_flutter_app/Provider/db_provider.dart';
 import 'package:http/http.dart';
-class 
-THttpHelper {
+class THttpHelper {
   // late final String _URL_API= "http://10.0.2.2:8089"; 
   static final String BaseUrl= AppUrl.api;
   
@@ -255,6 +255,33 @@ THttpHelper {
       }
     }else{
       return result;
+    }
+  }
+  ///send-requirement/${id}
+  static Future<Map<String,String>?> createRequirement(Requirementform data)async{
+    DatabaseProvider db= DatabaseProvider();
+    int userId = await db.getUserId();
+    String token = await db.getToken();
+    Response response = await post(Uri.parse("$BaseUrl/send-requirement/$userId"),
+      headers: {
+        'Content-Type': 'application/json',
+        HttpHeaders.authorizationHeader: 'Bearer $token'
+      },
+      body: json.encode(data.toJson())
+    );
+     int status = response.statusCode;
+     if(status == 200){
+      String json = response.body;
+      log(json);
+      dynamic res= jsonDecode(json);
+      try {
+        return <String,String>{};
+      } catch (e) {
+        log(e.toString());
+        throw Exception(e);
+      }
+    }else{
+      return null;
     }
   }
 }

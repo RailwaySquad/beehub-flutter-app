@@ -1,4 +1,5 @@
 import 'package:beehub_flutter_app/Provider/user_provider.dart';
+import 'package:beehub_flutter_app/Utils/beehub_button.dart';
 import 'package:beehub_flutter_app/Widgets/post_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -158,7 +159,7 @@ class PeopleSearched extends StatelessWidget {
               Text("${list[index].groupCounter} groups")
             ],
           ),
-          trailing: TextButton(onPressed: (){}, child: const Text("Add Friend")),
+          trailing: BeehubButton.AddFriend(list[index].id)
         );
       });
   }

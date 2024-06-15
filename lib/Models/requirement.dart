@@ -3,9 +3,9 @@ import 'package:beehub_flutter_app/Models/user.dart';
 
 class Requirement{
   final int? id;
-  final num senderId;
-  final num? receiverId;
-  final num? groupId;
+  final int senderId;
+  final int? receiverId;
+  final int? groupId;
   final int? reportId;
   final String? type;
   final bool? isAccept;
@@ -15,6 +15,16 @@ class Requirement{
   final Group? group;
 
   Requirement({ this.id,required this.senderId,  this.receiverId,  this.groupId,  this.reportId, this.type, this.isAccept, this.createAt, this.sender, this.receiver, this.group});
+  Map<String, dynamic> toJson(){
+    return {
+      "id": id ??"",
+      "sender_id": senderId,
+      "receiver_id": receiverId??"",
+      "group_id": groupId??"",
+      "report_id": reportId??"",
+      "type": type,
+    };
+  }
   factory Requirement.fromJson(Map<String, dynamic> json) {
     final id = json["id"];
     final senderId =json["sender_id"]??json["sender"]["id"];
@@ -39,5 +49,9 @@ class Requirement{
       sender: sender,
       receiver: receiver,
       group: group );
+  }
+  @override
+  String toString() {
+    return "SenderId : $senderId \tReceiverId: $receiverId \t Type: $type \t GroupId: $groupId"; 
   }
 }
