@@ -1,7 +1,7 @@
 class UserSetting{
-  final num id;
-  final num userId;
-  final num? postId;
+  final int id;
+  final int userId;
+  final int? postId;
   final String settingType;
   final String? settingItem;
 
@@ -16,9 +16,9 @@ class UserSetting{
     };
   }
    factory UserSetting.fromJson(Map<String, dynamic> json){
-      final id = json['id'] as num;
-      final user = json['user_id'] as num;
-      final post = json['post_is'] as num;
+      final id = json['id'] as int;
+      final user = json['user_id'] as int;
+      final post = json['post_is'] as int;
       final settingType = json['setting_type'] as String;
       final settingItem = json['setting_item'] as String;
       return UserSetting(

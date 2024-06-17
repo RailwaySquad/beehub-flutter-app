@@ -1,3 +1,5 @@
+import 'package:beehub_flutter_app/Models/group.dart';
+import 'package:beehub_flutter_app/Models/user.dart';
 import 'package:beehub_flutter_app/Provider/user_provider.dart';
 import 'package:beehub_flutter_app/Utils/beehub_button.dart';
 import 'package:beehub_flutter_app/Widgets/post_widget.dart';
@@ -19,7 +21,7 @@ class _SearchScreenState extends State<SearchScreen>  with SingleTickerProviderS
   // final Map<String,dynamic> result = {"posts": <List<Post>>[], "groups": [],"people": []};
   final List<Tab> _tabs = const [
     Tab(text: "Posts"),
-    Tab(text: "Friends"),
+    Tab(text: "People"),
     Tab(text: "Groups"),
   ];
   final List<Widget> _tabsBody = [
@@ -27,17 +29,18 @@ class _SearchScreenState extends State<SearchScreen>  with SingleTickerProviderS
     const PeopleSearched(),
     const GroupSearched()
   ];
-  // Future<Map<String,dynamic>> searching()async{
-  //   final text = _searchController.text;
-  //   var resultSearch = await THttpHelper.getSearchResult(text);
-  //   return resultSearch;
-  // }
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      Provider.of<UserProvider>(context, listen: false).fetchSearch(_searchController.text);
+       bool refetch = Provider.of<UserProvider>(context, listen: false).refetch;
+       
+      if(refetch){
+        Provider.of<UserProvider>(context, listen: false).refetchSearch(_searchController.text);
+      }else{
+        Provider.of<UserProvider>(context, listen: false).fetchSearch(_searchController.text);
+      }
       final UserProvider myProvider = Provider.of<UserProvider>(context, listen: false);
       _searchController.addListener(() {
         myProvider.fetchSearch(_searchController.text);
@@ -50,15 +53,16 @@ class _SearchScreenState extends State<SearchScreen>  with SingleTickerProviderS
     _tabController.dispose();
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     String arguments = Get.arguments ?? {};
     _searchController.text = arguments;
+    
     return Scaffold(
       appBar: AppBar(
         leading:  IconButton(icon: const Icon(Icons.chevron_left),onPressed: (){
-          Navigator.pop(context);
+          Get.toNamed("/");
         },),
         title: TextFormField(
                   controller: _searchController,
@@ -124,6 +128,22 @@ class PeopleSearched extends StatelessWidget {
   const PeopleSearched({super.key});
   @override
   Widget build(BuildContext context) {
+    Provider.of<UserProvider>(context).refetch = true;
+    Widget getButton(User usernow){
+      switch (usernow.typeRelationship) {
+        case "BLOCKED":
+          return BeehubButton.UnBlock(usernow.id, '/search',Get.arguments);
+        case "FRIEND":
+          return BeehubButton.UnFriend(usernow.id, '/search',Get.arguments);
+        case "SENT_REQUEST":
+          return BeehubButton.CancelRequest(usernow.id, '/search',Get.arguments);
+        case "NOT_ACCEPT":
+          return BeehubButton.AcceptFriend(usernow.id, usernow.isBanned, '/search',Get.arguments);
+        default:
+          return BeehubButton.AddFriend(usernow.id, '/search',Get.arguments);
+
+      }
+    }
     bool isLoading = Provider.of<UserProvider>(context).isLoading;
     Map<String,dynamic> search = Provider.of<UserProvider>(context).resultSearch;
     if(isLoading||search.isEmpty){
@@ -142,16 +162,26 @@ class PeopleSearched extends StatelessWidget {
       itemBuilder: (context, index){
         return ListTile(
           contentPadding: const EdgeInsets.symmetric(vertical: 5),
-          leading: list[index].image!=null
-          ? CircleAvatar(
-            child: Image.network(list[index].image!))
-          :(list[index].gender=='female'
-                        ?CircleAvatar(
-                          child: Image.asset("assets/avatar/user_female.png"),)
-                        :CircleAvatar(
-                          child: Image.asset("assets/avatar/user_male.png"))
+          leading: GestureDetector(
+            onTap: (){
+             
+              Get.toNamed("/userpage/${list[index].username}");
+            },
+            child: list[index].image!=null
+            ? CircleAvatar(
+              child: Image.network(list[index].image!))
+            :(list[index].gender=='female'
+                          ?CircleAvatar(
+                            child: Image.asset("assets/avatar/user_female.png"),)
+                          :CircleAvatar(
+                            child: Image.asset("assets/avatar/user_male.png"))
+            ),
           ),
-          title: Text(list[index].fullname),
+          title: GestureDetector(
+            onTap: (){
+              Get.toNamed("/userpage/${list[index].username}");
+            },
+            child: Text(list[index].fullname)),
           subtitle: Row(
             children: [
               Text("${list[index].friendCounter} friends"),
@@ -159,7 +189,7 @@ class PeopleSearched extends StatelessWidget {
               Text("${list[index].groupCounter} groups")
             ],
           ),
-          trailing: BeehubButton.AddFriend(list[index].id)
+          trailing: getButton(list[index]),
         );
       });
   }
@@ -179,6 +209,24 @@ class GroupSearched extends StatelessWidget {
     if(list.isEmpty){
       return const Text("Found 0 group");
     }
+    Widget getButton(Group group){
+      if(group.joined==null){
+        return BeehubButton.JoinGroup(group.id!, "/search", Get.arguments);
+      }else if(group.joined=='send request'){
+        return BeehubButton.CancelJoinGroup(group.id!, "/search", Get.arguments);
+      }else{
+        switch (group.memberRole) {
+          case "MEMBER":
+            return BeehubButton.VisitGroup(group.id!);
+          case "GROUP_CREATOR":
+            return BeehubButton.ManagerGroup(group.id!);
+          case "GROUP_MANAGER":
+            return BeehubButton.ManagerGroup(group.id!);
+          default:
+            return BeehubButton.VisitGroup(group.id!);
+        }
+      }
+    }
     return ListView.builder(
       shrinkWrap: true,
       padding: const EdgeInsets.all(10),
@@ -186,10 +234,15 @@ class GroupSearched extends StatelessWidget {
       itemBuilder: (context, index){
         return ListTile(
           contentPadding: const EdgeInsets.symmetric(vertical: 5),
-          leading: list[index].imageGroup!=null
-          ? CircleAvatar(
-            child: Image.network(list[index].imageGroup!))
-          :CircleAvatar(child: Image.asset("assets/avatar/group_image.png")),
+          leading: GestureDetector(
+            onTap: (){
+              Get.toNamed("/group/${list[index].id}");
+            },
+            child: list[index].imageGroup!=null
+            ? CircleAvatar(
+              child: Image.network(list[index].imageGroup!))
+            :CircleAvatar(child: Image.asset("assets/avatar/group_image.png")),
+          ),
           title: Text(list[index].groupname),
           subtitle: Row(
             children: [
@@ -198,7 +251,7 @@ class GroupSearched extends StatelessWidget {
               Text("${list[index].memberCount} members")
             ],
           ),
-          trailing: TextButton(onPressed: (){}, child: const Text("Join")),
+          trailing: getButton(list[index]),
         );
       });
   }

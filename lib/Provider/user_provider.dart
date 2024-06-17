@@ -12,6 +12,7 @@ class UserProvider extends ChangeNotifier{
   Profile? profile;
   Group? _group;
   Map<String,dynamic> _resultSearch=<String,dynamic>{}; 
+  bool _refetch = false;
   List<User> get friends {
     return _friends;
   }
@@ -80,7 +81,17 @@ class UserProvider extends ChangeNotifier{
     isLoading = false;
     notifyListeners();
   }
+  Future refetchSearch(String search)async{
+    var result = await THttpHelper.getSearchResult(search);
+    _resultSearch = result;
+  }
   Map<String,dynamic> get resultSearch{
     return _resultSearch;
+  }
+  set refetch(bool change){
+    _refetch=change;
+  }
+  bool get refetch{
+    return _refetch;
   }
 }

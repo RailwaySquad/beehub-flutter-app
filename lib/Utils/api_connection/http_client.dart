@@ -142,6 +142,7 @@ class THttpHelper {
       log("Connect database successful: $status");
       String json = response.body;
       dynamic profile = jsonDecode(json);
+      profile["own"] =  profile["id"]!=null&& userId==profile["id"] ? true:false;
       try {
         return Profile.fromJson(profile);
       } catch (e) {
@@ -272,10 +273,9 @@ class THttpHelper {
      int status = response.statusCode;
      if(status == 200){
       String json = response.body;
-      log(json);
       dynamic res= jsonDecode(json);
       try {
-        return <String,String>{};
+        return Map<String,String>.from(res);
       } catch (e) {
         log(e.toString());
         throw Exception(e);

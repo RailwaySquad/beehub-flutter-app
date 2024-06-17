@@ -1,7 +1,7 @@
 class Gallery{
-  final num? id;
-  final num? userId;
-  final num? postId; 
+  final int? id;
+  final int? userId;
+  final int? postId; 
   final String media;
   final String mediaType;
   final DateTime? createAt;

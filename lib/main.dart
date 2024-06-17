@@ -1,6 +1,7 @@
 import 'package:beehub_flutter_app/Provider/auth_provider.dart';
 import 'package:beehub_flutter_app/Provider/db_provider.dart';
 import 'package:beehub_flutter_app/Provider/user_provider.dart';
+import 'package:beehub_flutter_app/Screens/AccountSetting/profile_setting_page.dart';
 import 'package:beehub_flutter_app/Screens/Group/group_page.dart';
 import 'package:beehub_flutter_app/Screens/Search/search_screen.dart';
 import 'package:beehub_flutter_app/Screens/user_page.dart';
@@ -39,6 +40,7 @@ class MyApp extends StatelessWidget {
         GetPage(name: '/', page: ()=> const SplashScreen()),
         GetPage(name: '/search', page: ()=> const SearchScreen()),
         GetPage(name: '/userpage/:user', page: ()=> const UserPage()),
+        GetPage(name: '/profile_setting', page: ()=> const ProfileSettingPage()),
         GetPage(name: "/group/:idGroup", page: ()=> const GroupPage())
       ]
     );

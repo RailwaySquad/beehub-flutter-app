@@ -17,11 +17,11 @@ class Requirement{
   Requirement({ this.id,required this.senderId,  this.receiverId,  this.groupId,  this.reportId, this.type, this.isAccept, this.createAt, this.sender, this.receiver, this.group});
   Map<String, dynamic> toJson(){
     return {
-      "id": id ??"",
+      "id": id ??0,
       "sender_id": senderId,
-      "receiver_id": receiverId??"",
-      "group_id": groupId??"",
-      "report_id": reportId??"",
+      "receiver_id": receiverId??0,
+      "group_id": groupId??0,
+      "report_id": reportId??0,
       "type": type,
     };
   }
@@ -32,7 +32,7 @@ class Requirement{
     final groupId = json["group_id"];
     final reportId = json["report_id"];
     final type = json["type"];
-    final isAccept = json["is_accept"];
+    final isAccept = json["_accept"];
     final createAt = json["create_at"]!=null?DateTime.parse(json["create_at"]):null;
     final sender = json["sender"]!=null? User.fromJson(json["sender"]):null;
     final receiver = json["receiver"]!=null? User.fromJson(json["receiver"]):null;
@@ -52,6 +52,6 @@ class Requirement{
   }
   @override
   String toString() {
-    return "SenderId : $senderId \tReceiverId: $receiverId \t Type: $type \t GroupId: $groupId"; 
+    return "SenderId : $senderId \tReceiverId: $receiverId \t Type: $type \t GroupId: $groupId \t Accept: $isAccept"; 
   }
 }

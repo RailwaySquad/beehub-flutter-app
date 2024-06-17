@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:beehub_flutter_app/Constants/color.dart';
 import 'package:beehub_flutter_app/Models/profile.dart';
 import 'package:beehub_flutter_app/Provider/user_provider.dart';
@@ -8,6 +6,7 @@ import 'package:beehub_flutter_app/Screens/Profile/profile_gallery.dart';
 import 'package:beehub_flutter_app/Screens/Profile/profile_posts.dart';
 import 'package:beehub_flutter_app/Widgets/expanded/expanded_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -67,8 +66,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       Provider.of<UserProvider>(context, listen: false).fetchProfile(true);
-      String? user = Provider.of<UserProvider>(context, listen: false).username;
-      log("User : "+user.toString());
     }); 
   }
   @override
@@ -151,8 +148,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ],
                           ),
                           OutlinedButton(
-                              onPressed: (){},
-                              child: const Text("Account Setting", style: TextStyle(color: TColors.buttonPrimary),),
+                              onPressed: (){
+                                Get.toNamed("/profile_setting");
+                              },
+                              child: const Text("Profile Setting", style: TextStyle(color: TColors.buttonPrimary),),
                             ),
                         ],
                       ),

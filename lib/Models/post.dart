@@ -3,12 +3,12 @@ import 'dart:core';
 class Post {
   final int id;
   final String text;
-  final num userId;
+  final int userId;
   final String userFullname;
   final String userUsername;
   final String? userImage;
   final String userGender;
-  final num? groupId;
+  final int? groupId;
   final String? groupName;
   final bool? publicGroup;
   final String? groupImage;
