@@ -349,6 +349,9 @@ class _CreatePostPageState extends State<CreatePostPage> {
                             createdPost = await ApiService.createPost(newPost);
                           }
                           widget.onUpdatePostList();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Create New Post Success'))
+                          );
                           Navigator.pop(context);
                         } catch (e) {
                           print('Error creating post: $e');

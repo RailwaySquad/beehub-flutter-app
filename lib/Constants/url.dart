@@ -1,5 +1,5 @@
 class AppUrl {
-  static String base = 'http://172.16.1.165:8080';
+  static String base = 'http://192.168.1.16:8080';
   static String api = "$base/api";
 
   static String authPath = "$api/auth";
