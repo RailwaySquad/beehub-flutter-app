@@ -1,9 +1,12 @@
+import 'dart:developer';
+
 import 'package:beehub_flutter_app/Constants/color.dart';
 import 'package:beehub_flutter_app/Models/post.dart';
 import 'package:beehub_flutter_app/Provider/user_provider.dart';
 import 'package:beehub_flutter_app/Utils/api_connection/http_client.dart';
 import 'package:beehub_flutter_app/Widgets/post_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
 class ProfilePosts extends StatefulWidget {
@@ -37,7 +40,21 @@ class _ProfilePostsState extends State<ProfilePosts> {
       }
     });
   }
-
+  Future updatePostList() async {
+    setState(() {
+      isLoading = false;
+      page = 0;
+      posts.clear();
+      hasMore = true;
+      fetchProfilePost();
+    });
+  }
+  @override
+  void setState(fn) {
+    if(mounted) {
+      super.setState(fn);
+    }
+  }
   @override
   void initState() {
     super.initState();
@@ -47,14 +64,14 @@ class _ProfilePostsState extends State<ProfilePosts> {
       }
     });
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      String? usern =
-          Provider.of<UserProvider>(context, listen: false).username;
+      String? usern = Get.parameters["user"];
+      log(usern.toString());
       if (usern != null) {
         username = usern;
-        fetchProfilePost();
       } else {
-        Provider.of<UserProvider>(context, listen: false).getUsername();
+        username =  Provider.of<UserProvider>(context, listen: false).username!;
       }
+        fetchProfilePost();
     });
   }
 
@@ -66,14 +83,6 @@ class _ProfilePostsState extends State<ProfilePosts> {
 
   @override
   Widget build(BuildContext context) {
-    void updatePostList() {
-      setState(() {
-        page = 0;
-        posts.clear();
-        hasMore = true;
-        fetchProfilePost();
-      });
-    }
 
     if (posts.isEmpty) {
       return const SliverToBoxAdapter(
@@ -83,7 +92,7 @@ class _ProfilePostsState extends State<ProfilePosts> {
         itemCount: posts.length,
         itemBuilder: (context, index) {
           if (posts.isNotEmpty) {
-            return PostWidget(
+            return  PostWidget(
                 onUpdatePostList: updatePostList, post: posts[index]);
           } else {
             return const Padding(

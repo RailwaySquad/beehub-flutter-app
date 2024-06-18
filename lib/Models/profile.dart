@@ -4,7 +4,7 @@ import 'package:beehub_flutter_app/Models/user.dart';
 import 'package:beehub_flutter_app/Models/user_setting.dart';
 
 class Profile {
-  final num id;
+  final int id;
   final String username;
   final String email;
   final String fullname;
@@ -23,6 +23,7 @@ class Profile {
   final List<UserSetting>? userSettings;
   final List<User>? relationships;
   final DateTime? createdAt;
+  final bool ownProfile;
   Map<String, dynamic> toJson() {
     return {
       'id': id,  
@@ -56,7 +57,8 @@ class Profile {
     final activeAt= json['active_at']!=null? DateTime.parse(json['active_at']):null;
     final createdAt = json['createdAt']!=null?DateTime.parse(json['createdAt']):null;
     final isBanned = json['_banned'] as bool;
-    final phone = json['phone'] as String;
+    final phone = json['phone'] ??"";
+    final ownProfile =json["own"];
     final List<Group> groups = json['group_joined']!=null? List.from(json['group_joined'].map((e) => Group.fromJson(e))):[];
     final List<UserSetting> userSetting = json['user_settings']!=null?List.from(json['user_settings'].map((e)=> UserSetting.fromJson(e))):[];
     final List<User> relationships = json['relationships']!=null? List.from(json['relationships'].map((e)=> User.fromJson(e))):[];
@@ -80,9 +82,10 @@ class Profile {
           galleries: galliries,
           relationships: relationships,
           userSettings: userSetting,
-          createdAt: createdAt
+          createdAt: createdAt,
+          ownProfile: ownProfile
           );
   }
 
-  Profile({required this.id, required this.username, required this.email, required this.fullname, required this.gender, this.image, this.background, this.bio, required this.birthday, required this.isActive, this.relationshipWithUser, required this.activeAt, required this.isBanned, required this.phone, this.groupJoined, this.galleries,  this.userSettings, this.relationships, this.createdAt});
+  Profile({required this.id, required this.username, required this.email, required this.fullname, required this.gender, this.image, this.background, this.bio, required this.birthday, required this.isActive, this.relationshipWithUser, required this.activeAt, required this.isBanned, required this.phone, this.groupJoined, this.galleries,  this.userSettings, this.relationships, this.createdAt, required this.ownProfile});
 }

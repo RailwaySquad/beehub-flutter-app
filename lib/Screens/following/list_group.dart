@@ -1,6 +1,7 @@
 import 'package:beehub_flutter_app/Provider/user_provider.dart';
 import 'package:beehub_flutter_app/Models/group.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
 class ListGroup extends StatelessWidget {
@@ -22,10 +23,19 @@ class ListGroup extends StatelessWidget {
       itemBuilder: ( context, index){
         return ListTile(
           contentPadding: const EdgeInsets.symmetric(vertical: 5),
-          leading: list[index].imageGroup!=null
-            ?Image.network(list[index].imageGroup!)
-            : Image.asset( "assets/avatar/group_image.png"),
-          title: Text(list[index].groupname),
+          leading: GestureDetector(
+            onTap: (){
+              Get.toNamed("/group/${list[index].id}");
+            },
+            child: list[index].imageGroup!=null
+              ?Image.network(list[index].imageGroup!)
+              : Image.asset( "assets/avatar/group_image.png"),
+          ),
+          title: GestureDetector(
+            onTap: (){
+              Get.toNamed("/group/${list[index].id}");
+            },
+            child: Text(list[index].groupname)),
         );
       },
     );

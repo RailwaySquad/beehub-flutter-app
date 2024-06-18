@@ -1,5 +1,9 @@
+import 'package:beehub_flutter_app/Models/group_media.dart';
+import 'package:beehub_flutter_app/Models/group_member.dart';
+import 'package:beehub_flutter_app/Models/report.dart';
+import 'package:beehub_flutter_app/Models/requirement.dart';
 class Group{
-  final num? id;
+  final int? id;
   final String groupname;
   final bool publicGroup;
   final String? description;
@@ -11,7 +15,11 @@ class Group{
   final String? memberRole;
   final int? memberCount;
   final int? postCount;
-  Group({this.id, required this.groupname, required this.publicGroup,  this.description, required this.active, required this.createdAt,  this.imageGroup,  this.backgroundGroup, this.joined,  this.memberRole, this.memberCount, this.postCount});
+  final List<Requirement>? requirements;
+  final List<GroupMember>? groupMembers;
+  final List<GroupMedia>? groupMedias;
+  final List<Report>? reportsOfGroup;
+  Group({this.id, required this.groupname, required this.publicGroup,  this.description, required this.active, required this.createdAt,  this.imageGroup,  this.backgroundGroup, this.joined,  this.memberRole, this.memberCount, this.postCount,  this.requirements, this.groupMembers,this.groupMedias,this.reportsOfGroup });
   Map<String, dynamic> toJson() {
       return {
         'id': id,  
@@ -38,6 +46,11 @@ class Group{
     final memberRole = json['member_role'];
     final memberCount = json['member_count'] as int;
     final postCount = json["post_count"] as int;
+    final List<Requirement> requirements = json["requirements"]!=null? List.from( json["requirements"].map((e)=> Requirement.fromJson(e)) ):[];
+    final List<GroupMember> groupMem = json["group_members"]!=null? List.from(json["group_members"].map((e)=> GroupMember.fromJson(e))) :[];
+    final List<Report> reports= json["reports_of_group"]!=null? List.from(json["reports_of_group"].map((e) =>  Report.fromJson(e))):[]; 
+    final List<GroupMedia> medias = json["group_medias"]!=null? List.from(json["group_medias"].map((e)=> GroupMember.fromJson(e))):[];
+    
     return Group(
           id:id,
           groupname:groupname, 
@@ -50,7 +63,11 @@ class Group{
           joined: joined,
           memberCount: memberCount,
           memberRole: memberRole,
-          postCount: postCount
+          postCount: postCount,
+          groupMedias: medias,
+          groupMembers: groupMem,
+          reportsOfGroup: reports,
+          requirements: requirements
           );
   }
 

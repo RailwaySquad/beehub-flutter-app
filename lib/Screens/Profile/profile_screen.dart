@@ -6,6 +6,7 @@ import 'package:beehub_flutter_app/Screens/Profile/profile_gallery.dart';
 import 'package:beehub_flutter_app/Screens/Profile/profile_posts.dart';
 import 'package:beehub_flutter_app/Widgets/expanded/expanded_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -147,14 +148,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ],
                           ),
                           OutlinedButton(
-                              onPressed: (){},
-                              child: const Text("Account Setting", style: TextStyle(color: TColors.buttonPrimary),),
+                              onPressed: (){
+                                Get.toNamed("/profile_setting");
+                              },
+                              child: const Text("Profile Setting", style: TextStyle(color: TColors.buttonPrimary),),
                             ),
                         ],
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 8),
-                        child: Text("Active at ${DateFormat.yMMMMd('en_US').format(profile.createdAt!)}"),
+                        child: profile.createdAt!=null? Text("Created at ${DateFormat.yMMMMd('en_US').format(profile.createdAt!)}"): const Text(""),
                       ),
                       SizedBox(
                         child: Row(

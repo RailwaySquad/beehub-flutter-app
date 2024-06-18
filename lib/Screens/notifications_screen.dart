@@ -1,7 +1,10 @@
 import 'package:beehub_flutter_app/Constants/color.dart';
 import 'package:beehub_flutter_app/Models/requirement.dart';
+import 'package:beehub_flutter_app/Models/requirementForm.dart';
+import 'package:beehub_flutter_app/Provider/db_provider.dart';
 import 'package:beehub_flutter_app/Utils/api_connection/http_client.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class NotificationsScreen extends StatefulWidget {
@@ -42,11 +45,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         ),
       );
     }
-    // if(list.isEmpty){
-    //   return Padding(
-    //     padding: const EdgeInsets.all(20),
-    //     child: Center(child: Text("You have 0 notification for now",style: Theme.of(context).textTheme.headlineSmall)));
-    // }
     return Column(
       children: [
         AppBar(
@@ -57,27 +55,100 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           shrinkWrap: true,
           itemCount: list.length,
           itemBuilder: (context, index){
-            return ListTile(
-              leading: GestureDetector(
-                onTap: (){},
-                child: list[index].sender!.image!=null? Image.network(list[index].sender!.image!): (list[index].sender!.gender=='female'? Image.asset("assets/avatar/user_female.png"):Image.asset("assets/avatar/user_male.png")),
-              ),
-              title: RichText(
-                              text: TextSpan(
-                                style: DefaultTextStyle.of(context).style,
-                              children: [
-                                TextSpan(text: list[index].sender!.fullname, style: const TextStyle(fontWeight: FontWeight.bold)),
-                                const TextSpan(text: " send an add friend request"),
-                                ]
-                            )),  
-              subtitle: Text(list[index].createAt!=null&& DateTime.now().difference(list[index].createAt!)>const Duration(days: 1) ? DateFormat.yMMMMd('en_US').format(list[index].createAt!).toString() : "${DateTime.now().difference(list[index].createAt!).inHours.toString()} hours ago"),
-              trailing: Wrap(
-                spacing: 12,
-                children: <Widget>[
-                  IconButton(onPressed: (){}, icon: const Icon(Icons.check, size: 20,color: Colors.green,)),
-                  IconButton(onPressed: (){}, icon: const Icon(Icons.close, size: 20, color:  Colors.red,))
-                ],),
+            if(list[index].group==null && !list[index].isAccept!){
+              return ListTile(
+                leading: GestureDetector(
+                  onTap: (){
+                    Get.toNamed("/userpage/${list[index].sender!.username}");
+                  },
+                  child: list[index].sender!.image!=null? Image.network(list[index].sender!.image!): (list[index].sender!.gender=='female'? Image.asset("assets/avatar/user_female.png"):Image.asset("assets/avatar/user_male.png")),
+                ),
+                title: RichText(
+                                text: TextSpan(
+                                  style: DefaultTextStyle.of(context).style,
+                                children: [
+                                  TextSpan(text: list[index].sender!.fullname, style: const TextStyle(fontWeight: FontWeight.bold)),
+                                  const TextSpan(text: " send an add friend request"),
+                                  ]
+                              )),  
+                subtitle: Text(list[index].createAt!=null&& DateTime.now().difference(list[index].createAt!)>const Duration(days: 1) ? DateFormat.yMMMMd('en_US').format(list[index].createAt!).toString() : "${DateTime.now().difference(list[index].createAt!).inHours.toString()} hours ago"),
+                trailing: Wrap(
+                  spacing: 12,
+                  children: <Widget>[
+                    IconButton(onPressed:  () async{
+                      int idUser = await DatabaseProvider().getUserId();
+                      Requirementform req = Requirementform(senderId: list[index].sender!.id, receiverId: idUser, type: "ACCEPT");
+                      var response = await THttpHelper.createRequirement(req);
+                      if(response?["response"]!="unsuccess" && response?["response"]!="error"){
+                        Get.toNamed("/",preventDuplicates: false);
+                      }
+                    }, icon: const Icon(Icons.check, size: 20,color: Colors.green,)),
+                    IconButton(onPressed: () async{
+                      int idUser = await DatabaseProvider().getUserId();
+                      Requirementform req = Requirementform(senderId: list[index].sender!.id, receiverId: idUser, type: "CANCEL_ADDFRIEND");
+                      var response = await THttpHelper.createRequirement(req);
+                      if(response?["response"]!="unsuccess" && response?["response"]!="error"){
+                        Get.toNamed("/",preventDuplicates: false);
+                      }
+                    }, icon: const Icon(Icons.close, size: 20, color:  Colors.red,))
+                  ],),
+                );
+            }
+            if(list[index].group==null && list[index].isAccept!){
+              return GestureDetector(
+                onTap: (){
+                  Get.toNamed("/userpage/${list[index].sender!.username}");
+                },
+                child: ListTile(
+                  leading: list[index].sender!.image!=null? Image.network(list[index].sender!.image!)
+                                : (list[index].sender!.gender=='female'? Image.asset("assets/avatar/user_female.png"):Image.asset("assets/avatar/user_male.png")),
+                  title: RichText(
+                        text: TextSpan(
+                          style: DefaultTextStyle.of(context).style,
+                        children: [
+                          TextSpan(text: list[index].sender!.fullname, style: const TextStyle(fontWeight: FontWeight.bold)),
+                          const TextSpan(text: " now become your friend"),
+                          ]
+                        )),
+                  trailing: IconButton(onPressed: ()async {
+                    Requirementform req = Requirementform(senderId: list[index].sender!.id,id: list[index].id, type: "REMOVE_NOTIFICATION");
+                    var response = await THttpHelper.createRequirement(req);
+                    if(response?["response"]!="unsuccess" && response?["response"]!="error"){
+                      Get.toNamed("/",preventDuplicates: false);
+                    }
+                  }, icon: const Icon(Icons.remove)),
+                ),
               );
+            }
+            if(list[index].receiverId==null && list[index].group!=null){
+              return GestureDetector(
+                onTap: (){
+                    Get.toNamed("/group/${list[index].group!.id}");
+                  },
+                child: ListTile(
+                  leading: list[index].group!.imageGroup!=null? Image.network(list[index].group!.imageGroup!): Image.asset("assets/avatar/group_image.png"),
+                  title: RichText(
+                                  text: TextSpan(
+                                    style: DefaultTextStyle.of(context).style,
+                                  children: [
+                                    TextSpan(text: list[index].group!.groupname, style: const TextStyle(fontWeight: FontWeight.bold)),
+                                    const TextSpan(text: " accept you join the group"),
+                                    ]
+                                )),  
+                  subtitle: Text(list[index].createAt!=null&& DateTime.now().difference(list[index].createAt!)>const Duration(days: 1) ? DateFormat.yMMMMd('en_US').format(list[index].createAt!).toString() : "${DateTime.now().difference(list[index].createAt!).inHours.toString()} hours ago"),
+                   trailing: IconButton(onPressed: ()async {
+                    int idUser = await DatabaseProvider().getUserId();
+                    Requirementform req = Requirementform(senderId: idUser,id: list[index].id, type: "REMOVE_NOTIFICATION");
+                    var response = await THttpHelper.createRequirement(req);
+                    if(response?["response"]!="unsuccess" && response?["response"]!="error"){
+                      Get.toNamed("/",preventDuplicates: false);
+                    }
+                  }, icon: const Icon(Icons.remove)),
+                ),
+              );
+            }
+            return const SizedBox();
+            
           }),
       ],
     );

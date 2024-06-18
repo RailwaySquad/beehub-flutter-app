@@ -5,6 +5,9 @@ import 'package:beehub_flutter_app/Models/group.dart';
 import 'package:beehub_flutter_app/Provider/user_provider.dart';
 import 'package:beehub_flutter_app/Screens/Group/group_about.dart';
 import 'package:beehub_flutter_app/Screens/Group/group_discussion.dart';
+import 'package:beehub_flutter_app/Screens/Group/group_media.dart';
+import 'package:beehub_flutter_app/Screens/Group/group_people.dart';
+import 'package:beehub_flutter_app/Utils/beehub_button.dart';
 import 'package:beehub_flutter_app/Widgets/expanded/expanded_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -62,18 +65,18 @@ class _GroupPageState extends State<GroupPage> {
           return const GroupDiscussion();
         case "About":
           return const GroupAbout();
-        case "Members":
-          return const SliverToBoxAdapter(child:  Placeholder());
+        case "People":
+          return const GroupPeople();
         case "Media":
-          return  const SliverToBoxAdapter(child:  Placeholder());
+          return  const GroupMedia();
         default:
-          return const SliverToBoxAdapter(child:  Placeholder());
+          return const GroupDiscussion();
       }
   }
   @override
   void initState() {
     super.initState();
-    _idGroup = Get.parameters["idGroup"]!=null? num.parse(Get.parameters["idGroup"]!): null;
+    _idGroup = Get.parameters["idGroup"]!=null? int.parse(Get.parameters["idGroup"]!): null;
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if(_idGroup!=null){
         Provider.of<UserProvider>(context, listen: false).fetchGroup(_idGroup!);  
@@ -96,6 +99,30 @@ class _GroupPageState extends State<GroupPage> {
           )
         ),
       );
+    }
+    Widget getButton(){
+      if(group.joined==null){
+        return BeehubButton.JoinGroup(group.id!, "/group/${group.id}", null);
+      }else if(group.joined=="send request"){
+        return BeehubButton.CancelJoinGroup(group.id!, "/group/${group.id}", null);
+      }else{
+        switch (group.memberRole) {
+          case "MEMBER":
+            return BeehubButton.LeaveGroup(group.id!, "/group/${group.id}", null);
+          case "GROUP_CREATOR":
+            return BeehubButton.ManagerGroup(group.id!);
+          case "GROUP_MANAGER":
+            return Row(
+              children: [
+                BeehubButton.ManagerGroup(group.id!),
+                const SizedBox(width: 8,),
+                BeehubButton.LeaveGroup(group.id!, '/group/${group.id}', null)
+              ],
+            );
+          default:
+            return BeehubButton.JoinGroup(group.id!, "/group/${group.id}", null);
+        }
+      }
     }
     return Scaffold(
       body: CustomScrollView(
@@ -178,10 +205,7 @@ class _GroupPageState extends State<GroupPage> {
                           ),
                         ],
                       ),
-                      OutlinedButton(
-                          onPressed: (){},
-                          child: const Text("Account Setting", style: TextStyle(color: TColors.buttonPrimary),),
-                        ),
+                      getButton()
                     ],
                   ),
                   
