@@ -165,8 +165,6 @@ class _PostWidgetState extends State<PostWidget> {
                                   )
                                   : InkWell(
                                      onTap: (){
-                                      Provider.of<UserProvider>(context, listen: false).setUsername(widget.post.userUsername);
-                                      log(Provider.of<UserProvider>(context, listen: false).username!);
                                       Get.toNamed("/userpage/${widget.post.userUsername}");
                                     },
                                     child: Column(

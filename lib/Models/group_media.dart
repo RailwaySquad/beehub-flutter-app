@@ -1,5 +1,7 @@
+import 'dart:developer';
+
 class GroupMedia{
-  final int id;
+  final int? id;
   final String media;
   final String mediaType;
   final DateTime? createAt;
@@ -8,7 +10,7 @@ class GroupMedia{
   final int? groupId;
   final int? postId;
 
-  GroupMedia({required this.id, required this.media, required this.mediaType,  this.createAt, this.username,  this.fullname,  this.groupId, this.postId});
+  GroupMedia({ this.id, required this.media, required this.mediaType,  this.createAt, this.username,  this.fullname,  this.groupId, this.postId});
   factory GroupMedia.fromJson(Map<String, dynamic> json){
     final id = json["id"];
     final media = json["media"];
@@ -18,6 +20,7 @@ class GroupMedia{
     final fullname = json["fullname"]??'';
     final groupId = json["group_id"];
     final postId = json["post_id"];
+    log("id: $id\tmedia: $media\tmediaT: $mediaType\tcreate: $createAt\tusername: $username\tfullname: $fullname\tgroupId: $groupId\tPostId: $postId");
     return GroupMedia(
       id: id, 
       media: media, 

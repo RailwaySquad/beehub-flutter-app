@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:beehub_flutter_app/Constants/url.dart';
+import 'package:beehub_flutter_app/Models/ProfileForm.dart';
 import 'package:beehub_flutter_app/Models/group.dart';
 import 'package:beehub_flutter_app/Models/post.dart';
 import 'package:beehub_flutter_app/Models/profile.dart';
@@ -283,5 +284,59 @@ class THttpHelper {
     }else{
       return null;
     }
+  }
+  static Future<bool> checkUsername(String username)async{
+    DatabaseProvider db= DatabaseProvider();
+    String token = await db.getToken();
+    Response response = await get(Uri.parse("$BaseUrl/check-user?username=$username"),
+    headers: {
+      HttpHeaders.authorizationHeader: 'Bearer $token'
+    });
+     int status = response.statusCode;
+     if(status==200){
+      bool res = jsonDecode(response.body) as bool;
+      log(res.toString());
+      return res ;
+     }
+     log("Error Netword connect");
+     return false;
+  }
+  static Future<bool> checkEmail(String email)async{
+    DatabaseProvider db= DatabaseProvider();
+    String token = await db.getToken();
+    Response response = await get(Uri.parse("$BaseUrl/check-email?email=$email"),
+    headers: {
+      'Content-Type': 'application/json',
+      HttpHeaders.authorizationHeader: 'Bearer $token'
+    });
+     int status = response.statusCode;
+     if(status==200){
+      bool res = jsonDecode(response.body) as bool;
+      log(res.toString());
+      return res;
+     }
+     log("Error Netword connect");
+     return false;
+  }
+  ///update/profile/{id}
+  static Future<bool> updateProfile (Profileform data) async {
+    DatabaseProvider db= DatabaseProvider();
+     int userId = await db.getUserId();
+    String token = await db.getToken();
+    Response response = await post(Uri.parse("$BaseUrl/update/profile/$userId"),
+    headers: {
+      'Content-Type': 'application/json',
+      HttpHeaders.authorizationHeader: 'Bearer $token'
+    },
+    body: json.encode(data.toJson())
+    );
+    int status = response.statusCode;
+    if(status==200){
+      bool res = jsonDecode(response.body) as bool;
+      log(res.toString());
+      return res;
+    }
+    log("Error Netword connect");
+    return false;
   }
 }

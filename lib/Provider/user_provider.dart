@@ -10,6 +10,7 @@ class UserProvider extends ChangeNotifier{
   List<Group> _groups = [];
   String? _username;
   Profile? profile;
+  Profile? ownprofile;
   Group? _group;
   Map<String,dynamic> _resultSearch=<String,dynamic>{}; 
   bool _refetch = false;
@@ -40,14 +41,11 @@ class UserProvider extends ChangeNotifier{
     }
   }
   Future getUsername() async{
-    _username ??= await THttpHelper.getUsername();
+    _username = await THttpHelper.getUsername();
     notifyListeners();
   }
   String? get username {
     return _username;
-  }
-  void setUsername(String usern){
-    _username = usern;
   }
   Future fetchProfile(isUserLogin,{user=""})async{
     isLoading=true;
@@ -57,7 +55,11 @@ class UserProvider extends ChangeNotifier{
       isLoading = false;
       notifyListeners();
     }else{
+      if(username==null) {
+        await getUsername();
+      }
       profile = await THttpHelper.getProfile(username!);
+      ownprofile = await THttpHelper.getProfile(username!);
       isLoading = false;
       notifyListeners();
     }

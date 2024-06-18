@@ -17,7 +17,7 @@ class Profile {
   final String? relationshipWithUser;
   final DateTime? activeAt;
   final bool isBanned;
-  final String phone;
+  final String? phone;
   final List<Group>? groupJoined;
   final List<Gallery>? galleries;
   final List<UserSetting>? userSettings;

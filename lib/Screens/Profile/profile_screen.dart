@@ -70,7 +70,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
   @override
   Widget build(BuildContext context) {
-    Profile? profile = Provider.of<UserProvider>(context, listen: false).profile;
+    Profile? profile = Provider.of<UserProvider>(context, listen: false).ownprofile;
     var size = MediaQuery.of(context).size;
     bool isLoading = Provider.of<UserProvider>(context).isLoading;
     if(isLoading || profile==null){
@@ -149,7 +149,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           OutlinedButton(
                               onPressed: (){
-                                Get.toNamed("/profile_setting");
+                                Get.toNamed("/account_setting");
                               },
                               child: const Text("Profile Setting", style: TextStyle(color: TColors.buttonPrimary),),
                             ),
