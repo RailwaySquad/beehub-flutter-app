@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:beehub_flutter_app/Constants/url.dart';
 import 'package:beehub_flutter_app/Models/ProfileForm.dart';
@@ -321,7 +322,7 @@ class THttpHelper {
   ///update/profile/{id}
   static Future<bool> updateProfile (Profileform data) async {
     DatabaseProvider db= DatabaseProvider();
-     int userId = await db.getUserId();
+    int userId = await db.getUserId();
     String token = await db.getToken();
     Response response = await post(Uri.parse("$BaseUrl/update/profile/$userId"),
     headers: {
@@ -338,5 +339,22 @@ class THttpHelper {
     }
     log("Error Netword connect");
     return false;
+  }
+  //UploadAvatar /upload/profile/image/{id}
+  static Future<dynamic> uploadAvatar(File file)async{
+    DatabaseProvider db= DatabaseProvider();
+    int userId = await db.getUserId();
+    String token = await db.getToken();
+    var request =  MultipartRequest("POST",Uri.parse("$BaseUrl/upload/profile/image/$userId"));
+    var myFile = await MultipartFile.fromPath("media",file.path);
+    request.headers.addAll({HttpHeaders.authorizationHeader: 'Bearer $token'});
+    request.files.add(myFile);
+    final response = await request.send();
+    if(response.statusCode==201){
+      var data = await response.stream.bytesToString();
+      return jsonDecode(data);
+    }else{
+      return null;
+    }
   }
 }

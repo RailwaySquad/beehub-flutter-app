@@ -5,16 +5,16 @@ class Profileform{
   String? fullname;
   String gender;
   String? bio;
-  DateTime birthday;
+  String? birthday;
   String? phone;
-  Profileform({required this.id, this.fullname, required this.gender, this.bio, this.phone,required this.birthday});
+  Profileform({required this.id, this.fullname, required this.gender, this.bio, this.phone,this.birthday});
   Map<String, dynamic> toJson() {
     return {
       'id': id,  
       'fullname': fullname,
       'gender' : gender,
       'bio': bio,
-      'birthday': birthday.toString(),
+      'birthday': birthday,
       'phone': phone
     };
   } 
@@ -23,7 +23,7 @@ class Profileform{
       id: profile.id, 
       gender: profile.gender,
       bio: profile.bio,
-      birthday: profile.birthday??DateTime.now(),
+      birthday: profile.birthday.toString(),
       fullname: profile.fullname,
       phone: profile.phone
       );

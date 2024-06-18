@@ -1,4 +1,6 @@
 import 'dart:developer';
+import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:beehub_flutter_app/Constants/color.dart';
 import 'package:beehub_flutter_app/Models/ProfileForm.dart';
@@ -8,6 +10,7 @@ import 'package:beehub_flutter_app/Utils/api_connection/http_client.dart';
 import 'package:beehub_flutter_app/Utils/helper/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -21,6 +24,7 @@ class AccountSettingPage extends StatefulWidget {
 
 class _AccountSettingPageState extends State<AccountSettingPage> {
   DateTime? selectedDate;
+  File? _file;
   void _showDatePicker(DateTime? birthday){
     showDatePicker(
       context: context,
@@ -39,7 +43,22 @@ class _AccountSettingPageState extends State<AccountSettingPage> {
         log(selectedDate.toString());
     });
   }
-
+  Future<void> _pickFile() async {
+    try {
+      final pickedFile =
+          await ImagePicker().pickImage(source: ImageSource.gallery);
+      if (pickedFile != null) {
+        setState(() {
+          _file = File(pickedFile.path);
+          // _isButtonEnabled = true;
+        });
+      } else {
+        print('No file selected.');
+      }
+    } catch (e) {
+      print('Error picking file: $e');
+    }
+  }
   @override
   Widget build(BuildContext context) {
     Profile? prof = Provider.of<UserProvider>(context, listen: false).ownprofile;
@@ -69,19 +88,22 @@ class _AccountSettingPageState extends State<AccountSettingPage> {
         String biography = bioController.text;
 
         int id = int.parse(idInputController.text);
-        Profileform data = Profileform(id: id,gender: gender, bio: biography, birthday:selectedDate??DateTime.now(),fullname: fullname,phone: phone );
+        DateFormat formatD = new DateFormat('yyyy-MM-dd');
+        String update= selectedDate!=null? formatD.format(selectedDate!):formatD.format(DateTime.now()); 
+        Profileform data = Profileform(id: id,gender: gender, bio: biography, birthday: update,fullname: fullname,phone: phone );
         log(data.toString());
         return THttpHelper.updateProfile(data);
       }
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(onPressed: (){Get.toNamed("/");},icon: const Icon(Icons.chevron_left),),
-        title: const Text("Profile Setting"),
+        title: const Text("Account Setting"),
         actions: [
           TextButton(onPressed: ()async  {
                       if(formKey.currentState!.validate()){
                         bool result= await submitData();
                         if(result){
+                          Provider.of<UserProvider>(context, listen: false).fetchProfile(true);
                           Get.toNamed('/');
                         }else{
                           log(result.toString());
@@ -123,7 +145,19 @@ class _AccountSettingPageState extends State<AccountSettingPage> {
                             ),
                             width: 90,
                             height: 90,
-                            child: GestureDetector(child: prof.image!.isNotEmpty? Image.network(prof.image!,height: 75, width: 75,fit: BoxFit.fill):
+                            child: GestureDetector(
+                              onTap: () async{
+                                final ImagePicker picker = ImagePicker();
+                                final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+                                if(image!=null){
+                                  Uint8List bytes = await image.readAsBytes();
+                                  bool upload = await THttpHelper.uploadAvatar(_file!);
+                                  log(upload.toString());
+                                }
+                              },
+                              child: _file!=null? 
+                              Image.file(_file!,fit: BoxFit.fill)
+                              :prof.image!.isNotEmpty? Image.network(prof.image!,height: 75, width: 75,fit: BoxFit.fill):
                               (profile.gender == 'female'?
                               Image.asset("assets/avatar/user_female.png",height: 75, width: 75,fit: BoxFit.fill):Image.asset("assets/avatar/user_male.png",height: 75, width: 75,fit: BoxFit.fill)
                               ),)
@@ -196,7 +230,7 @@ class _AccountSettingPageState extends State<AccountSettingPage> {
                   child: Row(
                   children: <Widget>[
                       Expanded(child: Text(selectedDate==null? 'No Date Choosen': 'Picked Date: ${DateFormat.yMd().format(selectedDate!)}')),
-                      TextButton(onPressed:() =>_showDatePicker(profile.birthday), child: const Text("Choose Date", style: TextStyle(fontWeight: FontWeight.bold),))
+                      TextButton(onPressed:() =>_showDatePicker(prof.birthday), child: const Text("Choose Date", style: TextStyle(fontWeight: FontWeight.bold),))
                     ],
                     ),
                   )
