@@ -22,11 +22,11 @@ class _ProfilePostsState extends State<ProfilePosts> {
   int page = 0;
   bool isLoading = false;
   bool errorConnect = false;
-  String username = "";
+  String? username = Get.currentRoute.isNotEmpty? Get.parameters["user"]: null;
   Future fetchProfilePost() async {
     if (isLoading) return;
     isLoading = true;
-    List<Post>? post = await THttpHelper.getProfilePost(username, page);
+    List<Post>? post = await THttpHelper.getProfilePost(username!, page);
     setState(() {
       page++;
       isLoading = false;
@@ -58,20 +58,19 @@ class _ProfilePostsState extends State<ProfilePosts> {
   @override
   void initState() {
     super.initState();
+    log(username.toString());
+    log(Get.currentRoute);
     controller.addListener(() {
       if (controller.position.maxScrollExtent == controller.offset) {
         fetchProfilePost();
       }
     });
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      String? usern = Get.parameters["user"];
-      log(usern.toString());
-      if (usern != null) {
-        username = usern;
-      } else {
-        username =  Provider.of<UserProvider>(context, listen: false).username!;
-      }
-        fetchProfilePost();
+      Provider.of<UserProvider>(context, listen: false).getUsername();
+      username ??= Provider.of<UserProvider>(context, listen: false).username;
+      Future.delayed(Duration(seconds: 4));
+      log(username.toString());
+      fetchProfilePost();
     });
   }
 

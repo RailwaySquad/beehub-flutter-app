@@ -1,5 +1,8 @@
 import 'package:beehub_flutter_app/Models/post.dart';
+import 'package:beehub_flutter_app/Models/user.dart';
+import 'package:beehub_flutter_app/Provider/db_provider.dart';
 import 'package:beehub_flutter_app/Utils/api_connection/http_client.dart';
+import 'package:beehub_flutter_app/Utils/api_connection/http_post.dart';
 import 'package:beehub_flutter_app/Widgets/addpost_widget.dart';
 import 'package:beehub_flutter_app/Widgets/post_widget.dart';
 
@@ -39,6 +42,7 @@ class _PopularPostsState extends State<PopularPosts> {
       }
     });
   }
+  
   void updatePostList(){
     setState(() {
       page = 0;
@@ -117,13 +121,17 @@ class _PopularPostsState extends State<PopularPosts> {
                           textAlign: TextAlign.left,
                         ),
                       ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => CreatePostPage(onUpdatePostList: updatePostList),
-                          ),
-                        );
+                      onPressed: () async {
+                        DatabaseProvider db = DatabaseProvider();
+                        int userid = await db.getUserId();
+                        ApiService.getUserById(userid).then((user){
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CreatePostPage(onUpdatePostList: updatePostList,user:user),
+                            ),
+                          );
+                        });
                       },
                     ),
                   ),

@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:beehub_flutter_app/Constants/url.dart';
+import 'package:beehub_flutter_app/Models/ProfileForm.dart';
 import 'package:beehub_flutter_app/Models/group.dart';
 import 'package:beehub_flutter_app/Models/post.dart';
 import 'package:beehub_flutter_app/Models/profile.dart';
@@ -10,6 +12,7 @@ import 'package:beehub_flutter_app/Models/requirement.dart';
 import 'package:beehub_flutter_app/Models/requirementForm.dart';
 import 'package:beehub_flutter_app/Models/user.dart';
 import 'package:beehub_flutter_app/Provider/db_provider.dart';
+import 'package:http/browser_client.dart';
 import 'package:http/http.dart';
 class THttpHelper {
   // late final String _URL_API= "http://10.0.2.2:8089"; 
@@ -156,6 +159,7 @@ class THttpHelper {
   }
   ///user/{id_user}/get-posts/{username}
   static Future<List<Post>?> getProfilePost(String username,int page) async{
+    log( username);
     DatabaseProvider db= DatabaseProvider();
     int userId = await db.getUserId();
     String token = await db.getToken();
@@ -167,6 +171,15 @@ class THttpHelper {
     int status = response.statusCode;
     if(status == 200){
       String json = response.body;
+      if(json.isEmpty){
+        String us=  await getUsername();
+        Response response2 = await get(Uri.parse("$BaseUrl/user/$userId/get-posts/$us?limit=3&page=$page"),
+          headers: {
+            HttpHeaders.authorizationHeader: 'Bearer $token'
+          }
+        );
+        json = response2.body;
+      }
       dynamic post = jsonDecode(json);
       try {
         return  List.from(post.map((e) => Post.fromJson(e)));
@@ -280,6 +293,121 @@ class THttpHelper {
         log(e.toString());
         throw Exception(e);
       }
+    }else{
+      return null;
+    }
+  }
+  static Future<bool> checkUsername(String username)async{
+    DatabaseProvider db= DatabaseProvider();
+    String token = await db.getToken();
+    Response response = await get(Uri.parse("$BaseUrl/check-user?username=$username"),
+    headers: {
+      HttpHeaders.authorizationHeader: 'Bearer $token'
+    });
+     int status = response.statusCode;
+     if(status==200){
+      bool res = jsonDecode(response.body) as bool;
+      log(res.toString());
+      return res ;
+     }
+     log("Error Netword connect");
+     return false;
+  }
+  static Future<bool> checkEmail(String email)async{
+    DatabaseProvider db= DatabaseProvider();
+    String token = await db.getToken();
+    Response response = await get(Uri.parse("$BaseUrl/check-email?email=$email"),
+    headers: {
+      'Content-Type': 'application/json',
+      HttpHeaders.authorizationHeader: 'Bearer $token'
+
+    });
+     int status = response.statusCode;
+     if(status==200){
+      bool res = jsonDecode(response.body) as bool;
+      log(res.toString());
+      return res;
+     }
+     log("Error Netword connect");
+     return false;
+  }
+  ///check-password/
+  static Future<bool> checkPassword(String password)async{
+    DatabaseProvider db= DatabaseProvider();
+    String token = await db.getToken();
+    // var client = BrowserClient()..withCredentials = true;
+    Response response = await get(Uri.parse("$BaseUrl/check-password/?password=$password"),
+    headers: {
+      'Content-Type': 'application/json',
+      // HttpHeaders.accessControlAllowCredentialsHeader: '*',
+      // HttpHeaders.accessControlAllowHeadersHeader: "*",
+      HttpHeaders.authorizationHeader: 'Bearer $token',
+    });
+     int status = response.statusCode;
+     log(status.toString());
+     if(status==200){
+      bool res = jsonDecode(response.body) as bool;
+      log(res.toString());
+      return res ;
+     }
+     log("Error Netword connect");
+     return false;
+  }
+  ///update/profile/password/
+  static Future<bool> updatePassword(String password)async{
+    DatabaseProvider db= DatabaseProvider();
+    int userId = await db.getUserId();
+    String token = await db.getToken();
+    Response response = await post(Uri.parse("$BaseUrl/update/profile/password/$userId"),
+    headers: {
+      "Content-Type": 'text/plain',
+      HttpHeaders.authorizationHeader: 'Bearer $token'
+    },
+    body: password
+    );
+    int status = response.statusCode;
+    if(status==200){
+      bool res = jsonDecode(response.body) as bool;
+      log(res.toString());
+      return res;
+    }
+    log("Error Netword connect");
+    return false;
+  }
+  ///update/profile/{id}
+  static Future<bool> updateProfile (Profileform data) async {
+    DatabaseProvider db= DatabaseProvider();
+    int userId = await db.getUserId();
+    String token = await db.getToken();
+    Response response = await post(Uri.parse("$BaseUrl/update/profile/$userId"),
+    headers: {
+      'Content-Type': 'application/json',
+      HttpHeaders.authorizationHeader: 'Bearer $token'
+    },
+    body: json.encode(data.toJson())
+    );
+    int status = response.statusCode;
+    if(status==200){
+      bool res = jsonDecode(response.body) as bool;
+      log(res.toString());
+      return res;
+    }
+    log("Error Netword connect");
+    return false;
+  }
+  //UploadAvatar /upload/profile/image/{id}
+  static Future<dynamic> uploadAvatar(File file)async{
+    DatabaseProvider db= DatabaseProvider();
+    int userId = await db.getUserId();
+    String token = await db.getToken();
+    var request =  MultipartRequest("POST",Uri.parse("$BaseUrl/upload/profile/image/$userId"));
+    var myFile = await MultipartFile.fromPath("media",file.path);
+    request.headers.addAll({HttpHeaders.authorizationHeader: 'Bearer $token'});
+    request.files.add(myFile);
+    final response = await request.send();
+    if(response.statusCode==201){
+      var data = await response.stream.bytesToString();
+      return jsonDecode(data);
     }else{
       return null;
     }

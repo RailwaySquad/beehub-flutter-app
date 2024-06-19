@@ -1,14 +1,16 @@
 import 'dart:io';
 import 'package:beehub_flutter_app/Models/post.dart';
 import 'package:beehub_flutter_app/Models/postMe.dart';
+import 'package:beehub_flutter_app/Models/user.dart';
 import 'package:beehub_flutter_app/Provider/db_provider.dart';
 import 'package:beehub_flutter_app/Utils/api_connection/http_post.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class CreatePostPage extends StatefulWidget {
+  final User user;
   final void Function() onUpdatePostList;
-   const CreatePostPage({Key? key, required this.onUpdatePostList}) : super(key: key);
+   const CreatePostPage({Key? key, required this.onUpdatePostList, required this.user}) : super(key: key);
   @override
   _CreatePostPageState createState() => _CreatePostPageState();
 }
@@ -66,14 +68,22 @@ class _CreatePostPageState extends State<CreatePostPage> {
         child: Container(
           child: Column(
             children: <Widget>[
-              const Row(
-                children: <Widget>[
-                  Icon(
-                    Icons.account_circle,
-                    size: 60.0,
-                  ),
-                  Text('Name')
-                ],
+              Container(
+                margin: EdgeInsets.only(top: 10),
+                  child: Row(
+                  children: <Widget>[
+                    CircleAvatar(radius: 25,
+                      child: widget.user.image != null &&
+                              widget.user.image!.isNotEmpty
+                          ? Image.network(widget.user.image!)
+                          : Image.asset(widget.user.gender == "female"
+                              ? "assets/avatar/user_female.png"
+                              : "assets/avatar/user_male.png"),
+                    ),
+                    SizedBox(width: 5),
+                    Text(widget.user.fullname)
+                  ],
+                ),
               ),
               SizedBox(
                 height: 15.0,
@@ -339,6 +349,9 @@ class _CreatePostPageState extends State<CreatePostPage> {
                             createdPost = await ApiService.createPost(newPost);
                           }
                           widget.onUpdatePostList();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Create New Post Success'))
+                          );
                           Navigator.pop(context);
                         } catch (e) {
                           print('Error creating post: $e');

@@ -1,5 +1,7 @@
 import 'dart:developer';
 
+
+import 'package:beehub_flutter_app/Models/comment.dart';
 import 'package:beehub_flutter_app/Models/post.dart';
 import 'package:beehub_flutter_app/Constants/color.dart';
 import 'package:beehub_flutter_app/Models/like.dart';
@@ -8,13 +10,15 @@ import 'package:beehub_flutter_app/Provider/user_provider.dart';
 import 'package:beehub_flutter_app/Utils/api_connection/http_post.dart';
 import 'package:beehub_flutter_app/Utils/helper/helper_functions.dart';
 import 'package:beehub_flutter_app/Utils/shadow/shadows.dart';
+import 'package:beehub_flutter_app/Widgets/addpostShare_widget.dart';
 import 'package:beehub_flutter_app/Widgets/editpost_widget.dart';
 import 'package:beehub_flutter_app/Widgets/expanded/expanded_widget.dart';
+import 'package:beehub_flutter_app/Widgets/postShare_widget.dart';
 import 'package:beehub_flutter_app/Widgets/showcommentpost.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
+
 import 'package:provider/provider.dart';
 
 class PostWidget extends StatefulWidget {
@@ -29,8 +33,10 @@ class _PostWidgetState extends State<PostWidget> {
   bool _isOptionsVisible = false;
   int _countComment = 0;
   int _countLike = 0;
-  late int _checkUser ;
+  int _countShare = 0;
+  late int _checkUser;
   bool _checkLike = false;
+  late Future<List<Comment>> _commentsFuture;
   void _toggleOptionsVisibility() {
     setState(() {
       _isOptionsVisible = !_isOptionsVisible;
@@ -46,7 +52,54 @@ class _PostWidgetState extends State<PostWidget> {
     _fetchCountComment();
     _fetchCheckLike();
     _fetchCountLike();
+    _fetchCountShare();
     _initializeUser();
+  }
+  List<TextSpan> parseComment(String comment){
+    final regex = RegExp(r'tag=(.*?)&link=(.*?)(?=\s+|$)');
+    List<TextSpan> spans = [];
+    int lastIndex = 0;
+    for (final match in regex.allMatches(comment)){
+      if(match.start > lastIndex){
+        spans.add(TextSpan(text: comment.substring(lastIndex,match.start)));
+      }
+      final tagName = match.group(2);
+      final link = match.group(2);
+      spans.add(
+        TextSpan(
+          text:tagName,
+          style: TextStyle(color:Colors.blueAccent.shade700,fontWeight: FontWeight.bold),
+          recognizer: TapGestureRecognizer()..onTap = (){
+            Get.toNamed("/userpage/$link");
+          },
+        )
+      );
+      lastIndex = match.end;
+    }
+    if(lastIndex < comment.length){
+      spans.add(TextSpan(text:comment.substring(lastIndex)));
+    }
+    return spans;
+  }
+  String formatDate(DateTime? date){
+    if(date == null) return '';
+    final now = DateTime.now();
+    final difference = now.difference(date);
+    if(difference.inDays > 365){
+      final years = (difference.inDays / 365).floor();
+      return '$years year ago'; 
+    }else if(difference.inDays >= 30){
+      final months = (difference.inDays / 30).floor();
+      return '$months month ago';
+    }else if(difference.inDays >= 1){
+      return '${difference.inDays} day ago';
+    }else if(difference.inHours >= 1){
+      return '${difference.inHours} hours ago';
+    }else if(difference.inMinutes >= 1){
+      return '${difference.inMinutes} minutes ago';
+    }else{
+      return 'Now' ;
+    }
   }
   Widget getMedia(height, width) {
     if (widget.post.medias != null) {
@@ -60,15 +113,66 @@ class _PostWidgetState extends State<PostWidget> {
   }
   void _fetchCountComment() async{
     int count = await ApiService.countComment(widget.post.id);
+    int totalRecomment = 0;
+    List<Comment> comments = await ApiService.getComment(widget.post.id);
+    for(Comment comment in comments){
+      int recomments = await ApiService.countReComment(comment.id!);
+      totalRecomment += recomments;
+    }
     setState(() {
-      _countComment = count;
+      _countComment = count + totalRecomment;
     });
+  }
+  void _addLike() async{
+    try{
+      DatabaseProvider db = DatabaseProvider();
+      int userid = await db.getUserId();
+      int postid = widget.post.id;
+      Like like = Like(
+        enumEmo: '👍',
+        user: userid,
+        post: postid
+      );
+      await ApiService.addLike(like);
+    }catch(e){
+      print('Error to add Like: $e');
+    }
+    _fetchCheckLike();
+    _fetchCountLike();                               
+  }
+  void _removeLike() async{
+    try{
+      DatabaseProvider db = new DatabaseProvider();
+      int userid = await db.getUserId();
+      int postid = widget.post.id;
+      await ApiService.removeLike(userid, postid);
+    }catch(e){
+      print('Error to remove Like: $e');
+    }
+    _fetchCheckLike();
+    _fetchCountLike();
   }
   void _fetchCountLike() async{
     int count = await ApiService.countLike(widget.post.id);
     setState(() {
       _countLike = count;
     });
+  }
+  void _fetchCountShare() async{
+    int count = await ApiService.countShare(widget.post.id);
+    setState(() {
+      _countShare = count;
+    });
+  }
+  Color parseColor(String? colorString) {
+    if (colorString == null || colorString.isEmpty) {
+      return Colors.transparent;
+    } else {
+      if (colorString.startsWith('#')) {
+        colorString = 'ff${colorString.substring(1)}';
+      }
+      return Color(int.parse(colorString, radix: 16) + 0xFF000000);
+    }
   }
   void _fetchCheckLike() async{
     DatabaseProvider db = DatabaseProvider();
@@ -87,16 +191,6 @@ class _PostWidgetState extends State<PostWidget> {
   }
   @override
   Widget build(BuildContext context) {
-    Color parseColor(String? colorString) {
-      if (colorString == null || colorString.isEmpty) {
-        return Colors.transparent;
-      } else {
-        if (colorString.startsWith('#')) {
-          colorString = 'ff${colorString.substring(1)}';
-        }
-        return Color(int.parse(colorString, radix: 16) + 0xFF000000);
-      }
-    }
     final dark = THelperFunction.isDarkMode(context);
     return Container(
       decoration: BoxDecoration(
@@ -160,13 +254,11 @@ class _PostWidgetState extends State<PostWidget> {
                                                 )
                                               ]))
                                         ]),
-                                        widget.post.createdAt!=null?Text(DateFormat("dd/MM/yyyy hh:mm").format(widget.post.createdAt!),style: Theme.of(context).textTheme.bodySmall,):const SizedBox()
+                                        Text(formatDate(widget.post.createdAt))
                                     ],
                                   )
                                   : InkWell(
                                      onTap: (){
-                                      Provider.of<UserProvider>(context, listen: false).setUsername(widget.post.userUsername);
-                                      log(Provider.of<UserProvider>(context, listen: false).username!);
                                       Get.toNamed("/userpage/${widget.post.userUsername}");
                                     },
                                     child: Column(
@@ -184,7 +276,7 @@ class _PostWidgetState extends State<PostWidget> {
                                           maxLines: 1,
                                           textAlign: TextAlign.left,
                                         ),
-                                        widget.post.createdAt!=null?Text(DateFormat("dd/MM/yyyy hh:mm").format(widget.post.createdAt!),style: Theme.of(context).textTheme.bodySmall,):const SizedBox()
+                                        Text(formatDate(widget.post.createdAt))
                                       ],
                                     ),
                                   ))
@@ -202,61 +294,88 @@ class _PostWidgetState extends State<PostWidget> {
                   height: 10,
                 ),
                 //Post Content
-                SizedBox(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      widget.post.background != "ffffffff" &&
-                              widget.post.background != "inherit"
-                          ? Row(
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                                Expanded(
-                                  child: SingleChildScrollView(
-                                    child: Container(
-                                      height: 200,
-                                      color: parseColor(widget.post.background),
-                                      child: Center(
-                                        child: Text(
-                                          widget.post.text,
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                              color:
-                                                  parseColor(widget.post.color),
-                                              fontSize: 20),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              ],
-                            )
-                          : Row(
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                                Expanded(
-                                    child: SingleChildScrollView(
-                                        child: ExpandedWidget(
-                                            text: widget.post.text)))
-                              ],
-                            )
+                widget.post.share == true ?
+                Container(
+                  margin: EdgeInsets.only(left: 30.0,right: 30),
+                  padding: EdgeInsets.only(left: 5),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color.fromARGB(255, 133, 131, 131).withOpacity(0.2),
+                        spreadRadius: 5,
+                        blurRadius: 7,
+                        offset: Offset(0, 3), // Thay đổi offset để điều chỉnh vị trí shadow
+                      ),
                     ],
                   ),
+                  child: PostShare(post: widget.post,parseColor:parseColor,parseComment:parseComment,formatDate:formatDate),
+                )
+                :
+                Column(
+                  children: [
+                    SizedBox(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          widget.post.background != "ffffffff" &&
+                                  widget.post.background != "inherit"
+                              ? Row(
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: [
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    Expanded(
+                                      child: SingleChildScrollView(
+                                        child: Container(
+                                          height: 200,
+                                          color: parseColor(widget.post.background),
+                                          child: Center(
+                                            child: RichText(
+                                              text: TextSpan(
+                                                style: TextStyle(
+                                                  color:
+                                                      parseColor(widget.post.color),
+                                                  fontSize: 20),
+                                                children: parseComment(widget.post.text),
+                                              ),
+                                            )
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                )
+                              : Row(
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: [
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    Expanded(
+                                        child: SingleChildScrollView(
+                                          child: RichText(
+                                          text: TextSpan(
+                                            style: Theme.of(context).textTheme.bodyMedium,
+                                            children: parseComment(widget.post.text),
+                                          ),
+                                        ),))
+                                  ],
+                                )
+                        ],
+                      ),
+                    ),
+                    if (widget.post.medias != null &&
+                      widget.post.medias!.isNotEmpty)
+                    Image.network(
+                      widget.post.medias!,
+                      fit: BoxFit.cover,
+                    ),
+                  ],
                 ),
-                if (widget.post.medias != null &&
-                    widget.post.medias!.isNotEmpty)
-                  Image.network(
-                    widget.post.medias!,
-                    fit: BoxFit.cover,
-                  ),
                 const SizedBox(
                   height: 8,
                 ),
@@ -276,37 +395,12 @@ class _PostWidgetState extends State<PostWidget> {
                           ),
                           Row(
                             children: [
-                              _checkLike == false ?
+                              _checkLike == true ?
                               IconButton(
-                                  onPressed: () async{
-                                    try{
-                                      DatabaseProvider db = new DatabaseProvider();
-                                      int userid = await db.getUserId();
-                                      int postid = widget.post.id;
-                                      await ApiService.removeLike(userid, postid);
-                                      _fetchCheckLike();
-                                    }catch(e){
-                                      print('Error to add Like: $e');
-                                    }
-                                  },
+                                  onPressed: _removeLike,
                                   icon: const Text('👍'))
                                   :IconButton(
-                                  onPressed: () async{
-                                    try{
-                                      DatabaseProvider db = DatabaseProvider();
-                                      int userid = await db.getUserId();
-                                      int postid = widget.post.id;
-                                      Like like = Like(
-                                        enumEmo: '👍',
-                                        user: userid,
-                                        post: postid
-                                      );
-                                      await ApiService.addLike(like);
-                                      _fetchCheckLike();
-                                    }catch(e){
-                                      print('Error to add Like: $e');
-                                    }
-                                  },
+                                  onPressed: _addLike,
                                   icon: const Icon(
                                     Icons.thumb_up_alt_outlined)) ,
                               const Text("Like")
@@ -331,7 +425,7 @@ class _PostWidgetState extends State<PostWidget> {
                                   isScrollControlled: true,
                                   context: context,
                                   builder: (BuildContext context) {
-                                    return ShowComment(post: post,fetchCountComment:_fetchCountComment); // Gọi StatefulWidget mới
+                                    return ShowComment(post: post,fetchCountComment:_fetchCountComment,fetchCheckLike:_fetchCheckLike,fetchCountLike:_fetchCountLike,countLike:_countLike,checkLike:_checkLike,addLike:_addLike,removeLike:_removeLike,parseComment:parseComment,parseColor:parseColor,onUpdatePostList: widget.onUpdatePostList); // Gọi StatefulWidget mới
                                   },
                                 );
                               });
@@ -359,14 +453,33 @@ class _PostWidgetState extends State<PostWidget> {
                     ),
                     //Share
                     SizedBox(
-                      child: Row(
+                      child: Column(
                         children: [
-                          IconButton(
-                              onPressed: () {},
-                              icon: const Icon(Icons.share)),
-                          const Text("Share")
+                          Text(
+                            "$_countShare",
+                            style: Theme.of(context).textTheme.bodySmall,
+                            maxLines: 1,
+                          ),
+                          Row(
+                            children: [
+                              IconButton(
+                                onPressed: () {
+                                  ApiService.getPostById(widget.post.id).then((post){
+                                    showModalBottomSheet(
+                                      isScrollControlled: true,
+                                      context: context, 
+                                      builder: (BuildContext context){
+                                        return AddPostShare(post: post,onUpdatePostList: widget.onUpdatePostList,parseComment:parseComment);
+                                      },
+                                    );
+                                  });
+                                },
+                                icon: const Icon(Icons.share)),
+                              const Text("Share")
+                            ],
+                          ),
                         ],
-                      ),
+                      )
                     )
                   ],
                 )
@@ -395,6 +508,7 @@ class _PostWidgetState extends State<PostWidget> {
                   _checkUser == widget.post.userId ? 
                   Column(
                     children: [
+                      if(widget.post.share == false)
                       ElevatedButton(
                         onPressed: () {
                           ApiService.getPostById(widget.post.id).then((post) {
@@ -402,7 +516,7 @@ class _PostWidgetState extends State<PostWidget> {
                               isScrollControlled: true,
                               context: context,
                               builder: (BuildContext context) {
-                                return EditPostPage(post: post,onUpdatePostList: widget.onUpdatePostList); // Gọi StatefulWidget mới
+                                return EditPostPage(post: post,onUpdatePostList: widget.onUpdatePostList,parseComment:parseComment);
                               },
                             );
                           });
@@ -451,10 +565,12 @@ class _PostWidgetState extends State<PostWidget> {
                             int postId = widget.post.id;
                             ApiService.deletePost(postId).then((_){
                               widget.onUpdatePostList();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Delete Post Success'))
+                              );
                             });
                           }
                         },
-                        
                         style: TextButton.styleFrom(
                           padding: EdgeInsets.zero,
                           backgroundColor: Colors.transparent, // Bỏ màu nền mặc định

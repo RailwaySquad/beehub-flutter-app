@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:beehub_flutter_app/Models/group_media.dart';
 import 'package:beehub_flutter_app/Models/group_member.dart';
 import 'package:beehub_flutter_app/Models/report.dart';
@@ -44,12 +46,12 @@ class Group{
     final bgGr = json['background_group'];
     final joined = json['joined'];
     final memberRole = json['member_role'];
-    final memberCount = json['member_count'] as int;
-    final postCount = json["post_count"] as int;
+    final memberCount = json['member_count'];
+    final postCount = json["post_count"] ;
     final List<Requirement> requirements = json["requirements"]!=null? List.from( json["requirements"].map((e)=> Requirement.fromJson(e)) ):[];
     final List<GroupMember> groupMem = json["group_members"]!=null? List.from(json["group_members"].map((e)=> GroupMember.fromJson(e))) :[];
     final List<Report> reports= json["reports_of_group"]!=null? List.from(json["reports_of_group"].map((e) =>  Report.fromJson(e))):[]; 
-    final List<GroupMedia> medias = json["group_medias"]!=null? List.from(json["group_medias"].map((e)=> GroupMember.fromJson(e))):[];
+    final List<GroupMedia> medias = json["group_medias"]!=null? List.from(json["group_medias"].map((e)=> GroupMedia.fromJson(e))):[];
     
     return Group(
           id:id,

@@ -45,7 +45,7 @@ class ProfileAbout extends StatelessWidget {
                         child: Text("Phone number", style: Theme.of(context).textTheme.bodyLarge)),
                       Container(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(profile.phone, style: Theme.of(context).textTheme.bodyLarge))
+                        child: Text(profile.phone!, style: Theme.of(context).textTheme.bodyLarge))
                     ]
                   ),
                   TableRow(

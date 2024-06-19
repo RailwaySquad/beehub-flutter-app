@@ -14,27 +14,41 @@ class BuildComment extends StatefulWidget {
   final commentsFuture;
   final VoidCallback refreshComments;
   final VoidCallback CountComment;
-  const BuildComment({Key? key, required this.postId, required this.onFocusChange, required this.commentsFuture,required this.refreshComments,required this.formatDate, required this.CountComment}):super(key: key);
+  final VoidCallback fecthReCommentCount;
+  final Function(String,int) onReply;
+  final Map<int,int> reCommentsCountMap;
+  final List<TextSpan> Function(String) parseComment;
+  const BuildComment({Key? key, required this.postId, required this.onFocusChange, required this.commentsFuture,required this.refreshComments,required this.formatDate, required this.CountComment, required this.onReply, required this.fecthReCommentCount, required this.reCommentsCountMap, required this.parseComment}):super(key: key);
 
   @override
   State<BuildComment> createState() => _BuildCommentState();
 }
 
 class _BuildCommentState extends State<BuildComment> {
-  //late Future<List<Comment>> _commentsFuture;
   final Map<int, bool> _isEditCommentMap = {};
   final Map<int, Future<Comment?>> _commentToEditFutureMap = {};
   final Map<int, TextEditingController> _editControllerMap = {};
   final Map<int, String> _tempCommentMap = {};
   final Map<int, bool> _isSaveButtonEnabledMap = {};
+  final Map<int, bool> _isShowReCommentMap = {};
+  final Map<String, String> _tagMap = {};
+  late int _checkUser;
   FocusNode _commentTextFieldFocusNode = FocusNode();
-
+  void _initializeUser() async {
+    DatabaseProvider db = DatabaseProvider();
+    _checkUser = await db.getUserId();
+  }
   void _toggleEditComment(int commentId) {
     setState(() {
       _isEditCommentMap[commentId] = !(_isEditCommentMap[commentId] ?? false);
       if (_isEditCommentMap[commentId] == true) {
         _commentToEditFutureMap[commentId] = ApiService.getCommentById(commentId);
       }
+    });
+  }
+  void _toggleShowReComment(int commentId) {
+    setState(() {
+      _isShowReCommentMap[commentId] = !(_isShowReCommentMap[commentId] ?? false);
     });
   }
   void _toggleEditCommentAndPop(BuildContext context, int commentId) {
@@ -44,9 +58,10 @@ class _BuildCommentState extends State<BuildComment> {
   @override
   void initState() {
     super.initState();
-    //_commentsFuture = ApiService.getComment(widget.postId);
     widget.commentsFuture;
     _commentTextFieldFocusNode.addListener(_onFocusChange);
+    widget.fecthReCommentCount();
+    _initializeUser();
   }
   @override
   void dispose() {
@@ -57,7 +72,23 @@ class _BuildCommentState extends State<BuildComment> {
     });
     super.dispose();
   }
-
+  String _stripTags(String text) {
+    final regex = RegExp(r'tag=(.*?)&link=(.*?)(?=\s+|$)');
+    return text.replaceAllMapped(regex, (match){
+      String tag = match.group(1) ?? '';
+      String link = match.group(2) ?? '';
+      String displayText = tag;
+      _tagMap[displayText] = 'tag=$tag&link=$link';
+      return displayText;
+    });
+  }
+  String _restoreTags(String text){
+    String restoredText = text;
+    _tagMap.forEach((displayText, tagLink) {
+      restoredText = restoredText.replaceAll(displayText, tagLink);
+    });
+    return restoredText;
+  }
   void _onFocusChange() {
     widget.onFocusChange(_commentTextFieldFocusNode.hasFocus);
     if (!_commentTextFieldFocusNode.hasFocus) {
@@ -66,13 +97,11 @@ class _BuildCommentState extends State<BuildComment> {
       });
     }
   }
-
   void _checkSaveButtonState(int commentId) {
     setState(() {
       _isSaveButtonEnabledMap[commentId] = _editControllerMap[commentId]!.text.isNotEmpty;
     });
   }
-
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<Comment>>(
@@ -89,16 +118,22 @@ class _BuildCommentState extends State<BuildComment> {
           return Column(
             children: comments.map((comment) {
               bool isEditComment = _isEditCommentMap[comment.id] ?? false;
+              bool isShowReComment = _isShowReCommentMap[comment.id] ?? false;
+              int reCommentCount = widget.reCommentsCountMap[comment.id] ?? 0;
               return Column(
                 children: <Widget>[
                   Row(
                     children: <Widget>[
                       Padding(padding: EdgeInsets.only(left: 10.0)),
                       Container(
-                        margin: EdgeInsets.only(bottom: isEditComment ? 40 : 20),
-                        child: const Icon(
-                          Icons.account_circle,
-                          size: 50.0,
+                        margin: EdgeInsets.only(bottom: isEditComment ? 40 : 10),
+                        child: CircleAvatar( radius: 22,
+                          child: comment.userimage != null &&
+                                  comment.userimage!.isNotEmpty
+                              ? Image.network(comment.userimage!)
+                              : Image.asset(comment.usergender == "female"
+                                  ? "assets/avatar/user_female.png"
+                                  : "assets/avatar/user_male.png"),
                         ),
                       ),
                       const SizedBox(
@@ -118,8 +153,8 @@ class _BuildCommentState extends State<BuildComment> {
                               } else {
                                 Comment? commentToEdit = snapshot.data;
                                 if (!_editControllerMap.containsKey(comment.id)) {
-                                  _editControllerMap[comment.id!] = TextEditingController(
-                                    text: _tempCommentMap[comment.id] ?? commentToEdit?.comment,
+                                   _editControllerMap[comment.id!] = TextEditingController(
+                                     text: _stripTags(comment.comment),
                                   );
                                   _editControllerMap[comment.id!]!.addListener(() {
                                     _checkSaveButtonState(comment.id!);
@@ -160,7 +195,7 @@ class _BuildCommentState extends State<BuildComment> {
                                                   int commentId = commentToEdit.id!;
                                                   Comment editComment = Comment(
                                                     id: commentId,
-                                                    comment: _editControllerMap[commentId]!.text,
+                                                    comment: _restoreTags(_editControllerMap[commentId]!.text),
                                                     post: postId,
                                                     user: userId,
                                                   );
@@ -194,7 +229,7 @@ class _BuildCommentState extends State<BuildComment> {
                         )
                       : Container(
                           margin: EdgeInsets.only(bottom: 5),
-                          height: 90,
+                          height: 80,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -210,7 +245,12 @@ class _BuildCommentState extends State<BuildComment> {
                                       comment.fullname!,
                                       style: TextStyle(fontSize: 15.0, color: Colors.black, fontWeight: FontWeight.bold),
                                     ),
-                                    Text(comment.comment, style: TextStyle(fontSize: 15.0, color: Colors.black)),
+                                     RichText(
+                                      text: TextSpan(
+                                        style: TextStyle(fontSize: 15.0, color: Colors.black),
+                                        children: widget.parseComment(comment.comment)
+                                      )
+                                    )
                                   ],
                                 ),
                                 style: TextButton.styleFrom(
@@ -231,8 +271,11 @@ class _BuildCommentState extends State<BuildComment> {
                                       style: TextStyle(fontSize: 12.0, color: Colors.deepPurpleAccent)),
                                   SizedBox(
                                     width: 10.0,
-                                  ),
-                                  Text('Trả lời', style: TextStyle(fontSize: 12.0)),
+                                  ),GestureDetector(
+                                    onTap:()=> widget.onReply(comment.fullname!,comment.id!),
+                                    child: Text('Trả lời', style: TextStyle(fontSize: 12.0)),
+                                  )
+                                  
                                 ],
                               ),
                             ],
@@ -240,11 +283,19 @@ class _BuildCommentState extends State<BuildComment> {
                         ),
                     ],
                   ),
-                  SizedBox(height: 1.0),
+                  if(reCommentCount!= 0)
                   Container(
-                    child: BuildReComment(),
+                    margin: EdgeInsets.only(right: 220,bottom: 1),
+                    child: GestureDetector(
+                      onTap: () => _toggleShowReComment(comment.id!),
+                      child: Text('See $reCommentCount reply'),
+                    )  
                   ),
-                  SizedBox(height: 5.0),
+                  if(isShowReComment)
+                  Container(
+                    child: BuildReComment(comment:comment,refreshComments:widget.refreshComments,CountComment:widget.CountComment,formatDate:widget.formatDate,
+                    fecthReCommentCount:widget.fecthReCommentCount,stripTags:_stripTags,restoreTags:_restoreTags,parseComment:widget.parseComment),
+                  ),
                 ],
               );
             }).toList(),
@@ -258,10 +309,35 @@ class _BuildCommentState extends State<BuildComment> {
       context: context,
       builder: (BuildContext context) {
         return Container(
-          height: 150, // Đặt chiều cao mong muốn ở đây
+          height: _checkUser != comment.user ?75 :150, // Đặt chiều cao mong muốn ở đây
           padding: EdgeInsets.all(16.0), // Đặt khoảng cách padding nếu cần thiết
           child: SingleChildScrollView(
-            child: Column(
+            child:
+            _checkUser != comment.user ?
+            Column(
+              children: [
+                ElevatedButton(
+                  onPressed: () {},
+                  child: Center(
+                    child: Text(
+                      'Report Comment',
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ),
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                    backgroundColor: Colors.grey.shade200, // Bỏ màu nền mặc định
+                    elevation: 0, // Bỏ shadow
+                    shadowColor: Colors.transparent, // Bỏ shadow màu
+                    side: BorderSide.none, // Bỏ border
+                    shape: RoundedRectangleBorder( // Bỏ border radius mặc định
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                )
+              ]
+            )
+            :Column(
               children: [
                 ElevatedButton(
                   onPressed: () => _toggleEditCommentAndPop(context, comment.id!),

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:beehub_flutter_app/Models/group.dart';
 import 'package:beehub_flutter_app/Models/profile.dart';
 import 'package:beehub_flutter_app/Models/user.dart';
@@ -10,6 +12,7 @@ class UserProvider extends ChangeNotifier{
   List<Group> _groups = [];
   String? _username;
   Profile? profile;
+  Profile? ownprofile;
   Group? _group;
   Map<String,dynamic> _resultSearch=<String,dynamic>{}; 
   bool _refetch = false;
@@ -40,14 +43,15 @@ class UserProvider extends ChangeNotifier{
     }
   }
   Future getUsername() async{
-    _username ??= await THttpHelper.getUsername();
+    _username = await THttpHelper.getUsername();
+    log("getUsername $_username");
     notifyListeners();
+  }
+  void  setUsername(String username){
+    _username =username;
   }
   String? get username {
     return _username;
-  }
-  void setUsername(String usern){
-    _username = usern;
   }
   Future fetchProfile(isUserLogin,{user=""})async{
     isLoading=true;
@@ -57,7 +61,10 @@ class UserProvider extends ChangeNotifier{
       isLoading = false;
       notifyListeners();
     }else{
+      await getUsername();
+      log("message $username");
       profile = await THttpHelper.getProfile(username!);
+      ownprofile = await THttpHelper.getProfile(username!);
       isLoading = false;
       notifyListeners();
     }
