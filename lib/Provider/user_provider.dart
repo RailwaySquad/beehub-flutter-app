@@ -47,6 +47,9 @@ class UserProvider extends ChangeNotifier{
     log("getUsername $_username");
     notifyListeners();
   }
+  void  setUsername(String username){
+    _username =username;
+  }
   String? get username {
     return _username;
   }

@@ -359,7 +359,7 @@ class _PostWidgetState extends State<PostWidget> {
                                         child: SingleChildScrollView(
                                           child: RichText(
                                           text: TextSpan(
-                                            style: Theme.of(context).textTheme.bodyText2,
+                                            style: Theme.of(context).textTheme.bodyMedium,
                                             children: parseComment(widget.post.text),
                                           ),
                                         ),))
