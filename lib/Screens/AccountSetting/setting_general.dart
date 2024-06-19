@@ -15,16 +15,17 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 
-class AccountSettingPage extends StatefulWidget {
-  const AccountSettingPage({super.key});
+class SettingGeneral extends StatefulWidget {
+  const SettingGeneral({super.key});
 
   @override
-  State<AccountSettingPage> createState() => _AccountSettingPageState();
+  State<SettingGeneral> createState() => _SettingGeneralState();
 }
 
-class _AccountSettingPageState extends State<AccountSettingPage> {
+class _SettingGeneralState extends State<SettingGeneral> {
   DateTime? selectedDate;
-  File? _file;
+  File? _fileAvatar;
+  File? _fileBg;
   void _showDatePicker(DateTime? birthday){
     showDatePicker(
       context: context,
@@ -42,22 +43,6 @@ class _AccountSettingPageState extends State<AccountSettingPage> {
       });
         log(selectedDate.toString());
     });
-  }
-  Future<void> _pickFile() async {
-    try {
-      final pickedFile =
-          await ImagePicker().pickImage(source: ImageSource.gallery);
-      if (pickedFile != null) {
-        setState(() {
-          _file = File(pickedFile.path);
-          // _isButtonEnabled = true;
-        });
-      } else {
-        print('No file selected.');
-      }
-    } catch (e) {
-      print('Error picking file: $e');
-    }
   }
   @override
   Widget build(BuildContext context) {
@@ -92,7 +77,7 @@ class _AccountSettingPageState extends State<AccountSettingPage> {
         String update= selectedDate!=null? formatD.format(selectedDate!):formatD.format(DateTime.now()); 
         Profileform data = Profileform(id: id,gender: gender, bio: biography, birthday: update,fullname: fullname,phone: phone );
         log(data.toString());
-        return THttpHelper.updateProfile(data);
+        return await THttpHelper.updateProfile(data);
       }
     return Scaffold(
       appBar: AppBar(
@@ -123,55 +108,68 @@ class _AccountSettingPageState extends State<AccountSettingPage> {
                 Stack(
                       clipBehavior: Clip.none,
                       children: [
-                        Container(
-                            decoration: const BoxDecoration(
-                              border:  Border(bottom: BorderSide(color: TColors.secondary,width: 2.0))
-                            ),
-                          height: 180,
-                          width: THelperFunction.screenWidth(),
+                        GestureDetector(
+                           onTap: ()async{
+                                final ImagePicker picker = ImagePicker();
+                                final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+                                if(image!=null){
+                                  setState(() {
+                                    _fileBg = File(image.path);
+                                  });
+                                  // bool upload = await THttpHelper.uploadAvatar(_file!);
+                                  // log(upload.toString());
+                                }
+                            },
                           child: Container(
-                            color:TColors.darkerGrey,
-                            child: prof.background!.isNotEmpty? Image.network(prof.background!): const SizedBox(),
-                            ),
+                              decoration: const BoxDecoration(
+                                border:  Border(bottom: BorderSide(color: TColors.secondary,width: 2.0))
+                              ),
+                            height: 180,
+                            width: THelperFunction.screenWidth(),
+                            child: Container(
+                              color:TColors.darkerGrey,
+                              child: _fileBg!=null? Image.file(_fileBg!, fit: BoxFit.fill,) :prof.background!.isNotEmpty? Image.network(prof.background!): const SizedBox(),
+                              ),
+                          ),
                         ),
                         Positioned(
                           top: 130, 
                           left: 20,
-                          child: Container(
-                            // color: Colors.white,
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.black,width: 2.0),
-                              borderRadius: BorderRadius.circular(45.0),
-                            ),
-                            width: 90,
-                            height: 90,
-                            child: GestureDetector(
-                              onTap: () async{
+                          child: GestureDetector(
+                            onTap: () async{
                                 final ImagePicker picker = ImagePicker();
                                 final XFile? image = await picker.pickImage(source: ImageSource.gallery);
                                 if(image!=null){
-                                  Uint8List bytes = await image.readAsBytes();
-                                  bool upload = await THttpHelper.uploadAvatar(_file!);
-                                  log(upload.toString());
+                                  setState(() {
+                                    _fileAvatar = File(image.path);
+                                  });
+                                  // bool upload = await THttpHelper.uploadAvatar(_file!);
+                                  // log(upload.toString());
                                 }
                               },
-                              child: _file!=null? 
-                              Image.file(_file!,fit: BoxFit.fill)
-                              :prof.image!.isNotEmpty? Image.network(prof.image!,height: 75, width: 75,fit: BoxFit.fill):
-                              (profile.gender == 'female'?
-                              Image.asset("assets/avatar/user_female.png",height: 75, width: 75,fit: BoxFit.fill):Image.asset("assets/avatar/user_male.png",height: 75, width: 75,fit: BoxFit.fill)
-                              ),)
+                            child: Container(
+                              // color: Colors.white,
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.black,width: 2.0),
+                                borderRadius: BorderRadius.circular(45.0),
+                              ),
+                              width: 90,
+                              height: 90,
+                              child: CircleAvatar(
+                                radius: 45.0,
+                                child: _fileAvatar!=null? 
+                                Image.file(_fileAvatar!,fit: BoxFit.fill)
+                                :prof.image!.isNotEmpty? Image.network(prof.image!,height: 75, width: 75,fit: BoxFit.fill):
+                                (profile.gender == 'female'?
+                                Image.asset("assets/avatar/user_female.png",height: 75, width: 75,fit: BoxFit.fill):Image.asset("assets/avatar/user_male.png",height: 75, width: 75,fit: BoxFit.fill)
+                                ),
+                              )
+                            ),
                           ),
                         ),
                       ]
                     ),
                 const SizedBox(height: 50,),
-                TextFormField(
-                  readOnly: true,
-                  controller: idInputController,
-                  decoration: const InputDecoration(label: Text("Id",style:  TextStyle(color: Colors.black87,fontSize: 13),),
-                  floatingLabelAlignment: FloatingLabelAlignment.start ),
-                ),
                 TextFormField(
                         controller: fullnameInputController,
                         decoration: const InputDecoration(

@@ -2,12 +2,14 @@ import 'package:beehub_flutter_app/Models/profile.dart';
 
 class Profileform{
   int id;
+  String?email;
+  String? username;
   String? fullname;
   String gender;
   String? bio;
   String? birthday;
   String? phone;
-  Profileform({required this.id, this.fullname, required this.gender, this.bio, this.phone,this.birthday});
+  Profileform({required this.id, this.fullname, required this.gender, this.bio, this.phone,this.birthday, this.email, this.username});
   Map<String, dynamic> toJson() {
     return {
       'id': id,  
@@ -15,7 +17,9 @@ class Profileform{
       'gender' : gender,
       'bio': bio,
       'birthday': birthday,
-      'phone': phone
+      'phone': phone,
+      'email': email,
+      'username':username
     };
   } 
   factory Profileform.form(Profile profile){

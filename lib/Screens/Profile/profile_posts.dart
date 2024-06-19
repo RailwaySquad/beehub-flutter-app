@@ -66,7 +66,10 @@ class _ProfilePostsState extends State<ProfilePosts> {
       }
     });
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      Provider.of<UserProvider>(context, listen: false).getUsername();
       username ??= Provider.of<UserProvider>(context, listen: false).username;
+      Future.delayed(Duration(seconds: 4));
+      log(username.toString());
       fetchProfilePost();
     });
   }
