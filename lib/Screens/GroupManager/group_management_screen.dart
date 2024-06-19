@@ -1,13 +1,20 @@
+import 'package:beehub_flutter_app/Models/group.dart';
+import 'package:beehub_flutter_app/Provider/user_provider.dart';
+import 'package:beehub_flutter_app/Screens/GroupManager/group_member_screen.dart';
+import 'package:beehub_flutter_app/Screens/GroupManager/group_notification.dart';
+import 'package:beehub_flutter_app/Screens/GroupManager/group_report_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 
-class GroupManagement extends StatefulWidget {
-  const GroupManagement({super.key});
+class GroupManagementScreen extends StatefulWidget {
+  const GroupManagementScreen({super.key});
 
   @override
-  State<GroupManagement> createState() => _GroupManagementState();
+  State<GroupManagementScreen> createState() => _GroupManagementScreenState();
 }
 
-class _GroupManagementState extends State<GroupManagement> with SingleTickerProviderStateMixin  {
+class _GroupManagementScreenState extends State<GroupManagementScreen> with SingleTickerProviderStateMixin  {
   late final TabController _tabController;
   final List<Tab> _tabs = const [
     Tab(icon: Icon(Icons.notifications_active),),
@@ -15,16 +22,14 @@ class _GroupManagementState extends State<GroupManagement> with SingleTickerProv
     Tab(icon: Icon(Icons.report))
   ];
   final List<Widget> _tabsBody = [
-    Container(color: Colors.blue,),
-    Container(color: Colors.green,),
-    Container(color: Colors.red,)
+    const GroupNotification(),
+    const GroupMemberScreen(),
+    const GroupReportScreen()
   ];
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-    });
+    _tabController = TabController(length: 3, vsync: this);
   }
   @override
   void dispose() {
@@ -33,6 +38,15 @@ class _GroupManagementState extends State<GroupManagement> with SingleTickerProv
   }
   @override
   Widget build(BuildContext context) {
+    Group? group = Provider.of<UserProvider>(context).group;
+    if( group==null){
+      return Scaffold(
+        appBar: AppBar(
+          leading: IconButton(onPressed: ()=>Navigator.pop(context), icon: const Icon(Icons.chevron_left)),
+          title: const Text("Group Management"),
+        ),
+      );
+    }
     return Scaffold(
       body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -42,8 +56,7 @@ class _GroupManagementState extends State<GroupManagement> with SingleTickerProv
             AppBar(
               title: const Text('Group Management'),
                 actions: [
-                  IconButton(onPressed: (){        
-                  }, icon:const Icon(Icons.settings)),
+                  IconButton(onPressed: ()=> Get.toNamed("/group/setting/${group.id}"), icon:const Icon(Icons.settings)),
                 ],
             ),
             Expanded(

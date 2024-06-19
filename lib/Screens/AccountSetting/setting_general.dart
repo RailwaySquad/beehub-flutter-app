@@ -73,7 +73,7 @@ class _SettingGeneralState extends State<SettingGeneral> {
         String biography = bioController.text;
 
         int id = int.parse(idInputController.text);
-        DateFormat formatD = new DateFormat('yyyy-MM-dd');
+        DateFormat formatD = DateFormat('yyyy-MM-dd');
         String update= selectedDate!=null? formatD.format(selectedDate!):formatD.format(DateTime.now()); 
         Profileform data = Profileform(id: id,gender: gender, bio: biography, birthday: update,fullname: fullname,phone: phone );
         log(data.toString());
@@ -94,7 +94,7 @@ class _SettingGeneralState extends State<SettingGeneral> {
                           log(result.toString());
                         }
                       }
-                    }, child: const Text("Save"))
+                    }, child: Text("Save", style: GoogleFonts.ubuntu(fontSize: 18)))
         ],
       ),
       body: SingleChildScrollView(
@@ -209,7 +209,6 @@ class _SettingGeneralState extends State<SettingGeneral> {
                         decoration: const InputDecoration(
                           labelText: "Biography",
                         ),
-                        
                       ),
                 const SizedBox(height: 8,),
                 DropdownButtonFormField(

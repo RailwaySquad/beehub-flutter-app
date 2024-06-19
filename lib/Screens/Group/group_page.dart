@@ -7,7 +7,9 @@ import 'package:beehub_flutter_app/Screens/Group/group_about.dart';
 import 'package:beehub_flutter_app/Screens/Group/group_discussion.dart';
 import 'package:beehub_flutter_app/Screens/Group/group_media.dart';
 import 'package:beehub_flutter_app/Screens/Group/group_people.dart';
+import 'package:beehub_flutter_app/Utils/api_connection/http_client.dart';
 import 'package:beehub_flutter_app/Utils/beehub_button.dart';
+import 'package:beehub_flutter_app/Utils/helper/helper_functions.dart';
 import 'package:beehub_flutter_app/Widgets/expanded/expanded_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -22,7 +24,7 @@ class GroupPage extends StatefulWidget {
 }
 
 class _GroupPageState extends State<GroupPage> {
-  num? _idGroup;
+  int? _idGroup;
   List<String> tabs = [
     "Discussion",
     "About",
@@ -85,7 +87,6 @@ class _GroupPageState extends State<GroupPage> {
   }
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
     bool isLoading = Provider.of<UserProvider>(context).isLoading;
     Group? group = Provider.of<UserProvider>(context).group;
  
@@ -168,7 +169,7 @@ class _GroupPageState extends State<GroupPage> {
           ),
           SliverToBoxAdapter(
             child: Container(
-              width: size.width,
+              width: THelperFunction.screenWidth(),
               padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
               child: Column(
                 mainAxisSize: MainAxisSize.max,
@@ -224,16 +225,16 @@ class _GroupPageState extends State<GroupPage> {
                     child: Text("Created at ${DateFormat.yMMMMd('en_US').format(group.createdAt!)}"),
                   ),
                   SizedBox(
-                    width: size.width,
-                    height: size.height*0.05,
+                    width: THelperFunction.screenWidth(),
+                    height: THelperFunction.screenHeight()*0.05,
                     child: Stack(children: [
                       Positioned(
                         top: 0,
                         left: 0,
                         right: 0,
                         child: SizedBox(
-                          width: size.width,
-                          height: size.height * 0.04,
+                          width: THelperFunction.screenWidth(),
+                          height: THelperFunction.screenHeight() * 0.04,
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
                             physics: const BouncingScrollPhysics(),
@@ -267,7 +268,7 @@ class _GroupPageState extends State<GroupPage> {
                           margin: const EdgeInsets.only(left: 10),
                           duration:const Duration(milliseconds: 500),
                           width: changeContainerWidth(),
-                          height: size.height*0.008,
+                          height: THelperFunction.screenHeight()*0.008,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
                             color: TColors.primary),

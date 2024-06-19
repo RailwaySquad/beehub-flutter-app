@@ -1,10 +1,12 @@
 import 'package:beehub_flutter_app/Constants/color.dart';
 import 'package:beehub_flutter_app/Models/group.dart';
 import 'package:beehub_flutter_app/Models/post.dart';
+import 'package:beehub_flutter_app/Provider/user_provider.dart';
 import 'package:beehub_flutter_app/Utils/api_connection/http_client.dart';
 import 'package:beehub_flutter_app/Widgets/post_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 
 class GroupPosts extends StatefulWidget {
   const GroupPosts({
@@ -95,9 +97,16 @@ class _GroupPostsState extends State<GroupPosts> {
   }
   @override
   Widget build(BuildContext context) {
+    bool isLoading = Provider.of<UserProvider>(context).isLoading;
     var size = MediaQuery.of(context).size;
     if(errorConnect){
       return const Text("Error connect Server");
+    }
+    if(isLoading){
+      return const Center(
+        heightFactor: 100,
+        child: CircularProgressIndicator(color: TColors.buttonPrimary,),
+      );
     }
     return Column(
           children: [

@@ -206,23 +206,23 @@ class BeehubButton{
               child: const Text("Leave", style: TextStyle(fontWeight: FontWeight.w600),),
             );
   }
-  static Widget RetireManage(int groupId, String routeName,String? search ){
-    return ElevatedButton(
-              onPressed: () async{
-                int idUser = await DatabaseProvider().getUserId();
-                Requirementform req = Requirementform(senderId: idUser, groupId: groupId, type: "RETIRE");
-                var response = await THttpHelper.createRequirement(req);
-                if(response?["response"]!="unsuccess" && response?["response"]!="error"){
-                  Get.toNamed("/group/$groupId",arguments: search,preventDuplicates: false);
-                }
-              },
-              style: ButtonStyle(
-                foregroundColor: WidgetStateProperty.all<Color>(Colors.red),
-                backgroundColor: WidgetStateProperty.all<Color>(Colors.white),
-              ),
-              child: const Text("Retire", style: TextStyle(fontWeight: FontWeight.w600),),
-            );
-  }
+  // static Widget RetireManage(int groupId, String routeName,String? search ){
+  //   return ElevatedButton(
+  //             onPressed: () async{
+  //               int idUser = await DatabaseProvider().getUserId();
+  //               Requirementform req = Requirementform(senderId: idUser, groupId: groupId, type: "RETIRE");
+  //               var response = await THttpHelper.createRequirement(req);
+  //               if(response?["response"]!="unsuccess" && response?["response"]!="error"){
+  //                 Get.toNamed("/group/$groupId",arguments: search,preventDuplicates: false);
+  //               }
+  //             },
+  //             style: ButtonStyle(
+  //               foregroundColor: WidgetStateProperty.all<Color>(Colors.red),
+  //               backgroundColor: WidgetStateProperty.all<Color>(Colors.white),
+  //             ),
+  //             child: const Text("Retire", style: TextStyle(fontWeight: FontWeight.w600),),
+  //           );
+  // }
   static Widget AcceptJoinGroup(int groupId, int receiverId, String routeName,String? search ){
     return ElevatedButton(
               onPressed: () async{
@@ -250,11 +250,76 @@ class BeehubButton{
                   Get.toNamed(routeName,arguments: search,preventDuplicates: false);
                 }
               },
-               style: ButtonStyle(
+              style: ButtonStyle(
                 foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
                 backgroundColor: WidgetStateProperty.all<Color>(Colors.red),
               ),
               child: const Text("Reject"),
             );
   }
+
+  static Widget SetManager(int groupId, int receiverId,Function refetch) {
+    return ElevatedButton(
+      onPressed: ()async{
+        Requirementform req = Requirementform(senderId: receiverId, receiverId: receiverId, groupId: groupId,type: "SET_MANAGER");
+        var response = await THttpHelper.createRequirement(req);
+        if(response?["response"]!="unsuccess" && response?["response"]!="error"){
+          await refetch();
+        }
+      }, 
+      style: ButtonStyle(
+              foregroundColor: WidgetStateProperty.all<Color>(Colors.red),
+              backgroundColor: WidgetStateProperty.all<Color>(Colors.white),
+            ),
+      child: const Icon(Icons.add_moderator_outlined));
+  }
+  static Widget RetireManager(int groupId, Function refetch) {
+    return ElevatedButton(
+      onPressed: ()async{
+        int idUser = await DatabaseProvider().getUserId();
+        Requirementform req = Requirementform(senderId: idUser, receiverId: idUser, groupId: groupId, type: "RETIRE");
+        var response = await THttpHelper.createRequirement(req);
+        if(response?["response"]!="unsuccess" && response?["response"]!="error"){
+          await refetch();
+        }
+      }, 
+      style: ButtonStyle(
+              foregroundColor: WidgetStateProperty.all<Color>(Colors.red),
+              backgroundColor: WidgetStateProperty.all<Color>(Colors.white),
+            ),
+      child: const Icon(Icons.remove_moderator_outlined));
+  }
+  static Widget RemoveManager(int groupId, int idReceiver,Function refetch) {
+    return ElevatedButton(
+      onPressed: ()async{
+        int idUser = await DatabaseProvider().getUserId();
+        Requirementform req = Requirementform(senderId: idUser, receiverId: idReceiver, groupId: groupId, type: "REMOVE_MANAGER");
+        var response = await THttpHelper.createRequirement(req);
+        if(response?["response"]!="unsuccess" && response?["response"]!="error"){
+          await refetch();
+        }
+      }, 
+      style: ButtonStyle(
+              foregroundColor: WidgetStateProperty.all<Color>(Colors.red),
+              backgroundColor: WidgetStateProperty.all<Color>(Colors.white),
+            ),
+      child: const Icon(Icons.person_remove));
+  }
+  static Widget RemoveMember(int groupId, int idReceiver,Function refetch) {
+    return ElevatedButton(
+      onPressed: ()async{
+        int idUser = await DatabaseProvider().getUserId();
+        Requirementform req = Requirementform(senderId: idUser, receiverId: idReceiver, groupId: groupId, type: "KICK");
+        var response = await THttpHelper.createRequirement(req);
+        if(response?["response"]!="unsuccess" && response?["response"]!="error"){
+          await refetch();
+        }
+      }, 
+      style: ButtonStyle(
+              foregroundColor: WidgetStateProperty.all<Color>(Colors.red),
+              backgroundColor: WidgetStateProperty.all<Color>(Colors.white),
+            ),
+      child: const Icon(Icons.input_outlined));
+  }
+  
 }
