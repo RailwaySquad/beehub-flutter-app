@@ -23,8 +23,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     List<Requirement>? listReq = await THttpHelper.getNotification();
     setState(() {
       isLoading = false;
-      list.addAll(listReq!);
-
+      list = listReq ?? [];
     });
   }
   @override
@@ -80,7 +79,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                       Requirementform req = Requirementform(senderId: list[index].sender!.id, receiverId: idUser, type: "ACCEPT");
                       var response = await THttpHelper.createRequirement(req);
                       if(response?["response"]!="unsuccess" && response?["response"]!="error"){
-                        Get.toNamed("/",preventDuplicates: false);
+                        await fetchNotification();
                       }
                     }, icon: const Icon(Icons.check, size: 20,color: Colors.green,)),
                     IconButton(onPressed: () async{
@@ -88,7 +87,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                       Requirementform req = Requirementform(senderId: list[index].sender!.id, receiverId: idUser, type: "CANCEL_ADDFRIEND");
                       var response = await THttpHelper.createRequirement(req);
                       if(response?["response"]!="unsuccess" && response?["response"]!="error"){
-                        Get.toNamed("/",preventDuplicates: false);
+                        await fetchNotification();
                       }
                     }, icon: const Icon(Icons.close, size: 20, color:  Colors.red,))
                   ],),
@@ -114,7 +113,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     Requirementform req = Requirementform(senderId: list[index].sender!.id,id: list[index].id, type: "REMOVE_NOTIFICATION");
                     var response = await THttpHelper.createRequirement(req);
                     if(response?["response"]!="unsuccess" && response?["response"]!="error"){
-                      Get.toNamed("/",preventDuplicates: false);
+                      await fetchNotification();
                     }
                   }, icon: const Icon(Icons.remove)),
                 ),
@@ -141,7 +140,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     Requirementform req = Requirementform(senderId: idUser,id: list[index].id, type: "REMOVE_NOTIFICATION");
                     var response = await THttpHelper.createRequirement(req);
                     if(response?["response"]!="unsuccess" && response?["response"]!="error"){
-                      Get.toNamed("/",preventDuplicates: false);
+                      await fetchNotification();
                     }
                   }, icon: const Icon(Icons.remove)),
                 ),

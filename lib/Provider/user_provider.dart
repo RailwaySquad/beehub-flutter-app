@@ -70,7 +70,7 @@ class UserProvider extends ChangeNotifier{
   Group? get group{
     return _group;    
   }
-  Future fetchGroup(num idGroup)async{
+  Future fetchGroup(int idGroup)async{
     isLoading = true;
     notifyListeners();
     Group? findGroup = await THttpHelper.getGroup(idGroup);
