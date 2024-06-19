@@ -1,10 +1,10 @@
-import 'dart:developer';
 import 'package:beehub_flutter_app/Constants/color.dart';
 import 'package:beehub_flutter_app/Models/profile.dart';
 import 'package:beehub_flutter_app/Provider/user_provider.dart';
 import 'package:beehub_flutter_app/Screens/Profile/profile_about.dart';
 import 'package:beehub_flutter_app/Screens/Profile/profile_gallery.dart';
 import 'package:beehub_flutter_app/Screens/Profile/profile_posts.dart';
+import 'package:beehub_flutter_app/Utils/beehub_button.dart';
 import 'package:beehub_flutter_app/Widgets/expanded/expanded_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -25,6 +25,7 @@ class _UserPageState extends State<UserPage> {
     "Gallery"
   ];
   int currentTab =0;
+
   double changePositionedOfLine(){
     switch (currentTab) {
       case 0:
@@ -69,22 +70,50 @@ class _UserPageState extends State<UserPage> {
       Provider.of<UserProvider>(context, listen: false).fetchProfile(false,user: Get.parameters["user"]);
     }); 
   }
+
   @override
   Widget build(BuildContext context) {
     Profile? profile = Provider.of<UserProvider>(context, listen: false).profile;
     var size = MediaQuery.of(context).size;
     bool isLoading = Provider.of<UserProvider>(context).isLoading;
     if(isLoading || profile==null){
-      return Scaffold(
-        
-        body: const Center(
+      return const  Scaffold(
+        body: Center(
           child: CircularProgressIndicator(),
         ),
       );
     }
+    Widget getButton(){
+      if (profile.ownProfile) {
+        return OutlinedButton(
+                onPressed: (){},
+                child: const Text("Account Setting", style: TextStyle(color: TColors.buttonPrimary),),
+              );
+      }
+      switch (profile.relationshipWithUser) {
+        case "BLOCKED":
+          return BeehubButton.UnBlock(profile.id,'/userpage/${Get.parameters["user"]}',null);
+        case "FRIEND":
+          return BeehubButton.UnFriend(profile.id,'/userpage/${Get.parameters["user"]}',null);
+        case "SENT_REQUEST":
+          return BeehubButton.CancelRequest(profile.id,'/userpage/${Get.parameters["user"]}',null);
+        case "NOT_ACCEPT":
+          return BeehubButton.AcceptFriend(profile.id, (profile.isBanned || !profile.isActive),'/userpage/${Get.parameters["user"]}',null);
+        default:
+          return Row(
+            children: [
+              BeehubButton.AddFriend(profile.id,'/userpage/${Get.parameters["user"]}',null),
+              const SizedBox(width: 10,),
+              BeehubButton.BlockUser(profile.id,'/userpage/${Get.parameters["user"]}',null)
+            ],
+          );
+
+      }
+    }
+    
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(onPressed: (){Navigator.pop(context);},icon: const Icon(Icons.chevron_left),),
+        leading: IconButton(onPressed: (){Get.toNamed("/");},icon: const Icon(Icons.chevron_left),),
         title: const Text("User Profile"),
       ),
       body: CustomScrollView(
@@ -156,10 +185,7 @@ class _UserPageState extends State<UserPage> {
                               ),
                             ],
                           ),
-                          OutlinedButton(
-                              onPressed: (){},
-                              child: const Text("Account Setting", style: TextStyle(color: TColors.buttonPrimary),),
-                            ),
+                          getButton()
                         ],
                       ),
                       Padding(

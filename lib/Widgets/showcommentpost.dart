@@ -354,14 +354,24 @@ class _ShowCommentState extends State<ShowComment> {
                         ],
                       ):
                       Container(
-                        padding: EdgeInsets.only(right: 300.0,top: 10.0),
-                        child: RichText(
-                          text: TextSpan(
-                            style: TextStyle(fontSize: 18.0,color: Colors.black),
-                            children:widget.parseComment(widget.post.text)
-                          ),       
-                        ),
-                      ),
+                      height: 30,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          Expanded(
+                              child: SingleChildScrollView(
+                                child: RichText(
+                                text: TextSpan(
+                                  style: TextStyle(color: Colors.black),
+                                  children:widget.parseComment(widget.post.text),
+                                ),
+                              ),))
+                        ],
+                      )
+                    ) ,
                       SizedBox(height: 10.0),
                       if(widget.post.medias != null)
                       Container(

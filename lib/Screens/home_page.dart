@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:beehub_flutter_app/Provider/user_provider.dart';
 import 'package:beehub_flutter_app/Screens/Activity/activity_screen.dart';
 import 'package:beehub_flutter_app/Screens/Following/following_screen.dart';
@@ -23,8 +21,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       Provider.of<UserProvider>(context, listen: false).getUsername();
-      String? user = Provider.of<UserProvider>(context, listen: false).username;
-      log(user.toString());
+      
     });
   }
   @override

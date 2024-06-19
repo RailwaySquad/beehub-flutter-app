@@ -1,13 +1,11 @@
-import 'dart:developer';
-
 import 'package:beehub_flutter_app/Constants/color.dart';
 import 'package:beehub_flutter_app/Models/profile.dart';
 import 'package:beehub_flutter_app/Provider/user_provider.dart';
 import 'package:beehub_flutter_app/Screens/Profile/profile_about.dart';
 import 'package:beehub_flutter_app/Screens/Profile/profile_gallery.dart';
 import 'package:beehub_flutter_app/Screens/Profile/profile_posts.dart';
-import 'package:beehub_flutter_app/Widgets/expanded/expanded_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -67,13 +65,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       Provider.of<UserProvider>(context, listen: false).fetchProfile(true);
-      String? user = Provider.of<UserProvider>(context, listen: false).username;
-      log("User : "+user.toString());
     }); 
   }
   @override
   Widget build(BuildContext context) {
-    Profile? profile = Provider.of<UserProvider>(context, listen: false).profile;
+    Profile? profile = Provider.of<UserProvider>(context, listen: false).ownprofile;
     var size = MediaQuery.of(context).size;
     bool isLoading = Provider.of<UserProvider>(context).isLoading;
     if(isLoading || profile==null){
@@ -151,24 +147,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ],
                           ),
                           OutlinedButton(
-                              onPressed: (){},
-                              child: const Text("Account Setting", style: TextStyle(color: TColors.buttonPrimary),),
+                              onPressed: (){
+                                Get.toNamed("/account_setting");
+                              },
+                              child: const Text("Profile Setting", style: TextStyle(color: TColors.buttonPrimary),),
                             ),
                         ],
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 8),
-                        child: profile.createdAt!=null? Text("Created at ${DateFormat.yMMMMd('en_US').format(profile.createdAt!)}"): const Text(""),
-                      ),
-                      SizedBox(
-                        child: Row(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Expanded(
-                                      child: SingleChildScrollView(
-                                        child: ExpandedWidget(text: profile.bio!))
-                                    ),
+                            SizedBox(
+                              child: Text(profile.bio!)
+                            ),
+                            profile.createdAt!=null? Text("Created at ${DateFormat.yMMMMd('en_US').format(profile.createdAt!)}"): const Text(""),
                           ],
-                        )
+                        ),
                       ),
                       SizedBox(
                         width: size.width/2,

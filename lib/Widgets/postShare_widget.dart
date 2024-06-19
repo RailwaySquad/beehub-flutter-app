@@ -79,9 +79,7 @@ class _PostShareState extends State<PostShare> {
                                   )
                                   : InkWell(
                                      onTap: (){
-                                      Provider.of<UserProvider>(context, listen: false).setUsername(widget.post.usershareUserName!);
-                                      log(Provider.of<UserProvider>(context, listen: false).username!);
-                                      Get.toNamed("/userpage/${widget.post.usershareUserName!}");
+                                      Get.toNamed("/userpage/${widget.post.usershareUserName}");
                                     },
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -147,7 +145,7 @@ class _PostShareState extends State<PostShare> {
                               child: SingleChildScrollView(
                                 child: RichText(
                                 text: TextSpan(
-                                  style: Theme.of(context).textTheme.bodyText2,
+                                  style: TextStyle(color: Colors.black),
                                   children:widget.parseComment(widget.post.text),
                                 ),
                               ),))

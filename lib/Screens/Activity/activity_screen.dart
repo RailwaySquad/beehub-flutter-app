@@ -59,7 +59,9 @@ class _ActivityScreenState extends State<ActivityScreen> {
             AppBar(
               title: const Text('Beehub'),
                 actions: [
-                  IconButton(onPressed: (){}, icon:const Icon(Icons.search)),
+                  IconButton(onPressed: (){
+                    showSearch(context:context, delegate: BeehubSearchDelegate());
+                  }, icon:const Icon(Icons.search)),
                   IconButton(
                       icon: const Icon(Icons.exit_to_app),
                       onPressed: () {
@@ -126,6 +128,56 @@ class _ActivityScreenState extends State<ActivityScreen> {
             
           ],
         );
+  }
+}
+
+class BeehubSearchDelegate extends SearchDelegate {
+  List<String> list=[];
+  
+  @override
+  List<Widget>? buildActions(BuildContext context) {
+    return [
+      IconButton(onPressed: (){
+        query="";
+      }, icon: const Icon(Icons.clear)),
+    ];
+  }
+  
+  @override
+  Widget? buildLeading(BuildContext context) {
+    return IconButton(
+      onPressed: (){
+        close(context,null);
+      }, 
+      icon: const Icon(Icons.arrow_back));
+  }
+  
+  @override
+  Widget buildResults(BuildContext context) =>Container();
+  @override
+  void showResults(BuildContext context) {
+    Navigator.of(context).popAndPushNamed(
+      '/search',
+      arguments: query,
+    );
+    super.showResults(context);
+  }
+  
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    List<String> matchQuery=[];
+    for(var item in list){
+      if(item.toLowerCase().contains(query.toLowerCase())){
+        matchQuery.add(item);
+      }
+    }
+    return ListView.builder(
+      itemCount: matchQuery.length,
+      itemBuilder: (context,index){
+        return ListTile(
+          title: Text(list[index]),
+        );
+      });
   }
 }
 

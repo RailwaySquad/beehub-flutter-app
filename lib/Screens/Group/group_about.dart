@@ -11,7 +11,7 @@ class GroupAbout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-     Group? group = Provider.of<UserProvider>(context).group;
+    Group? group = Provider.of<UserProvider>(context).group;
 
     if(group==null ){
       return const SliverToBoxAdapter (

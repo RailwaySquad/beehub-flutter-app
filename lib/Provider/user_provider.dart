@@ -10,7 +10,10 @@ class UserProvider extends ChangeNotifier{
   List<Group> _groups = [];
   String? _username;
   Profile? profile;
+  Profile? ownprofile;
   Group? _group;
+  Map<String,dynamic> _resultSearch=<String,dynamic>{}; 
+  bool _refetch = false;
   List<User> get friends {
     return _friends;
   }
@@ -38,14 +41,11 @@ class UserProvider extends ChangeNotifier{
     }
   }
   Future getUsername() async{
-    _username ??= await THttpHelper.getUsername();
+    _username = await THttpHelper.getUsername();
     notifyListeners();
   }
   String? get username {
     return _username;
-  }
-  void setUsername(String usern){
-    _username = usern;
   }
   Future fetchProfile(isUserLogin,{user=""})async{
     isLoading=true;
@@ -55,7 +55,11 @@ class UserProvider extends ChangeNotifier{
       isLoading = false;
       notifyListeners();
     }else{
+      if(username==null) {
+        await getUsername();
+      }
       profile = await THttpHelper.getProfile(username!);
+      ownprofile = await THttpHelper.getProfile(username!);
       isLoading = false;
       notifyListeners();
     }
@@ -70,5 +74,26 @@ class UserProvider extends ChangeNotifier{
     _group = findGroup;
     isLoading = false;
     notifyListeners();
+  }
+  Future fetchSearch(String search)async{
+    isLoading = true;
+    notifyListeners();
+    var result = await THttpHelper.getSearchResult(search);
+    _resultSearch = result;
+    isLoading = false;
+    notifyListeners();
+  }
+  Future refetchSearch(String search)async{
+    var result = await THttpHelper.getSearchResult(search);
+    _resultSearch = result;
+  }
+  Map<String,dynamic> get resultSearch{
+    return _resultSearch;
+  }
+  set refetch(bool change){
+    _refetch=change;
+  }
+  bool get refetch{
+    return _refetch;
   }
 }

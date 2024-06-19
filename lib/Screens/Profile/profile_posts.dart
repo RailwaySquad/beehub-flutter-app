@@ -1,9 +1,12 @@
+import 'dart:developer';
+
 import 'package:beehub_flutter_app/Constants/color.dart';
 import 'package:beehub_flutter_app/Models/post.dart';
 import 'package:beehub_flutter_app/Provider/user_provider.dart';
 import 'package:beehub_flutter_app/Utils/api_connection/http_client.dart';
 import 'package:beehub_flutter_app/Widgets/post_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
 class ProfilePosts extends StatefulWidget {
@@ -19,11 +22,11 @@ class _ProfilePostsState extends State<ProfilePosts> {
   int page = 0;
   bool isLoading = false;
   bool errorConnect = false;
-  String username = "";
+  String? username = Get.currentRoute.isNotEmpty? Get.parameters["user"]: null;
   Future fetchProfilePost() async {
     if (isLoading) return;
     isLoading = true;
-    List<Post>? post = await THttpHelper.getProfilePost(username, page);
+    List<Post>? post = await THttpHelper.getProfilePost(username!, page);
     setState(() {
       page++;
       isLoading = false;
@@ -55,20 +58,16 @@ class _ProfilePostsState extends State<ProfilePosts> {
   @override
   void initState() {
     super.initState();
+    log(username.toString());
+    log(Get.currentRoute);
     controller.addListener(() {
       if (controller.position.maxScrollExtent == controller.offset) {
         fetchProfilePost();
       }
     });
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      String? usern =
-          Provider.of<UserProvider>(context, listen: false).username;
-      if (usern != null) {
-        username = usern;
-        fetchProfilePost();
-      } else {
-        Provider.of<UserProvider>(context, listen: false).getUsername();
-      }
+      username ??= Provider.of<UserProvider>(context, listen: false).username;
+      fetchProfilePost();
     });
   }
 
@@ -80,14 +79,6 @@ class _ProfilePostsState extends State<ProfilePosts> {
 
   @override
   Widget build(BuildContext context) {
-    // void updatePostList() {
-    //   setState(() {
-    //     page = 0;
-    //     posts.clear();
-    //     hasMore = true;
-    //     fetchProfilePost();
-    //   });
-    // }
 
     if (posts.isEmpty) {
       return const SliverToBoxAdapter(
@@ -97,7 +88,7 @@ class _ProfilePostsState extends State<ProfilePosts> {
         itemCount: posts.length,
         itemBuilder: (context, index) {
           if (posts.isNotEmpty) {
-            return PostWidget(
+            return  PostWidget(
                 onUpdatePostList: updatePostList, post: posts[index]);
           } else {
             return const Padding(

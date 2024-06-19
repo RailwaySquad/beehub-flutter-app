@@ -184,6 +184,12 @@ class _PostWidgetState extends State<PostWidget> {
     });
   }
   @override
+  void setState(fn) {
+    if(mounted) {
+      super.setState(fn);
+    }
+  }
+  @override
   Widget build(BuildContext context) {
     final dark = THelperFunction.isDarkMode(context);
     return Container(
@@ -253,8 +259,6 @@ class _PostWidgetState extends State<PostWidget> {
                                   )
                                   : InkWell(
                                      onTap: (){
-                                      Provider.of<UserProvider>(context, listen: false).setUsername(widget.post.userUsername);
-                                      log(Provider.of<UserProvider>(context, listen: false).username!);
                                       Get.toNamed("/userpage/${widget.post.userUsername}");
                                     },
                                     child: Column(
@@ -355,7 +359,7 @@ class _PostWidgetState extends State<PostWidget> {
                                         child: SingleChildScrollView(
                                           child: RichText(
                                           text: TextSpan(
-                                            style: Theme.of(context).textTheme.bodyText2,
+                                            style: TextStyle(color: Colors.black),
                                             children: parseComment(widget.post.text),
                                           ),
                                         ),))
@@ -364,6 +368,7 @@ class _PostWidgetState extends State<PostWidget> {
                         ],
                       ),
                     ),
+                    SizedBox(height: 10),
                     if (widget.post.medias != null &&
                       widget.post.medias!.isNotEmpty)
                     Image.network(
