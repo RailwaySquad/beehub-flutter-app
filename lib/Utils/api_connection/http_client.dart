@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:beehub_flutter_app/Constants/url.dart';
 import 'package:beehub_flutter_app/Models/ProfileForm.dart';
@@ -12,7 +11,6 @@ import 'package:beehub_flutter_app/Models/requirement.dart';
 import 'package:beehub_flutter_app/Models/requirementForm.dart';
 import 'package:beehub_flutter_app/Models/user.dart';
 import 'package:beehub_flutter_app/Provider/db_provider.dart';
-import 'package:http/browser_client.dart';
 import 'package:http/http.dart';
 class THttpHelper {
   // late final String _URL_API= "http://10.0.2.2:8089"; 
