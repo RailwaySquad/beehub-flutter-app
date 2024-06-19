@@ -44,7 +44,6 @@ class UserProvider extends ChangeNotifier{
   }
   Future getUsername() async{
     _username = await THttpHelper.getUsername();
-    log("getUsername $_username");
     notifyListeners();
   }
   void  setUsername(String username){
@@ -62,7 +61,6 @@ class UserProvider extends ChangeNotifier{
       notifyListeners();
     }else{
       await getUsername();
-      log("message $username");
       profile = await THttpHelper.getProfile(username!);
       ownprofile = await THttpHelper.getProfile(username!);
       isLoading = false;

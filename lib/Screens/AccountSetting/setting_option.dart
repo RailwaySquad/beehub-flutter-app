@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class SettingOption extends StatelessWidget {
   const SettingOption({super.key});
@@ -10,7 +11,7 @@ class SettingOption extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(onPressed: (){Get.toNamed("/");},icon: const Icon(Icons.chevron_left),),
-        title: const Text("Account Setting"),
+        title: Text("Account Setting",style: GoogleFonts.ubuntu(fontSize: 22, fontWeight: FontWeight.bold)),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),

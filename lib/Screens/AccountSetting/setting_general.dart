@@ -1,6 +1,5 @@
 import 'dart:developer';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:beehub_flutter_app/Constants/color.dart';
 import 'package:beehub_flutter_app/Models/ProfileForm.dart';
@@ -10,6 +9,7 @@ import 'package:beehub_flutter_app/Utils/api_connection/http_client.dart';
 import 'package:beehub_flutter_app/Utils/helper/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -81,8 +81,8 @@ class _SettingGeneralState extends State<SettingGeneral> {
       }
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(onPressed: (){Get.toNamed("/");},icon: const Icon(Icons.chevron_left),),
-        title: const Text("Account Setting"),
+        leading: IconButton(onPressed: (){Navigator.pop(context);},icon: const Icon(Icons.chevron_left),),
+        title:  Text("Account Setting",style: GoogleFonts.ubuntu(fontSize: 22, fontWeight: FontWeight.bold)),
         actions: [
           TextButton(onPressed: ()async  {
                       if(formKey.currentState!.validate()){

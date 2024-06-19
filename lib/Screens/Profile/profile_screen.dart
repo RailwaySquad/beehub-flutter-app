@@ -146,11 +146,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                             ],
                           ),
-                          OutlinedButton(
+                          IconButton.outlined( 
                               onPressed: (){
                                 Get.toNamed("/account_setting");
                               },
-                              child: const Text("Profile Setting", style: TextStyle(color: TColors.buttonPrimary),),
+                              icon: const Icon(Icons.settings),
                             ),
                         ],
                       ),
