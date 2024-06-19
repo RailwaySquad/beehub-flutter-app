@@ -5,10 +5,36 @@ import 'package:beehub_flutter_app/Models/comment.dart';
 import 'package:beehub_flutter_app/Models/like.dart';
 import 'package:beehub_flutter_app/Models/post.dart';
 import 'package:beehub_flutter_app/Models/postMe.dart';
+import 'package:beehub_flutter_app/Models/recomment.dart';
+import 'package:beehub_flutter_app/Models/user.dart';
 import 'package:beehub_flutter_app/Provider/db_provider.dart';
 import 'package:http/http.dart' as http;
 class ApiService  {
   static final String BaseUrl= AppUrl.api;
+  static Future<User> getUserById(int id) async{
+    try{
+      DatabaseProvider db = DatabaseProvider();
+      String token = await db.getToken(); 
+      http.Response response = await http.get(Uri.parse('$BaseUrl/user/$id'),
+       headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token'
+       });
+      print(response.body);
+      if(response.statusCode == 200){
+        Map<String, dynamic> body = json.decode(response.body);
+        User user = User.fromJson(body);
+        return user;
+      }
+      else{
+        print('Failed to load user: ${response.statusCode}');
+        throw Exception('Failed to load user');
+      }
+    }catch(e){
+      print('Error getUser by id: $e');
+      throw Exception('Failed to load user');
+    }
+  }
   static Future<Post> getPostById(int id) async{
     try{
       DatabaseProvider db = DatabaseProvider();
@@ -18,8 +44,7 @@ class ApiService  {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token'
        });
-      print(response.body);
-      
+       print(response.body);
       if(response.statusCode == 200){
         Map<String, dynamic> body = json.decode(response.body);
         Post post = Post.fromJson(body);
@@ -97,12 +122,12 @@ class ApiService  {
         return comment;
       }
       else{
-        print('Failed to load post: ${response.statusCode}');
-        throw Exception('Failed to load post');
+        print('Failed to load comment: ${response.statusCode}');
+        throw Exception('Failed to load comment');
       }
     }catch(e){
-      print('Error getPost by id: $e');
-      throw Exception('Failed to load post');
+      print('Error getComment by id: $e');
+      throw Exception('Failed to load comment');
     }
   }
     static Future<Comment> createComment(Comment comment) async {
@@ -130,7 +155,7 @@ class ApiService  {
       throw Exception('Failed to create comment');
     }
   }
-    static Future<Comment> editComment(Comment comment) async {
+  static Future<Comment> editComment(Comment comment) async {
     try {
       DatabaseProvider db = DatabaseProvider();
       String token = await db.getToken();
@@ -173,6 +198,147 @@ class ApiService  {
     }catch(e){
       print('Error delete comment: $e');
       throw Exception('Failed to delete comment');
+    }
+  }
+  static Future<ReComment> getReCommentById(int id) async{
+    try{
+      DatabaseProvider db = DatabaseProvider();
+      String token = await db.getToken(); 
+      http.Response response = await http.get(Uri.parse('$BaseUrl/posts/recommentpost/$id'),
+       headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token'
+       });
+      print(response.body);
+      
+      if(response.statusCode == 200){
+        Map<String, dynamic> body = json.decode(response.body);
+        ReComment recomment = ReComment.fromJson(body);
+        return recomment;
+      }
+      else{
+        print('Failed to load recomment: ${response.statusCode}');
+        throw Exception('Failed to load recomment');
+      }
+    }catch(e){
+      print('Error getReComment by id: $e');
+      throw Exception('Failed to load recomment');
+    }
+  }
+  static Future<List<ReComment>> getReComment(int id) async{
+    try{
+      DatabaseProvider db = DatabaseProvider();
+      String token = await db.getToken(); 
+      http.Response response = await http.get(Uri.parse('$BaseUrl/posts/recomment/$id'),
+       headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token'
+       });
+       print('recomment$response.body');
+      if(response.statusCode == 200){
+        List<dynamic> body = json.decode(response.body);
+        List<ReComment> recomment = body.map((dynamic item) => ReComment.fromJson(item)).toList();
+        return recomment;
+      }
+      else{
+        print('Failed to load recomment: ${response.statusCode}');
+        throw Exception('Failed to load recomment');
+      }
+    }catch(e){
+      print('Error getReComment by id: $e');
+      throw Exception('Failed to load recomment');
+    }
+  }
+  static Future<ReComment> createReComment(ReComment recomment) async {
+    try {
+      DatabaseProvider db = DatabaseProvider();
+      String token = await db.getToken();
+      http.Response response = await http.post(
+        Uri.parse('$BaseUrl/posts/recomment/create'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token'
+        },
+        body: json.encode(recomment.toJson()),
+      );
+      if (response.statusCode == 200) {
+        Map<String, dynamic> body = json.decode(response.body);
+        ReComment newReComment = ReComment.fromJson(body);
+        return newReComment;
+      } else {
+        print('Failed to create recomment: ${response.statusCode}');
+        throw Exception('Failed to create recomment');
+      }
+    } catch (e) {
+      print('Error creating recomment: $e');
+      throw Exception('Failed to create recomment');
+    }
+  }
+  static Future<ReComment> editReComment(ReComment comment) async {
+    try {
+      DatabaseProvider db = DatabaseProvider();
+      String token = await db.getToken();
+      http.Response response = await http.post(
+        Uri.parse('$BaseUrl/posts/recomment/update'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token'
+        },
+        body: json.encode(comment.toJson()),
+      );
+      if (response.statusCode == 200) {
+        Map<String, dynamic> body = json.decode(response.body);
+        ReComment newReComment = ReComment.fromJson(body);
+        return newReComment;
+      } else {
+        print('Failed to edit recomment: ${response.statusCode}');
+        throw Exception('Failed to edit recomment');
+      }
+    } catch (e) {
+      print('Error edit recomment: $e');
+      throw Exception('Failed to edit recomment');
+    }
+  }
+  static Future<bool> deleteReComment(int id) async{
+    try{
+      DatabaseProvider db = DatabaseProvider();
+      String token = await db.getToken();
+      http.Response response = await http.post(Uri.parse('$BaseUrl/posts/recomment/delete/$id'),
+      headers:{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token'
+      });
+      if(response.statusCode == 200){
+        return true;
+      }else{
+        print('Failed to delete recomment: ${response.statusCode}');
+        throw Exception('Failed to delete recomment');
+      }
+    }catch(e){
+      print('Error delete recomment: $e');
+      throw Exception('Failed to delete recomment');
+    }
+  }
+  static Future<int> countReComment(int commentId) async{
+    try{
+      DatabaseProvider db = DatabaseProvider();
+      String token = await db.getToken(); 
+      http.Response response = await http.get(Uri.parse('$BaseUrl/posts/recomment/comment/$commentId'),
+       headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token'
+       });      
+      if(response.statusCode == 200){
+        int count = json.decode(response.body);
+        return count;
+      }
+      else{
+        print('Failed to count recomment: ${response.statusCode}');
+        throw Exception('Failed to count recomment');
+      }
+    }catch(e){
+      print('Error count reply comment by comment: $e');
+      throw Exception('Failed to count recomment');
     }
   }
   static Future<bool> deletePost(int id) async{
@@ -264,6 +430,31 @@ class ApiService  {
       throw Exception('Failed to edit post');
     }
   }
+  static Future<PostMe> sharePost(PostMe post) async {
+    try {
+      DatabaseProvider db = DatabaseProvider();
+      String token = await db.getToken();
+      http.Response response = await http.post(
+        Uri.parse('$BaseUrl/posts/share'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token'
+        },
+        body: json.encode(post.toJson()),
+      );
+      if (response.statusCode == 200) {
+        Map<String, dynamic> body = json.decode(response.body);
+        PostMe sharePost = PostMe.fromJson(body);
+        return sharePost;
+      } else {
+        print('Failed to edit recomment: ${response.statusCode}');
+        throw Exception('Failed to edit recomment');
+      }
+    } catch (e) {
+      print('Error edit recomment: $e');
+      throw Exception('Failed to edit recomment');
+    }
+  }
   static Future<Like> addLike(Like like) async {
     try {
       DatabaseProvider db = DatabaseProvider();
@@ -324,12 +515,12 @@ class ApiService  {
         return count;
       }
       else{
-        print('Failed to count comment: ${response.statusCode}');
-        throw Exception('Failed to count comment');
+        print('Failed to count like: ${response.statusCode}');
+        throw Exception('Failed to count like');
       }
     }catch(e){
-      print('Error getPost by id: $e');
-      throw Exception('Failed to count comment');
+      print('Error count Like by Post: $e');
+      throw Exception('Failed to count like');
     }
   }
   static Future<bool> checkLike(int userid,int postid) async{
@@ -343,7 +534,8 @@ class ApiService  {
           'Authorization': 'Bearer $token'
         });
       if (response.statusCode == 200) {
-        return true;
+        bool isLikie = json.decode(response.body);
+        return isLikie;
       }else{
         print('Failed to check Like: ${response.statusCode}');
         throw Exception('Failed to check Like');
@@ -351,6 +543,28 @@ class ApiService  {
     }catch(e){
       print('Error check Like: $e');
       throw Exception('Failed to check Like');
+    }
+  }
+  static Future<int> countShare(int postId) async{
+    try{
+      DatabaseProvider db = DatabaseProvider();
+      String token = await db.getToken(); 
+      http.Response response = await http.get(Uri.parse('$BaseUrl/posts/countshare/$postId'),
+       headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token'
+       });      
+      if(response.statusCode == 200){
+        int count = json.decode(response.body);
+        return count;
+      }
+      else{
+        print('Failed to count share: ${response.statusCode}');
+        throw Exception('Failed to count share');
+      }
+    }catch(e){
+      print('Error count Share by Post: $e');
+      throw Exception('Failed to count share');
     }
   }
 }

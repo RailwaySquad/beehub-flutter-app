@@ -16,9 +16,17 @@ class Post {
   final String? color;
   final String? background;
   final String? medias;
+  final bool? share;
+  final String? usershareUserName;
+  final String? usershareFullname;
+  final String? usershareGender;
+  final String? usershareImage;
+  final String? usershareGroupName;
+  final num? usershareGroupId;
+  final DateTime? usershareCreatedAt;
   final DateTime? createdAt;
 
-  Post({ required this.id, required this.text, required this.userId,required this.userFullname, required this.userUsername, this.userImage, required this.userGender, this.groupId, required this.groupName, required this.publicGroup, this.groupImage, required this.settingType, this.color, this.background,this.medias,this.createdAt});
+  Post({ required this.id, required this.text, required this.userId,required this.userFullname, required this.userUsername, this.userImage, required this.userGender, this.groupId, required this.groupName, required this.publicGroup, this.groupImage, required this.settingType, this.color, this.background,this.medias,this.share, this.usershareFullname, this.usershareGender, this.usershareImage,this.usershareUserName,this.usershareGroupName,this.usershareGroupId, this.usershareCreatedAt,this.createdAt});
 
   Map<String, dynamic> toJson() {
     return {
@@ -36,7 +44,15 @@ class Post {
       'color':color,
       'background':background,
       'medias': medias,
-      'createdAt':createdAt?.toIso8601String()
+      'share':share,
+      'usershare_fullname':usershareFullname,
+      'usershare_gender':usershareGender,
+      'usershareimage':usershareImage,
+      'usershare_username':usershareUserName,
+      'usershareGroupName':usershareGroupName,
+      'usershareGroupId':usershareGroupId,
+      'timeshare':usershareCreatedAt?.toIso8601String(),
+      'create_at':createdAt?.toIso8601String()
     };
   } 
   factory Post.fromJson(Map<String, dynamic> json) {
@@ -55,6 +71,14 @@ class Post {
     final color= json['color'] ?? '';
     final background= json['background'] ?? '' ;
     final medias =json["medias"] ?? json["mediaUrl"];
+    final share = json['share'] ?? false;
+    final usershareFullname= json['usershare_fullname'] ?? '' ;
+    final usershareGender= json['usershare_gender'] ?? '' ;
+    final usershareImage= json['usershareimage'] ?? '' ;
+    final usershareUserName= json['usershare_username'] ?? '' ;
+    final usershareGroupName= json['usershareGroupName'] ?? '' ;
+    final usershareGroupId= json['usershareGroupId'] ;
+    final usershareCreatedAt = json['timeshare'] !=null ? DateTime.parse(json['timeshare']):null;
     final createAt = json['create_at'] !=null ? DateTime.parse(json['create_at']):null;
     return Post(
           id:id,
@@ -72,6 +96,14 @@ class Post {
           color: color,
           background: background,
           medias: medias,
+          share:share,
+          usershareFullname:usershareFullname,
+          usershareGender:usershareGender,
+          usershareImage:usershareImage,
+          usershareUserName:usershareUserName,
+          usershareGroupName:usershareGroupName,
+          usershareGroupId:usershareGroupId,
+          usershareCreatedAt:usershareCreatedAt,
           createdAt: createAt,
           );
   }

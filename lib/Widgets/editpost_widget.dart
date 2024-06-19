@@ -8,7 +8,8 @@ import 'package:beehub_flutter_app/Utils/api_connection/http_post.dart';
 class EditPostPage extends StatefulWidget {
   final Post post;
   final void Function() onUpdatePostList;
-  const EditPostPage({Key? key, required this.post, required this.onUpdatePostList}): super(key: key);
+  final List<TextSpan> Function(String) parseComment;
+  const EditPostPage({Key? key, required this.post, required this.onUpdatePostList, required this.parseComment}): super(key: key);
 
   @override
   State<EditPostPage> createState() => _EditPostPageState();
@@ -19,12 +20,30 @@ class _EditPostPageState extends State<EditPostPage> {
   Color _containerColor = Colors.black;
   Color _containerBackground = Colors.white;
   File? _selectedFile;
+  final Map<String, String> _tagMap = {};
   @override
   void initState(){
     super.initState();
-    _textController.text = widget.post.text;
+    _textController.text = _stripTags(widget.post.text);
     _containerColor = parseColor(widget.post.color);
     _containerBackground =  parseBackGround(widget.post.background);
+  }
+  String _stripTags(String text) {
+    final regex = RegExp(r'tag=(.*?)&link=(.*?)(?=\s+|$)');
+    return text.replaceAllMapped(regex, (match){
+      String tag = match.group(1) ?? '';
+      String link = match.group(2) ?? '';
+      String displayText = tag;
+      _tagMap[displayText] = 'tag=$tag&link=$link';
+      return displayText;
+    });
+  }
+  String _restoreTags(String text){
+    String restoredText = text;
+    _tagMap.forEach((displayText, tagLink) {
+      restoredText = restoredText.replaceAll(displayText, tagLink);
+    });
+    return restoredText;
   }
   Color parseColor(String? colorString) {
       if (colorString == null || colorString.isEmpty) {
@@ -90,15 +109,23 @@ class _EditPostPageState extends State<EditPostPage> {
         child: Container(
           child: Column(
             children: <Widget>[
-              const Row(
-                children: <Widget>[
-                  Icon(
-                    Icons.account_circle,
-                    size: 60.0,
-                  ),
-                  Text('Name')
-                ],
-              ),
+              Container(
+                margin: EdgeInsets.only(top: 10),
+                child: Row(
+                  children: <Widget>[
+                    CircleAvatar(radius: 25,
+                      child: widget.post.userImage != null &&
+                              widget.post.userImage!.isNotEmpty
+                          ? Image.network(widget.post.userImage!)
+                          : Image.asset(widget.post.userGender == "female"
+                              ? "assets/avatar/user_female.png"
+                              : "assets/avatar/user_male.png")
+                    ),
+                    SizedBox(width: 5.0),
+                    Text(widget.post.userFullname)
+                  ],
+                ),
+              ),       
               SizedBox(
                 height: 15.0,
               ),
@@ -361,9 +388,10 @@ class _EditPostPageState extends State<EditPostPage> {
                           int userId = await db.getUserId();
                           int postId = widget.post.id;
                           int groupId = 0;
+                          String restoredText = _restoreTags(_textController.text);
                           PostMe newPost = PostMe(
                               id: postId,
-                              text: _textController.text,
+                              text: restoredText,
                               color: _containerColor.value.toRadixString(16),
                               background:
                                   _containerBackground.value.toRadixString(16),
@@ -378,9 +406,12 @@ class _EditPostPageState extends State<EditPostPage> {
                           }
                           
                         } catch (e) {
-                          print('Error creating post: $e');
+                          print('Error edit post: $e');
                         }
                         widget.onUpdatePostList();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Edit Post Success'))
+                          );
                         Navigator.pop(context);
                       },
                       child: const Text(
