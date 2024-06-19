@@ -1,11 +1,10 @@
-import 'dart:developer';
-
 import 'package:beehub_flutter_app/Constants/color.dart';
 import 'package:beehub_flutter_app/Models/profile.dart';
 import 'package:beehub_flutter_app/Provider/db_provider.dart';
 import 'package:beehub_flutter_app/Provider/user_provider.dart';
 import 'package:beehub_flutter_app/Utils/api_connection/http_client.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 class PasswordUpdate extends StatefulWidget{
@@ -17,7 +16,7 @@ class _PasswordUpdateState extends State<PasswordUpdate> {
   final formKey = GlobalKey<FormState>();
   TextEditingController _passwordInputController = TextEditingController();
   TextEditingController _confirmPasswordInputController = TextEditingController();
-  TextEditingController _currentPasswordInputController = TextEditingController();
+  // TextEditingController _currentPasswordInputController = TextEditingController();
   @override
   void initState() {
     super.initState();
@@ -39,21 +38,21 @@ class _PasswordUpdateState extends State<PasswordUpdate> {
         composing: TextRange.empty,
       );
     });
-    _currentPasswordInputController.addListener((){
-      final String text = _currentPasswordInputController.text.toLowerCase();
-      _currentPasswordInputController.value = _currentPasswordInputController.value.copyWith(
-        text: text,
-        selection:
-            TextSelection(baseOffset: text.length, extentOffset: text.length),
-        composing: TextRange.empty,
-      );
-    });
+    // _currentPasswordInputController.addListener((){
+    //   final String text = _currentPasswordInputController.text.toLowerCase();
+    //   _currentPasswordInputController.value = _currentPasswordInputController.value.copyWith(
+    //     text: text,
+    //     selection:
+    //         TextSelection(baseOffset: text.length, extentOffset: text.length),
+    //     composing: TextRange.empty,
+    //   );
+    // });
   }
   @override
   void dispose() {
     _passwordInputController.dispose();
     _confirmPasswordInputController.dispose();
-    _currentPasswordInputController.dispose();
+    // _currentPasswordInputController.dispose();
     super.dispose();
   }
   @override
@@ -63,7 +62,7 @@ class _PasswordUpdateState extends State<PasswordUpdate> {
       return Scaffold(
         appBar: AppBar(
         leading: IconButton(icon: const Icon(Icons.chevron_left),onPressed: ()=>Navigator.pop(context),),
-        title: const Text("Change Password"),
+        title: Text("Change Password",style: GoogleFonts.ubuntu(fontSize: 22, fontWeight: FontWeight.bold)),
         ),
         body:const Center(child: CircularProgressIndicator(color: TColors.buttonPrimary,),),
       );
@@ -71,7 +70,7 @@ class _PasswordUpdateState extends State<PasswordUpdate> {
     return Scaffold(
       appBar:  AppBar(
         leading: IconButton(icon: const Icon(Icons.chevron_left),onPressed: ()=>Navigator.pop(context),),
-        title: const Text("Change Password"),
+        title: Text("Change Password",style: GoogleFonts.ubuntu(fontSize: 22, fontWeight: FontWeight.bold)),
         ),
       body: Padding(
         padding: const EdgeInsets.only(top: 30, left: 15,right: 15),
@@ -120,32 +119,32 @@ class _PasswordUpdateState extends State<PasswordUpdate> {
                   return null;
                 }
               ),
-              TextFormField(
-                obscureText: true,
-                autocorrect: false,
-                decoration: const InputDecoration( 
-                  labelText:"Current Password", 
-                  labelStyle: TextStyle(fontSize: 16)
-                ),
-                controller:_currentPasswordInputController,
-                validator: (val) {
-                  if(val!=null&& val.isEmpty){
-                    return "Current Password is required";
-                  }
-                  return null;
-                }
-              ),
+              // TextFormField(
+              //   obscureText: true,
+              //   autocorrect: false,
+              //   decoration: const InputDecoration( 
+              //     labelText:"Current Password", 
+              //     labelStyle: TextStyle(fontSize: 16)
+              //   ),
+              //   controller:_currentPasswordInputController,
+              //   validator: (val) {
+              //     if(val!=null&& val.isEmpty){
+              //       return "Current Password is required";
+              //     }
+              //     return null;
+              //   }
+              // ),
               const SizedBox(height: 12,),
               Center(
                 child: ElevatedButton(
                   onPressed: ()async{
-                    bool checkPassword = await THttpHelper.checkPassword(_currentPasswordInputController.text);
-                    log(checkPassword.toString());
-                    if(!checkPassword ){
-                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                                          content: Text("Current Password incorrect"),
-                                      ));
-                    }else{
+                    // bool checkPassword = await THttpHelper.checkPassword(_currentPasswordInputController.text);
+                    // log(checkPassword.toString());
+                    // if(!checkPassword ){
+                    //  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    //                       content: Text("Current Password incorrect"),
+                    //                   ));
+                    // }else{
 
                      if(formKey.currentState!.validate()){
                       bool resp= await THttpHelper.updatePassword(_passwordInputController.text); 
@@ -153,7 +152,7 @@ class _PasswordUpdateState extends State<PasswordUpdate> {
                         DatabaseProvider().logOut(context);
                       }
                      }
-                    }
+                  // }
                   }, 
                   style:  ButtonStyle(
                   foregroundColor: WidgetStateProperty.all<Color>(Colors.white),

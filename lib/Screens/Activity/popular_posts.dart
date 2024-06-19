@@ -1,5 +1,4 @@
 import 'package:beehub_flutter_app/Models/post.dart';
-import 'package:beehub_flutter_app/Models/user.dart';
 import 'package:beehub_flutter_app/Provider/db_provider.dart';
 import 'package:beehub_flutter_app/Utils/api_connection/http_client.dart';
 import 'package:beehub_flutter_app/Utils/api_connection/http_post.dart';

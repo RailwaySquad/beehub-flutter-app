@@ -85,10 +85,12 @@ class _UserPageState extends State<UserPage> {
     }
     Widget getButton(){
       if (profile.ownProfile) {
-        return OutlinedButton(
-                onPressed: (){},
-                child: const Text("Account Setting", style: TextStyle(color: TColors.buttonPrimary),),
-              );
+        return  IconButton.outlined( 
+                              onPressed: (){
+                                Get.toNamed("/account_setting");
+                              },
+                              icon: const Icon(Icons.settings),
+                            );
       }
       switch (profile.relationshipWithUser) {
         case "BLOCKED":
@@ -126,7 +128,7 @@ class _UserPageState extends State<UserPage> {
                     decoration: const BoxDecoration(
                       border:  Border(bottom: BorderSide(color: TColors.secondary,width: 2.0))
                     ),
-                  height: 220,
+                  height: 170,
                   width: size.width,
                   child: Container(
                     color:TColors.darkerGrey,
@@ -134,7 +136,7 @@ class _UserPageState extends State<UserPage> {
                     ),
                 ),
                 Positioned(
-                  top: 160, 
+                  top: 120, 
                   left: 20,
                   child: Container(
                     decoration: BoxDecoration(
@@ -162,7 +164,7 @@ class _UserPageState extends State<UserPage> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
                       const SizedBox(
-                        height: 220,
+                        height: 180,
                       ),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -190,18 +192,14 @@ class _UserPageState extends State<UserPage> {
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 8),
-                        child: Text("Created at ${DateFormat.yMMMMd('en_US').format(profile.createdAt!)}"),
-                      ),
-                       SizedBox(
-                        child: Row(
-                          children: [
-                            Expanded(
-                                      child: SingleChildScrollView(
-                                        child: ExpandedWidget(text: profile.bio!))
-                                    ),
-                          ],
-                        )
-                      ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children:[ 
+                            SizedBox(
+                              child: Text(profile.bio!)
+                            ),
+                            profile.createdAt!=null? Text("Created at ${DateFormat.yMMMMd('en_US').format(profile.createdAt!)}"): const Text(""),
+                      ])),
                       SizedBox(
                         width: size.width/2,
                         child: Row(

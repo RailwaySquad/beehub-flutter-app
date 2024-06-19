@@ -3,9 +3,9 @@ import 'package:beehub_flutter_app/Models/ProfileForm.dart';
 import 'package:beehub_flutter_app/Models/profile.dart';
 import 'package:beehub_flutter_app/Provider/db_provider.dart';
 import 'package:beehub_flutter_app/Provider/user_provider.dart';
-import 'package:beehub_flutter_app/Screens/AccountSetting/setting_account.dart';
 import 'package:beehub_flutter_app/Utils/api_connection/http_client.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 class UsernameUpdate extends StatefulWidget {
@@ -44,7 +44,7 @@ class _UsernameUpdateState extends State<UsernameUpdate> {
       return Scaffold(
         appBar: AppBar(
         leading: IconButton(icon: const Icon(Icons.chevron_left),onPressed: ()=>Navigator.pop(context),),
-        title: const Text("Change Username"),
+        title: Text("Change Username",style: GoogleFonts.ubuntu(fontSize: 22, fontWeight: FontWeight.bold)),
         ),
         body:const Center(child: CircularProgressIndicator(color: TColors.buttonPrimary,),),
       );
@@ -53,7 +53,7 @@ class _UsernameUpdateState extends State<UsernameUpdate> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(icon: const Icon(Icons.chevron_left),onPressed: ()=>Navigator.pop(context),),
-        title: const Text("Change Username"),
+        title: Text("Change Username",style: GoogleFonts.ubuntu(fontSize: 22, fontWeight: FontWeight.bold)),
         ),
       body: Padding(
         padding: const EdgeInsets.only(top: 30, left: 15,right: 15),
