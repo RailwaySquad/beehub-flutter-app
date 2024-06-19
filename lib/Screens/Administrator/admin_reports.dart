@@ -2,8 +2,10 @@ import 'dart:convert';
 
 import 'package:beehub_flutter_app/Constants/url.dart';
 import 'package:beehub_flutter_app/Provider/db_provider.dart';
-import 'package:beehub_flutter_app/Screens/Administrator/group_info.dart';
-import 'package:beehub_flutter_app/Screens/Administrator/user_info.dart';
+import 'package:beehub_flutter_app/Utils/admin_utils.dart';
+import 'package:beehub_flutter_app/Widgets/admin/group_info.dart';
+import 'package:beehub_flutter_app/Models/admin/admin_report.dart';
+import 'package:beehub_flutter_app/Widgets/admin/user_info.dart';
 import 'package:beehub_flutter_app/Utils/page_navigator.dart';
 import 'package:beehub_flutter_app/Widgets/scroll_table.dart';
 import 'package:flutter/material.dart';
@@ -78,41 +80,36 @@ class _ReportsState extends State<Reports> {
                       rows: snapshot.data!
                           .map((e) => DataRow(cells: [
                                 DataCell(Text(e.id.toString())),
-                                DataCell(InkWell(
-                                    onTap: () => PageNavigator(ctx: context)
-                                        .nextPage(
-                                            page: UserInfo(id: e.reporterId)),
-                                    child: Text(
+                                DataCell(
+                                    Text(
                                       e.reporter,
                                       style:
                                           const TextStyle(color: Colors.blue),
-                                    ))),
-                                DataCell(Row(
-                                  children: [
-                                    Text('${e.caseType}: '),
-                                    InkWell(
-                                      onTap: () {
-                                        if (e.caseType == 'user') {
-                                          PageNavigator(ctx: context).nextPage(
-                                              page: UserInfo(
-                                                  id: e.reportedCaseId));
-                                        } else if (e.caseType == 'group') {
-                                          PageNavigator(ctx: context).nextPage(
-                                              page: GroupInfo(
-                                                  id: e.reportedCaseId));
-                                        }
-                                      },
-                                      child: Text(e.reportedCaseName,
-                                          style: const TextStyle(
-                                              color: Colors.blue)),
-                                    )
-                                  ],
-                                )),
-                                DataCell(_getType(e.type)),
-                                DataCell(Text(DateFormat.yMd()
-                                    .add_jm()
+                                    ),
+                                    onTap: () => PageNavigator(ctx: context)
+                                        .nextPage(
+                                            page: UserInfo(id: e.reporterId))),
+                                DataCell(
+                                    Row(
+                                      children: [
+                                        Text('${e.caseType}: '),
+                                        Text(e.reportedCaseName,
+                                            style: const TextStyle(
+                                                color: Colors.blue))
+                                      ],
+                                    ), onTap: () {
+                                  if (e.caseType == 'user') {
+                                    PageNavigator(ctx: context).nextPage(
+                                        page: UserInfo(id: e.reportedCaseId));
+                                  } else if (e.caseType == 'group') {
+                                    PageNavigator(ctx: context).nextPage(
+                                        page: GroupInfo(id: e.reportedCaseId));
+                                  }
+                                }),
+                                DataCell(getReportType(e.type, null)),
+                                DataCell(Text(DateFormat("dd/MM/yyyy hh:mm aaa")
                                     .format(DateTime.parse(e.timestamp)))),
-                                DataCell(_getStatus(e.status)),
+                                DataCell(getStatus(e.status)),
                                 const DataCell(Text('delete')),
                               ]))
                           .toList(),
@@ -120,85 +117,6 @@ class _ReportsState extends State<Reports> {
                   : const Center(child: CircularProgressIndicator.adaptive())),
         ],
       ),
-    );
-  }
-
-  _getType(String type) {
-    switch (type) {
-      case 'nudity':
-      case 'spam':
-        return Badge(
-          label: Text(type),
-          backgroundColor: Colors.yellow[900],
-        );
-      case 'violence':
-      case 'involve a child':
-      case 'drugs':
-        return Badge(
-          label: Text(type),
-          backgroundColor: Colors.red,
-        );
-      default:
-        return Badge(
-          label: Text(type),
-          backgroundColor: Colors.grey,
-        );
-    }
-  }
-
-  _getStatus(String status) {
-    switch (status) {
-      case 'active':
-        return Badge(
-          label: Text(status),
-          backgroundColor: Colors.green,
-        );
-      case 'inactive':
-        return Badge(
-          label: Text(status),
-          backgroundColor: Colors.red,
-        );
-      case 'blocked':
-      default:
-        return Badge(
-          label: Text(status),
-          backgroundColor: Colors.grey,
-        );
-    }
-  }
-}
-
-class Report {
-  final int id;
-  final int reporterId;
-  final String reporter;
-  final int reportedCaseId;
-  final String reportedCaseName;
-  final String caseType;
-  final String type;
-  final String timestamp;
-  final String status;
-  Report(
-      {required this.id,
-      required this.reporter,
-      required this.reporterId,
-      required this.reportedCaseId,
-      required this.reportedCaseName,
-      required this.caseType,
-      required this.type,
-      required this.timestamp,
-      required this.status});
-  factory Report.fromJson(Map<String, dynamic> json) {
-    return Report(
-      id: json['id'],
-      reporter: json['reporter'],
-      reporterId: json['reporterId'],
-      reportedCaseId: json['reportedCaseId'],
-      reportedCaseName: json['reportedCaseName'],
-      caseType: json['caseType'],
-      type: json['type'],
-      timestamp: json['timestamp'],
-      status: json['status'],
     );
   }
 }

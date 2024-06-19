@@ -129,7 +129,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 }
               });
               return _registerButton(
-                  text: 'Sign in',
+                  text: 'Sign up',
                   tap: () {
                     if (_formKey.currentState!.validate()) {
                       auth.registerUser(

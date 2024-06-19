@@ -76,7 +76,7 @@ class _PasswordUpdateState extends State<PasswordUpdate> {
         padding: const EdgeInsets.only(top: 30, left: 15,right: 15),
         child: Form(
           key: formKey,
-          autovalidateMode: AutovalidateMode.onUnfocus,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
