@@ -358,7 +358,7 @@ class THttpHelper {
     Response response = await post(Uri.parse("$BaseUrl/update/profile/password/$userId"),
     headers: {
       "Content-Type": 'text/plain',
-      HttpHeaders.authorizationHeader: 'Bearer $token'
+      HttpHeaders.authorizationHeader: 'Bearer $token',
     },
     body: password
     );

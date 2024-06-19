@@ -45,25 +45,7 @@ class _SettingAccountState extends State<SettingAccount> {
           onTap: ()=>Navigator.push(context, MaterialPageRoute(builder: (context)=> PasswordUpdate())),
           title: const Text("Change Password"),
           trailing: const Icon(Icons.chevron_right),
-        ),
-        GestureDetector(
-          onTap: (){
-          
-          },
-          child:const ListTile(
-            title:  Text("Setting Posts"),
-            trailing: Icon(Icons.chevron_right),
-          ),
-        ),
-        GestureDetector(
-          onTap: (){
-          
-          },
-          child:const ListTile(
-            title:  Text("Setting Email"),
-            trailing: Icon(Icons.chevron_right),
-          ),
-        ),
+        )
       ])),
     );
   }
