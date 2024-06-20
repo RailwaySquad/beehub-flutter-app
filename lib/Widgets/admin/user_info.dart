@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:beehub_flutter_app/Constants/url.dart';
+import 'package:beehub_flutter_app/Models/admin/admin_user.dart';
 import 'package:beehub_flutter_app/Provider/db_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -36,6 +37,8 @@ class _UserInfoState extends State<UserInfo> {
         role: '',
         status: '',
         avatar: '',
+        createdAt: '',
+        reportTitleList: [],
         gallery: []);
     try {
       http.Response response = await http.get(Uri.parse(url), headers: {
@@ -145,48 +148,5 @@ class _UserInfoState extends State<UserInfo> {
           style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
       TextSpan(text: content, style: const TextStyle(color: Colors.black))
     ]));
-  }
-}
-
-class User {
-  final int id;
-  final String username;
-  final String email;
-  final String fullName;
-  final String gender;
-  final int noOfPosts;
-  final int noOfFriends;
-  final String role;
-  final String status;
-  final String avatar;
-  final List<String> gallery;
-
-  User({
-    required this.id,
-    required this.username,
-    required this.email,
-    required this.fullName,
-    required this.gender,
-    required this.noOfPosts,
-    required this.noOfFriends,
-    required this.role,
-    required this.status,
-    required this.avatar,
-    required this.gallery,
-  });
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-      id: json['id'],
-      username: json['username'],
-      email: json['email'],
-      fullName: json['fullName'] ?? '',
-      gender: json['gender'] ?? '',
-      noOfPosts: json['noOfPosts'],
-      noOfFriends: json['noOfFriends'],
-      role: json['role'],
-      status: json['status'],
-      avatar: json['avatar'] ?? '',
-      gallery: (json['gallery'] as List).map((e) => e as String).toList(),
-    );
   }
 }

@@ -168,7 +168,7 @@ class _DashboardState extends State<Dashboard> {
               ),
               Text(admin.email),
               Text(
-                  'Member since ${DateFormat.yMd().format(DateTime.parse(admin.createdAt))}'),
+                  'Member since ${DateFormat("dd/MM/yyyy").format(DateTime.parse(admin.createdAt))}'),
             ],
           ),
           actions: [
