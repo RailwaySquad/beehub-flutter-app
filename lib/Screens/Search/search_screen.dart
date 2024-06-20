@@ -132,7 +132,7 @@ class PeopleSearched extends StatelessWidget {
     Widget getButton(User usernow){
       switch (usernow.typeRelationship) {
         case "BLOCKED":
-          return BeehubButton.UnBlock(usernow.id, '/search',Get.arguments);
+          return BeehubButton.UnBlock(usernow.id, '/search',Get.arguments,(){});
         case "FRIEND":
           return BeehubButton.UnFriend(usernow.id, '/search',Get.arguments);
         case "SENT_REQUEST":
@@ -215,16 +215,7 @@ class GroupSearched extends StatelessWidget {
       }else if(group.joined=='send request'){
         return BeehubButton.CancelJoinGroup(group.id!, "/search", Get.arguments);
       }else{
-        switch (group.memberRole) {
-          case "MEMBER":
-            return BeehubButton.VisitGroup(group.id!);
-          case "GROUP_CREATOR":
-            return BeehubButton.ManagerGroup(group.id!);
-          case "GROUP_MANAGER":
-            return BeehubButton.ManagerGroup(group.id!);
-          default:
-            return BeehubButton.VisitGroup(group.id!);
-        }
+        return BeehubButton.VisitGroup(group.id!);
       }
     }
     return ListView.builder(

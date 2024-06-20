@@ -1,3 +1,4 @@
+import 'package:beehub_flutter_app/Constants/color.dart';
 import 'package:beehub_flutter_app/Provider/db_provider.dart';
 import 'package:beehub_flutter_app/Provider/user_provider.dart';
 import 'package:flutter/material.dart';
@@ -47,7 +48,9 @@ class _FollowingScreenState extends State<FollowingScreen> with SingleTickerProv
             AppBar(
               title: const Text('Beehub'),
                 actions: [
-                  IconButton(onPressed: (){}, icon:const Icon(Icons.search)),
+                  IconButton(onPressed: (){
+
+                  }, icon:const Icon(Icons.add_circle_outline_outlined,color: TColors.buttonPrimary,)),
                   IconButton(
                       icon: const Icon(Icons.exit_to_app),
                       onPressed: () {

@@ -27,9 +27,20 @@ class ListGroup extends StatelessWidget {
             onTap: (){
               Get.toNamed("/group/${list[index].id}");
             },
-            child: list[index].imageGroup!=null
-              ?Image.network(list[index].imageGroup!)
-              : Image.asset( "assets/avatar/group_image.png"),
+            child: 
+            Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: Colors.black,width: 1.0),
+                      borderRadius: BorderRadius.circular(45.0),
+                      image: DecorationImage(
+                        fit: BoxFit.fill,
+                        image: list[index].imageGroup!=null? NetworkImage( list[index].imageGroup!)
+                                  : const AssetImage("assets/avatar/group_image.png") as ImageProvider,)
+                    ),
+                    width: 60,
+                    height: 60,
+                  ),
           ),
           title: GestureDetector(
             onTap: (){

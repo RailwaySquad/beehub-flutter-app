@@ -49,4 +49,9 @@ class User {
           friendCounter: friendCounter
           );
   }
+  @override
+  String toString() {
+    // TODO: implement toString
+    return "User $username \t$typeRelationship \t$isBanned";
+  }
 }

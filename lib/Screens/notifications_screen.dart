@@ -60,7 +60,21 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   onTap: (){
                     Get.toNamed("/userpage/${list[index].sender!.username}");
                   },
-                  child: list[index].sender!.image!=null? Image.network(list[index].sender!.image!): (list[index].sender!.gender=='female'? Image.asset("assets/avatar/user_female.png"):Image.asset("assets/avatar/user_male.png")),
+                  child:
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: Colors.black,width: 1.0),
+                      borderRadius: BorderRadius.circular(45.0),
+                      image: DecorationImage(
+                        fit: BoxFit.fill,
+                        image: list[index].sender!.image!=null? NetworkImage(list[index].sender!.image!)
+                                  : (list[index].sender!.gender=='female'? const AssetImage("assets/avatar/user_female.png") as ImageProvider:const AssetImage("assets/avatar/user_male.png") as ImageProvider),)
+                    ),
+                    width: 60,
+                    height: 60,
+                  ),
+                  
                 ),
                 title: RichText(
                                 text: TextSpan(
@@ -99,8 +113,19 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   Get.toNamed("/userpage/${list[index].sender!.username}");
                 },
                 child: ListTile(
-                  leading: list[index].sender!.image!=null? Image.network(list[index].sender!.image!)
-                                : (list[index].sender!.gender=='female'? Image.asset("assets/avatar/user_female.png"):Image.asset("assets/avatar/user_male.png")),
+                  leading: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: Colors.black,width: 1.0),
+                      borderRadius: BorderRadius.circular(45.0),
+                      image: DecorationImage(
+                        fit: BoxFit.fill,
+                        image: list[index].sender!.image!=null? NetworkImage(list[index].sender!.image!)
+                                  : (list[index].sender!.gender=='female'? const AssetImage("assets/avatar/user_female.png") as ImageProvider:const AssetImage("assets/avatar/user_male.png") as ImageProvider),)
+                    ),
+                    width: 60,
+                    height: 60,
+                  ),
                   title: RichText(
                         text: TextSpan(
                           style: DefaultTextStyle.of(context).style,
@@ -125,7 +150,20 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     Get.toNamed("/group/${list[index].group!.id}");
                   },
                 child: ListTile(
-                  leading: list[index].group!.imageGroup!=null? Image.network(list[index].group!.imageGroup!): Image.asset("assets/avatar/group_image.png"),
+                  leading: 
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: Colors.black,width: 1.0),
+                      borderRadius: BorderRadius.circular(45.0),
+                      image: DecorationImage(
+                        fit: BoxFit.fill,
+                        image: list[index].group!.imageGroup!=null? NetworkImage(list[index].group!.imageGroup!)
+                                  : const AssetImage("assets/avatar/group_image.png") as ImageProvider,)
+                    ),
+                    width: 60,
+                    height: 60,
+                  ),
                   title: RichText(
                                   text: TextSpan(
                                     style: DefaultTextStyle.of(context).style,

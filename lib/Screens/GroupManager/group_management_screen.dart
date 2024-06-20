@@ -38,7 +38,7 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> with Sing
   }
   @override
   Widget build(BuildContext context) {
-    Group? group = Provider.of<UserProvider>(context).group;
+    Group? group = Provider.of<UserProvider>(context,listen: false).group;
     if( group==null){
       return Scaffold(
         appBar: AppBar(
