@@ -5,7 +5,6 @@ import 'package:beehub_flutter_app/Screens/Profile/profile_about.dart';
 import 'package:beehub_flutter_app/Screens/Profile/profile_gallery.dart';
 import 'package:beehub_flutter_app/Screens/Profile/profile_posts.dart';
 import 'package:beehub_flutter_app/Utils/beehub_button.dart';
-import 'package:beehub_flutter_app/Widgets/expanded/expanded_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';

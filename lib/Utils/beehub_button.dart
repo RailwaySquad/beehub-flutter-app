@@ -206,23 +206,7 @@ class BeehubButton{
               child: const Text("Leave", style: TextStyle(fontWeight: FontWeight.w600),),
             );
   }
-  // static Widget RetireManage(int groupId, String routeName,String? search ){
-  //   return ElevatedButton(
-  //             onPressed: () async{
-  //               int idUser = await DatabaseProvider().getUserId();
-  //               Requirementform req = Requirementform(senderId: idUser, groupId: groupId, type: "RETIRE");
-  //               var response = await THttpHelper.createRequirement(req);
-  //               if(response?["response"]!="unsuccess" && response?["response"]!="error"){
-  //                 Get.toNamed("/group/$groupId",arguments: search,preventDuplicates: false);
-  //               }
-  //             },
-  //             style: ButtonStyle(
-  //               foregroundColor: WidgetStateProperty.all<Color>(Colors.red),
-  //               backgroundColor: WidgetStateProperty.all<Color>(Colors.white),
-  //             ),
-  //             child: const Text("Retire", style: TextStyle(fontWeight: FontWeight.w600),),
-  //           );
-  // }
+
   static Widget AcceptJoinGroup(int groupId, int receiverId, String routeName,String? search ){
     return ElevatedButton(
               onPressed: () async{
