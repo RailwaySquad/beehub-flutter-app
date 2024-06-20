@@ -83,8 +83,9 @@ class AuthenticationProvider extends ChangeNotifier {
     try {
       http.Response req = await http.post(Uri.parse(url),
           body: json.encode(body),
-          headers: {'Content-Type': 'application/json; charset=UTF-8'});
-
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8'
+          }).timeout(const Duration(seconds: 3));
       if (req.statusCode == 200 || req.statusCode == 201) {
         final res = json.decode(req.body);
 

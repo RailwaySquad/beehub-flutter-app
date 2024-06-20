@@ -3,8 +3,11 @@ import 'dart:convert';
 import 'package:beehub_flutter_app/Constants/url.dart';
 import 'package:beehub_flutter_app/Models/admin/admin_user.dart';
 import 'package:beehub_flutter_app/Provider/db_provider.dart';
+import 'package:beehub_flutter_app/Utils/admin_utils.dart';
+import 'package:beehub_flutter_app/Widgets/admin/role_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class UserInfo extends StatefulWidget {
   final int id;
@@ -72,7 +75,7 @@ class _UserInfoState extends State<UserInfo> {
                           CircleAvatar(
                             radius: 72,
                             backgroundImage: NetworkImage(
-                              snapshot.data!.avatar,
+                              getAvatar(snapshot.data!.avatar),
                             ),
                           ),
                           const SizedBox(
@@ -81,13 +84,36 @@ class _UserInfoState extends State<UserInfo> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              _infoList('Username: ', snapshot.data!.username),
-                              _infoList('Full Name: ', snapshot.data!.fullName),
-                              _infoList('Email: ', snapshot.data!.email),
-                              _infoList('Gender: ', snapshot.data!.gender),
-                              _infoList(
-                                  'Role: ', _getRole(snapshot.data!.role)),
-                              _infoList('Status: ', snapshot.data!.status),
+                              infoList('Username: ',
+                                  [Text(snapshot.data!.username)]),
+                              infoList('Full Name: ',
+                                  [Text(snapshot.data!.fullName)]),
+                              infoList('Email: ', [Text(snapshot.data!.email)]),
+                              infoList('Gender: ', [
+                                getGender(snapshot.data!.gender),
+                                Text(snapshot.data!.gender)
+                              ]),
+                              infoList('Friends: ', [
+                                Text(snapshot.data!.noOfFriends.toString())
+                              ]),
+                              infoList('Posts: ',
+                                  [Text(snapshot.data!.noOfPosts.toString())]),
+                              infoList('Status: ',
+                                  [getStatus(snapshot.data!.status)]),
+                              infoList('Role: ', [
+                                RoleDropdown(
+                                  userId: snapshot.data!.id,
+                                  role: snapshot.data!.role,
+                                )
+                              ]),
+                              infoList(
+                                  'Report: ',
+                                  getMultipleReportType(
+                                      snapshot.data!.reportTitleList)),
+                              infoList('Member since: ', [
+                                Text(DateFormat("dd/MM/yyyy").format(
+                                    DateTime.parse(snapshot.data!.createdAt)))
+                              ]),
                             ],
                           )
                         ],
@@ -127,26 +153,5 @@ class _UserInfoState extends State<UserInfo> {
                   child: CircularProgressIndicator.adaptive(),
                 ),
               ));
-  }
-
-  _getRole(String type) {
-    switch (type) {
-      case 'ROLE_ADMIN':
-        return 'Admin';
-      case 'ROLE_USER':
-        return 'User';
-      default:
-        return '';
-    }
-  }
-
-  _infoList(String title, String content) {
-    return RichText(
-        text: TextSpan(children: [
-      TextSpan(
-          text: title,
-          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
-      TextSpan(text: content, style: const TextStyle(color: Colors.black))
-    ]));
   }
 }

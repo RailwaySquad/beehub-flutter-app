@@ -82,10 +82,12 @@ class _UserInfoState extends State<GroupInfo> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              _infoList('Group Name: ', snapshot.data!.name),
-                              _infoList('Visibility: ', snapshot.data!.isPublic ? 'Public' : 'Private'),
-                              _infoList('Members: ', snapshot.data!.noOfMembers.toString()),
-                              _infoList('Posts: ', snapshot.data!.noOfPosts.toString()),
+                              infoList('Group Name: ', [Text(snapshot.data!.name)]),
+                              infoList('Creator: ', [Text(snapshot.data!.creatorUsername)]),
+                              infoList('Visibility: ', [Text(snapshot.data!.isPublic ? 'Public' : 'Private')]),
+                              infoList('Members: ', [Text(snapshot.data!.noOfMembers.toString())]),
+                              infoList('Posts: ', [Text(snapshot.data!.noOfPosts.toString())]),
+                              infoList('Status: ', [getStatus(snapshot.data!.isActive ? 'active' : 'inactive')]),
                             ],
                           )
                         ],
@@ -125,16 +127,5 @@ class _UserInfoState extends State<GroupInfo> {
                   child: CircularProgressIndicator.adaptive(),
                 ),
               ));
-  }
-
-  _infoList(String title, String content) {
-    return RichText(
-        text: TextSpan(children: [
-      TextSpan(
-          text: title,
-          style: const TextStyle(
-              fontWeight: FontWeight.bold, color: Colors.black)),
-      TextSpan(text: content, style: const TextStyle(color: Colors.black))
-    ]));
   }
 }

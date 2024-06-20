@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:beehub_flutter_app/Models/admin/admin_group.dart';
 import 'package:beehub_flutter_app/Utils/admin_utils.dart';
+import 'package:beehub_flutter_app/Utils/page_navigator.dart';
+import 'package:beehub_flutter_app/Widgets/admin/group_info.dart';
 import 'package:http/http.dart' as http;
 import 'package:beehub_flutter_app/Constants/url.dart';
 import 'package:beehub_flutter_app/Provider/db_provider.dart';
@@ -79,7 +81,12 @@ class _ReportsState extends State<AdminGroups> {
                       rows: snapshot.data!
                           .map((e) => DataRow(cells: [
                                 DataCell(Text(e.id.toString())),
-                                DataCell(Text(e.name)),
+                                DataCell(
+                                    Text(e.name,
+                                        style: const TextStyle(
+                                            color: Colors.blue)),
+                                    onTap: () => PageNavigator(ctx: context)
+                                        .nextPage(page: GroupInfo(id: e.id))),
                                 DataCell(
                                     Text(e.isPublic ? 'Public' : 'Private')),
                                 DataCell(Text(DateFormat("dd/MM/yyyy")

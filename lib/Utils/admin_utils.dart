@@ -40,7 +40,7 @@ _countDuplicate(List<String> data) {
   return count;
 }
 
-getGender(String type) {
+Widget getGender(String type) {
   switch (type) {
     case 'male':
       return Icon(
@@ -102,7 +102,9 @@ getStatus(String type) {
 }
 
 String getAvatar(String avatar) {
-  if (avatar == "male") {
+  if (avatar == "") {
+    return "male";
+  } else if (avatar == "male") {
     return "${AppUrl.srcPath}/user_male.png";
   } else if (avatar == "female") {
     return "${AppUrl.srcPath}/user_female.png";
@@ -111,4 +113,17 @@ String getAvatar(String avatar) {
   } else {
     return avatar;
   }
+}
+
+infoList(String title, List<Widget> content) {
+  return Wrap(
+      direction: Axis.horizontal,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        ...content
+      ]);
 }

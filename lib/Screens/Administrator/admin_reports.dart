@@ -5,6 +5,7 @@ import 'package:beehub_flutter_app/Provider/db_provider.dart';
 import 'package:beehub_flutter_app/Utils/admin_utils.dart';
 import 'package:beehub_flutter_app/Widgets/admin/group_info.dart';
 import 'package:beehub_flutter_app/Models/admin/admin_report.dart';
+import 'package:beehub_flutter_app/Widgets/admin/post_info.dart';
 import 'package:beehub_flutter_app/Widgets/admin/user_info.dart';
 import 'package:beehub_flutter_app/Utils/page_navigator.dart';
 import 'package:beehub_flutter_app/Widgets/scroll_table.dart';
@@ -104,6 +105,9 @@ class _ReportsState extends State<Reports> {
                                   } else if (e.caseType == 'group') {
                                     PageNavigator(ctx: context).nextPage(
                                         page: GroupInfo(id: e.reportedCaseId));
+                                  } else if (e.caseType == 'post') {
+                                    PageNavigator(ctx: context).nextPage(
+                                        page: PostInfo(id: e.reportedCaseId));
                                   }
                                 }),
                                 DataCell(getReportType(e.type, null)),
