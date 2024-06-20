@@ -110,8 +110,8 @@ class _GroupDiscussionState extends State<GroupDiscussion> {
   @override
   Widget build(BuildContext context) {
     if (posts.isEmpty) {
-      return const SliverToBoxAdapter(
-          child: SizedBox(child: Text("There are no post in user profile")));
+      return  SliverToBoxAdapter(
+          child: Center(  heightFactor: 4.0,child: Text("Not Found Post",style: Theme.of(context).textTheme.headlineMedium),));
     }
     return SliverList.builder(
         itemCount: posts.length,

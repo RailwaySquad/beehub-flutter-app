@@ -1,11 +1,11 @@
 class UserSetting{
-  final int id;
-  final int userId;
+  final int? id;
+  final int? userId;
   final int? postId;
   final String settingType;
   final String? settingItem;
 
-  UserSetting({required this.id, required this.userId, required this.postId, required this.settingType, required this.settingItem});
+  UserSetting({this.id,  this.userId, required this.postId, required this.settingType, required this.settingItem});
   Map<String, dynamic> toJson(){
     return {
       "id": id,
@@ -16,11 +16,11 @@ class UserSetting{
     };
   }
    factory UserSetting.fromJson(Map<String, dynamic> json){
-      final id = json['id'] as int;
-      final user = json['user_id'] as int;
-      final post = json['post_is'] as int;
-      final settingType = json['setting_type'] as String;
-      final settingItem = json['setting_item'] as String;
+      final id = json['id'];
+      final user = json['user_id'] ;
+      final post = json['post_is'] ;
+      final settingType = json['setting_type'];
+      final settingItem = json['setting_item'];
       return UserSetting(
         id: id, 
         userId: user, 

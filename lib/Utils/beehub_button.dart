@@ -25,14 +25,18 @@ class BeehubButton{
               child: const Text("Add Friend", style: TextStyle(fontWeight: FontWeight.w600),),
             );
   }
-  static Widget UnBlock(int receiverId, String routeName,String? search ){
+  static Widget UnBlock(int receiverId, String routeName,String? search,Function refetch ){
     return ElevatedButton(
               onPressed: () async{
                 int idUser = await DatabaseProvider().getUserId();
                 Requirementform req = Requirementform(senderId: idUser, receiverId: receiverId, type: "UN_BLOCK");
                 var response = await THttpHelper.createRequirement(req);
                 if(response?["response"]!="unsuccess" && response?["response"]!="error"){
-                  Get.toNamed(routeName,arguments: search,preventDuplicates: false);
+                  if(search!=null || routeName.contains("/userpage/")){
+                    Get.toNamed(routeName,arguments: search,preventDuplicates: false);
+                  }else{
+                    await refetch();
+                  }
                 }
               },
               style: ButtonStyle(
@@ -131,13 +135,14 @@ class BeehubButton{
               child: const Text("Block", style: TextStyle(fontWeight: FontWeight.w600),),
             );
   }
-  static Widget JoinGroup(int groupId,String routeName,String? search ){
+  static Widget JoinGroup(int groupId,String routeName,String? search){
     return ElevatedButton(
               onPressed: () async{
                 int idUser = await DatabaseProvider().getUserId();
                 Requirementform req = Requirementform(senderId: idUser, groupId: groupId, type: "JOIN");
                 var response = await THttpHelper.createRequirement(req);
                 if(response?["response"]!="unsuccess" && response?["response"]!="error"){
+                  
                   Get.toNamed(routeName,arguments: search,preventDuplicates: false);
                 }
               },

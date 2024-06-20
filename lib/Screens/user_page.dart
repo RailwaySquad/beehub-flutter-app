@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:beehub_flutter_app/Constants/color.dart';
 import 'package:beehub_flutter_app/Models/profile.dart';
+import 'package:beehub_flutter_app/Models/user_setting.dart';
 import 'package:beehub_flutter_app/Provider/user_provider.dart';
 import 'package:beehub_flutter_app/Screens/Profile/profile_about.dart';
 import 'package:beehub_flutter_app/Screens/Profile/profile_gallery.dart';
@@ -93,7 +96,7 @@ class _UserPageState extends State<UserPage> {
       }
       switch (profile.relationshipWithUser) {
         case "BLOCKED":
-          return BeehubButton.UnBlock(profile.id,'/userpage/${Get.parameters["user"]}',null);
+          return BeehubButton.UnBlock(profile.id,'/userpage/${Get.parameters["user"]}',null,(){});
         case "FRIEND":
           return BeehubButton.UnFriend(profile.id,'/userpage/${Get.parameters["user"]}',null);
         case "SENT_REQUEST":
@@ -111,7 +114,7 @@ class _UserPageState extends State<UserPage> {
 
       }
     }
-    
+   
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(onPressed: (){Get.toNamed("/");},icon: const Icon(Icons.chevron_left),),
@@ -206,7 +209,7 @@ class _UserPageState extends State<UserPage> {
                           Expanded(
                             flex: 1,
                             child: TextButton(
-                              onPressed: (){},
+                              onPressed: ()=>  Get.toNamed("/userpage/friend_group/${profile.username}"),
                               child: RichText(
                                 text: TextSpan(
                                 style: GoogleFonts.ubuntu(color: TColors.black,fontSize: 14),
@@ -221,7 +224,7 @@ class _UserPageState extends State<UserPage> {
                           Expanded(
                             flex: 1,
                             child: TextButton(
-                              onPressed: (){},
+                              onPressed: ()=> Get.toNamed("/userpage/friend_group/${profile.username}"),
                               child: RichText(text: TextSpan(
                                 style:  GoogleFonts.ubuntu(color: TColors.black,fontSize: 14),
                                 children: [

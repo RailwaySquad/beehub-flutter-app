@@ -1,3 +1,4 @@
+import 'package:beehub_flutter_app/Constants/color.dart';
 import 'package:beehub_flutter_app/Models/user.dart';
 import 'package:beehub_flutter_app/Provider/user_provider.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +12,7 @@ class ListFriend extends StatelessWidget {
     bool isLoading = Provider.of<UserProvider>(context).isLoading;
     if(isLoading){
       return const Center(
-        child: CircularProgressIndicator(),
+        child: CircularProgressIndicator(color: TColors.buttonPrimary,),
       );
     }
     List<User> list= Provider.of<UserProvider>(context).friends;
@@ -26,9 +27,20 @@ class ListFriend extends StatelessWidget {
             onTap: (){
               Get.toNamed("/userpage/${list[index].username}");
             },
-            child: list[index].image!=null
-              ?Image.network(list[index].image!)
-              : Image.asset( list[index].gender == 'female'? "assets/avatar/user_female.png":"assets/avatar/user_male.png"),
+            child:
+            Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: Colors.black,width: 1.0),
+                      borderRadius: BorderRadius.circular(45.0),
+                      image: DecorationImage(
+                        fit: BoxFit.fill,
+                        image: list[index].image!=null? NetworkImage(list[index].image!)
+                                  : (list[index].gender == 'female'? const AssetImage("assets/avatar/user_female.png") as ImageProvider:const AssetImage("assets/avatar/user_male.png") as ImageProvider),)
+                    ),
+                    width: 60,
+                    height: 60,
+                  ),
           ),
           title: GestureDetector(
             onTap: (){

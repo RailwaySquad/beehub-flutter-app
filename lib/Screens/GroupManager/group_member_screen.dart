@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:beehub_flutter_app/Models/group.dart';
 import 'package:beehub_flutter_app/Models/group_member.dart';
 import 'package:beehub_flutter_app/Provider/db_provider.dart';
@@ -17,20 +19,14 @@ class GroupMemberScreen extends StatefulWidget {
 
 class _GroupMemberScreenState extends State<GroupMemberScreen> {
   List<GroupMember> list=[];
-  int? idUser ;
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      int id=await Provider.of<DatabaseProvider>(context, listen: false).getUserId();
-      setState(() {
-        idUser = id;
-      });
-    }); 
   }
   @override
   Widget build(BuildContext context) {
-    Group? group = Provider.of<UserProvider>(context).group;
+    Group? group = Provider.of<UserProvider>(context,listen: false).group;
+    int? idUser  = Provider.of<DatabaseProvider>(context,listen: false).userId;
     if(group==null){
       return  const SizedBox();
     }

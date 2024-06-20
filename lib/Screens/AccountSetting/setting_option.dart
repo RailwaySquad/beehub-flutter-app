@@ -6,8 +6,8 @@ class SettingOption extends StatelessWidget {
   const SettingOption({super.key});
   @override
   Widget build(BuildContext context) {
-    final Map<String, String> options= <String, String>{"General Setting": "/account_setting/general" ,"Account Setting": "/account_setting/account", "Security":"/account_setting/security" };
-    final List<String> keysOp = ["General Setting","Account Setting","Security"];
+    final Map<String, String> options= <String, String>{"General Setting": "/account_setting/general" ,"Account Setting": "/account_setting/account", "Security":"/account_setting/security", "Block List": "/account_setting/block" };
+    final List<String> keysOp = ["General Setting","Account Setting","Security","Block List"];
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(onPressed: (){Get.toNamed("/");},icon: const Icon(Icons.chevron_left),),

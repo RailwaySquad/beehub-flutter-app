@@ -28,18 +28,20 @@ class _PopularPostsState extends State<PopularPosts> {
     if(isLoading) return;
     isLoading = true;
     List<Post>? addPosts =await THttpHelper.getPopularPosts(page);
-    setState(() {
-      page++;
-      isLoading = false;
-      if(addPosts!=null &&addPosts.length<5){
-        hasMore=false;
-      }
-      if(addPosts==null){
-        errorConnect = true;
-      }else{
-        list.addAll(addPosts);
-      }
-    });
+    if(mounted){
+      setState(() {
+        page++;
+        isLoading = false;
+        if(addPosts!=null &&addPosts.length<5){
+          hasMore=false;
+        }
+        if(addPosts==null){
+          errorConnect = true;
+        }else{
+          list.addAll(addPosts);
+        }
+      });
+    }
   }
   
   void updatePostList(){

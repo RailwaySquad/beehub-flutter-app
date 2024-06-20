@@ -155,7 +155,17 @@ class _GroupPostsState extends State<GroupPosts> {
                                                       : Image.asset("assets/avatar/group_image.png"),
                                                 ),
                                             ),
-                                              Text(groups[index].groupname, textAlign:TextAlign.center, style: TextStyle(fontWeight: selectGroup==index? FontWeight.bold: FontWeight.normal),),
+                                            SizedBox(
+                                              width: 60,
+                                              child: Text(
+                                                  groups[index].groupname,
+                                                  overflow: TextOverflow.fade,
+                                                  softWrap: false,
+                                                  maxLines: 1,
+                                                  style: TextStyle(fontWeight: selectGroup==index? FontWeight.bold: FontWeight.normal)
+                                                ),
+                                            ),
+                                              // Text(groups[index].groupname, textAlign:TextAlign.center, style: TextStyle(fontWeight: selectGroup==index? FontWeight.bold: FontWeight.normal),),
                                         ],
                                       ),
                                 ),

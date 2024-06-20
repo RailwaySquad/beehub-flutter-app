@@ -193,6 +193,7 @@ class _PostWidgetState extends State<PostWidget> {
   Widget build(BuildContext context) {
     final dark = THelperFunction.isDarkMode(context);
     return Container(
+      margin: const EdgeInsets.symmetric(vertical: 2.5),
       decoration: BoxDecoration(
         color: dark ? TColors.darkerGrey : Colors.white,
         boxShadow: [
@@ -213,14 +214,30 @@ class _PostWidgetState extends State<PostWidget> {
                       child: Row(
                         children: <Widget>[
                           //Avatar
-                          CircleAvatar(
-                            child: widget.post.userImage != null &&
-                                    widget.post.userImage!.isNotEmpty
-                                ? Image.network(widget.post.userImage!)
-                                : Image.asset(widget.post.userGender == "female"
-                                    ? "assets/avatar/user_female.png"
-                                    : "assets/avatar/user_male.png"),
+                          Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border.all(color: Colors.black,width: 0.5),
+                                borderRadius: BorderRadius.circular(45.0),
+                                image: DecorationImage(
+                                  fit: BoxFit.fill,
+                                  image: widget.post.userImage != null &&
+                                        widget.post.userImage!.isNotEmpty? NetworkImage(widget.post.userImage!)
+                                  :(widget.post.userGender == 'female'?
+                                const AssetImage("assets/avatar/user_female.png")  as ImageProvider: const AssetImage("assets/avatar/user_male.png") as ImageProvider
+                                ))
+                              ),
+                              width: 40,
+                              height: 40,
                           ),
+                          // CircleAvatar(
+                          //   child: widget.post.userImage != null &&
+                          //           widget.post.userImage!.isNotEmpty
+                          //       ? Image.network(widget.post.userImage!)
+                          //       : Image.asset(widget.post.userGender == "female"
+                          //           ? "assets/avatar/user_female.png"
+                          //           : "assets/avatar/user_male.png"),
+                          // ),
                           const SizedBox(
                             width: 10,
                           ),
