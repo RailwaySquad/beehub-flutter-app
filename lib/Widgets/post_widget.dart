@@ -243,13 +243,17 @@ class _PostWidgetState extends State<PostWidget> {
                           ),
                           //Fullname
                           SizedBox(
+                            width: 250,
                               child: widget.post.groupName != null &&
                                       widget.post.groupName!.isNotEmpty
                                   ? Column(
+                                     mainAxisSize: MainAxisSize.max,
                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
-                                      Row(children: [
+                                      Row(
+                                        mainAxisSize: MainAxisSize.max,
+                                        children: [
                                           Text(
                                             widget.post.userFullname,
                                             style: Theme.of(context)
@@ -261,15 +265,22 @@ class _PostWidgetState extends State<PostWidget> {
                                             maxLines: 1,
                                             textAlign: TextAlign.left,
                                           ),
-                                          Text.rich(TextSpan(
-                                              text: " in ",
-                                              children: <InlineSpan>[
-                                                TextSpan(
-                                                  text: widget.post.groupName!,
-                                                  style: const TextStyle(
-                                                      fontWeight: FontWeight.bold),recognizer: TapGestureRecognizer()..onTap = () => Get.toNamed("/group/${widget.post.groupId!}")
-                                                )
-                                              ]))
+                                          Flexible(
+                                            fit: FlexFit.loose,
+                                            child: Text.rich(TextSpan(
+                                                text: " in ",
+                                                children: <InlineSpan>[
+                                                  TextSpan(
+                                                    text: widget.post.groupName!,
+                                                    style: const TextStyle(
+                                                        fontWeight: FontWeight.bold),recognizer: TapGestureRecognizer()..onTap = () => Get.toNamed("/group/${widget.post.groupId!}")
+                                                  )
+                                                ]),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              softWrap: false  
+                                              ),
+                                          )
                                         ]),
                                         Text(formatDate(widget.post.createdAt))
                                     ],

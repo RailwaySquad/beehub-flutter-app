@@ -60,13 +60,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           return const Placeholder();
       }
   }
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      Provider.of<UserProvider>(context, listen: false).fetchProfile(true);
-    }); 
-  }
+  
   @override
   Widget build(BuildContext context) {
     Profile? profile = Provider.of<UserProvider>(context, listen: false).ownprofile;

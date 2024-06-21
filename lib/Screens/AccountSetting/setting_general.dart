@@ -65,16 +65,20 @@ class _SettingGeneralState extends State<SettingGeneral> {
     final TextEditingController bioController = TextEditingController(text: profile.bio);
     
     Future<bool> submitData () async{
-        String fullname = fullnameInputController.text;
-        String phone = phoneInputController.text;
-        String gender = genderController.text;
-        String biography = bioController.text;
+         if(formKey.currentState!.validate()){
+            String fullname = fullnameInputController.text;
+            String phone = phoneInputController.text;
+            String gender = genderController.text;
+            String biography = bioController.text;
 
-        int id = int.parse(idInputController.text);
-        DateFormat formatD = DateFormat('yyyy-MM-dd');
-        String update= selectedDate!=null? formatD.format(selectedDate!):formatD.format(DateTime.now()); 
-        Profileform data = Profileform(id: id,gender: gender, bio: biography, birthday: update,fullname: fullname,phone: phone );
-        return await THttpHelper.updateProfile(data);
+            int id = int.parse(idInputController.text);
+            DateFormat formatD = DateFormat('yyyy-MM-dd');
+            String update= selectedDate!=null? formatD.format(selectedDate!):formatD.format(DateTime.now()); 
+            Profileform data = Profileform(id: id,gender: gender, bio: biography, birthday: update,fullname: fullname,phone: phone );
+            return await THttpHelper.updateProfile(data);
+         }else{
+          return false;
+         }
       }
     return Scaffold(
       appBar: AppBar(
@@ -172,7 +176,7 @@ class _SettingGeneralState extends State<SettingGeneral> {
                           labelText: "Full name",
                         ),
                         validator: (value){
-                          if(value!.isEmpty){
+                          if(value!=null &&value.trim().isEmpty){
                             return "Enter Fullname";
                           }else{
                             return null;
@@ -190,9 +194,9 @@ class _SettingGeneralState extends State<SettingGeneral> {
                         validator: (value){
                           String pattern = r'(^(84|0[35789])+([0-9]{8})$)';
                           RegExp regExp =  RegExp(pattern);
-                          if(value!.isEmpty){
+                          if(value!=null && value.trim().isEmpty){
                             return "Enter Phone number";
-                          }else if(!regExp.hasMatch(value)){
+                          }else if(!regExp.hasMatch(value!)){
                             return "Invalid Phone number \n(example: 8412345678 or 0912345678)";
                           }
                           return null;

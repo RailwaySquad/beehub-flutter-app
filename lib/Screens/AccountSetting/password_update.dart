@@ -119,40 +119,17 @@ class _PasswordUpdateState extends State<PasswordUpdate> {
                   return null;
                 }
               ),
-              // TextFormField(
-              //   obscureText: true,
-              //   autocorrect: false,
-              //   decoration: const InputDecoration( 
-              //     labelText:"Current Password", 
-              //     labelStyle: TextStyle(fontSize: 16)
-              //   ),
-              //   controller:_currentPasswordInputController,
-              //   validator: (val) {
-              //     if(val!=null&& val.isEmpty){
-              //       return "Current Password is required";
-              //     }
-              //     return null;
-              //   }
-              // ),
+              
               const SizedBox(height: 12,),
               Center(
                 child: ElevatedButton(
                   onPressed: ()async{
-                    // bool checkPassword = await THttpHelper.checkPassword(_currentPasswordInputController.text);
-                    // log(checkPassword.toString());
-                    // if(!checkPassword ){
-                    //  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    //                       content: Text("Current Password incorrect"),
-                    //                   ));
-                    // }else{
-
                      if(formKey.currentState!.validate()){
                       bool resp= await THttpHelper.updatePassword(_passwordInputController.text); 
                       if(resp){
                         DatabaseProvider().logOut(context);
                       }
                      }
-                  // }
                   }, 
                   style:  ButtonStyle(
                   foregroundColor: WidgetStateProperty.all<Color>(Colors.white),

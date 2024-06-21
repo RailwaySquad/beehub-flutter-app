@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:ui';
 
 import 'package:beehub_flutter_app/Constants/color.dart';
@@ -99,7 +98,6 @@ class _GroupPageState extends State<GroupPage> {
         ),
       );
     }
-    log(group.description!);
     Widget getButton(){
     
       if(group.joined==null){

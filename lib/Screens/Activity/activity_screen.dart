@@ -58,16 +58,16 @@ class _ActivityScreenState extends State<ActivityScreen> {
     return Column(
           children: [
             AppBar(
-              title: const Text('Beehub'),
-                actions: [
-                  IconButton(onPressed: (){
-                    showSearch(context:context, delegate: BeehubSearchDelegate());
-                  }, icon:const Icon(Icons.search)),
-                  IconButton(
-                    onPressed: () => 
-                      PageNavigator(ctx: context).nextPage(page: ChatScreen()), 
-                    icon: const Icon(Icons.message))
-                ],
+              title: Text('Beehub', style: GoogleFonts.lora(fontWeight: FontWeight.w600, fontSize: 28),),
+              actions: [
+                IconButton(onPressed: (){
+                  showSearch(context:context, delegate: BeehubSearchDelegate());
+                }, icon:const Icon(Icons.search)),
+                IconButton(
+                  onPressed: () => 
+                    PageNavigator(ctx: context).nextPage(page: const ChatScreen()), 
+                  icon: const Icon(Icons.message))
+              ],
             ),
             SizedBox(
               width: size.width,

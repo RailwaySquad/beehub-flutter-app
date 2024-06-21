@@ -484,4 +484,24 @@ class THttpHelper {
     log("Error Netword connect");
     return false;
   }
+  static Future<dynamic> createGroup(GroupForm group) async {
+     DatabaseProvider db= DatabaseProvider();
+    int userId = await db.getUserId();
+    String token = await db.getToken();
+    Response response = await post(Uri.parse("$BaseUrl/user/create-group/flutter/$userId"),
+    headers: {
+      'Content-Type': 'application/json',
+      HttpHeaders.authorizationHeader: 'Bearer $token'
+    },
+    body: json.encode(group.toJson())
+    );
+    int status = response.statusCode;
+    if(status==200){
+      log(response.body);
+      dynamic res = jsonDecode(response.body);
+      return res;
+    }
+    log("Error Netword connect");
+    return false;
+  }
 }
