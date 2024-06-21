@@ -1,7 +1,8 @@
 
 import 'package:beehub_flutter_app/Constants/color.dart';
-import 'package:beehub_flutter_app/Provider/db_provider.dart';
 import 'package:beehub_flutter_app/Screens/Activity/group_posts.dart';
+import 'package:beehub_flutter_app/Screens/Chat/chat.dart';
+import 'package:beehub_flutter_app/Utils/page_navigator.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -63,11 +64,9 @@ class _ActivityScreenState extends State<ActivityScreen> {
                     showSearch(context:context, delegate: BeehubSearchDelegate());
                   }, icon:const Icon(Icons.search)),
                   IconButton(
-                      icon: const Icon(Icons.exit_to_app),
-                      onPressed: () {
-                        ///logout
-                        DatabaseProvider().logOut(context);
-                      }),
+                    onPressed: () => 
+                      PageNavigator(ctx: context).nextPage(page: ChatScreen()), 
+                    icon: const Icon(Icons.message))
                 ],
             ),
             SizedBox(

@@ -103,7 +103,7 @@ getStatus(String type) {
 
 String getAvatar(String avatar) {
   if (avatar == "") {
-    return "male";
+    return "${AppUrl.srcPath}/user_male.png";
   } else if (avatar == "male") {
     return "${AppUrl.srcPath}/user_male.png";
   } else if (avatar == "female") {

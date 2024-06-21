@@ -27,7 +27,13 @@ class _RegisterPageState extends State<RegisterPage> {
       const MinLengthValidator(length: 6),
       const MaxLengthValidator(length: 20)
     ]);
+    if (_containsSpace(value)) return "Username cannot have space";
     return validator.validate(label: 'Username', value: value);
+  }
+
+  bool _containsSpace(String? value) {
+        if (value == null || value.isEmpty) return false;
+    return value.contains(RegExp(r'\s'));
   }
 
   String? _emailValidator(String? value) {

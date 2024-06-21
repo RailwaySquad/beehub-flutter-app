@@ -107,9 +107,12 @@ class AuthenticationProvider extends ChangeNotifier {
           PageNavigator(ctx: context).nextPageOnly(page: const HomePage());
         }
       } else {
-        final res = json.decode(req.body);
-
-        _resMessage = res['message'];
+        if (req.statusCode == 403) {
+          _resMessage = req.body;
+        } else {
+          final res = json.decode(req.body);
+          _resMessage = res['message'];
+        }
 
         _isLoading = false;
         notifyListeners();
