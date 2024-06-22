@@ -1,5 +1,3 @@
-
-
 import 'package:beehub_flutter_app/Models/profile.dart';
 import 'package:beehub_flutter_app/Models/user_setting.dart';
 import 'package:beehub_flutter_app/Provider/db_provider.dart';

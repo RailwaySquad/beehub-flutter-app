@@ -65,7 +65,7 @@ class _UsernameUpdateState extends State<UsernameUpdate> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Require Login again after update username"),
+              const Text("Require Login again after update username"),
               const SizedBox(height: 15,),
               TextFormField(
                 controller: _userInputController,

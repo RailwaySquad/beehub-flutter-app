@@ -69,6 +69,14 @@ class _GroupSettingScreenState extends State<GroupSettingScreen> {
     _nameInputController.text = group.groupname;
     _descriptionInputController.text = group.description??"";
     Future<void> submitData () async{
+      if(_fileBg!=null){
+        final uploadBg = await THttpHelper.uploadBackgroudGr(_fileBg!);
+          log(uploadBg.toString());
+      }
+      if(_fileImg!=null){
+        final uploadImg = await THttpHelper.uploadImgGr(_fileImg!);
+        log(uploadImg.toString());
+      }
         if(formKey.currentState!.validate()){
           String groupName = _nameInputController.text;
           String description = _descriptionInputController.text;
@@ -76,7 +84,7 @@ class _GroupSettingScreenState extends State<GroupSettingScreen> {
           GroupForm groupUpdate = GroupForm(id: id,groupname:groupName,description: description,publicGroup:  groupStatus??group.publicGroup);
           final res=  await THttpHelper.updateGroup(groupUpdate);
           if(res["result"]){
-            Get.toNamed("/group/$id");
+            Navigator.popAndPushNamed(context, "/group/$id");
           }
 
         }
@@ -110,11 +118,10 @@ class _GroupSettingScreenState extends State<GroupSettingScreen> {
                       setState(() {
                         _fileBg = File(image.path);
                       });
-                      bool upload = await THttpHelper.uploadBackgroudGr(_fileBg!);
                     }
                 },
                 child: group.backgroundGroup!=null? Image.network( group.backgroundGroup!,height: 160, fit: BoxFit.fill,)
-                                                : Container(color: Colors.grey,height: 160,),
+                                                : _fileBg!=null? Image.file(_fileBg!,height: 160, fit: BoxFit.fill,) :Container(color: Colors.grey,height: 160,),
               ),
               const SizedBox(height: 10,),
               const Text("Change group image", style: TextStyle(fontSize: 18),),
@@ -127,11 +134,11 @@ class _GroupSettingScreenState extends State<GroupSettingScreen> {
                       setState(() {
                         _fileImg = File(image.path);
                       });
-                      bool upload = await THttpHelper.uploadImgGr(_fileImg!);
+                      
                     }
                 },
-                child: group.imageGroup!=null? Image.network( group.imageGroup!,height: 160, width: 160, fit: BoxFit.fill,)
-                                                : Container(color: Colors.grey,height: 160, width: 160,),
+                child: group.imageGroup!=null? Image.network( group.imageGroup!,height: 160, width: 160, fit: BoxFit.fill)
+                                               :_fileImg!=null?Image.file(_fileImg!, height: 160,width: 160, fit: BoxFit.fill): Container(color: Colors.grey,height: 160, width: 160,),
               ),
               Form(
                 key: formKey,

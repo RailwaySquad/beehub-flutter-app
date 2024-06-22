@@ -13,7 +13,6 @@ import 'package:beehub_flutter_app/Models/user.dart';
 import 'package:beehub_flutter_app/Provider/db_provider.dart';
 import 'package:http/http.dart';
 class THttpHelper {
-  // late final String _URL_API= "http://10.0.2.2:8089"; 
   static final String BaseUrl= AppUrl.api;
   
   // /homepage/{id}
@@ -27,7 +26,6 @@ class THttpHelper {
       }
       );
      int status = response.statusCode;
-     log(status.toString());
      if(status == 200){
       log("Connect database successful: $status");
       String json = response.body;
@@ -161,7 +159,6 @@ class THttpHelper {
   }
   ///user/{id_user}/get-posts/{username}
   static Future<List<Post>?> getProfilePost(String username,int page) async{
-    log( username);
     DatabaseProvider db= DatabaseProvider();
     int userId = await db.getUserId();
     String token = await db.getToken();
@@ -337,12 +334,9 @@ class THttpHelper {
   static Future<bool> checkPassword(String password)async{
     DatabaseProvider db= DatabaseProvider();
     String token = await db.getToken();
-    // var client = BrowserClient()..withCredentials = true;
     Response response = await get(Uri.parse("$BaseUrl/check-password/?password=$password"),
     headers: {
       'Content-Type': 'application/json',
-      // HttpHeaders.accessControlAllowCredentialsHeader: '*',
-      // HttpHeaders.accessControlAllowHeadersHeader: "*",
       HttpHeaders.authorizationHeader: 'Bearer $token',
     });
      int status = response.statusCode;
@@ -391,7 +385,6 @@ class THttpHelper {
     int status = response.statusCode;
     if(status==200){
       bool res = jsonDecode(response.body) as bool;
-      log(res.toString());
       return res;
     }
     log("Error Netword connect");
@@ -418,9 +411,10 @@ class THttpHelper {
     DatabaseProvider db= DatabaseProvider();
     int userId = await db.getUserId();
     String token = await db.getToken();
+    log("Upload Background: ${file.path}");
     var request =  MultipartRequest("POST",Uri.parse("$BaseUrl/upload/profile/background/$userId"));
     var myFile = await MultipartFile.fromPath("media",file.path);
-    request.headers.addAll({HttpHeaders.authorizationHeader: 'Bearer $token'});
+    request.headers.addAll({'Authorization': 'Bearer $token'});
     request.files.add(myFile);
     final response = await request.send();
     if(response.statusCode==201){

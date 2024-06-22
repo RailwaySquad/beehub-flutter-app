@@ -8,7 +8,6 @@ import 'package:beehub_flutter_app/Provider/user_provider.dart';
 import 'package:beehub_flutter_app/Utils/api_connection/http_client.dart';
 import 'package:beehub_flutter_app/Utils/helper/helper_functions.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -65,6 +64,14 @@ class _SettingGeneralState extends State<SettingGeneral> {
     final TextEditingController bioController = TextEditingController(text: profile.bio);
     
     Future<bool> submitData () async{
+          if(_fileBg!=null){
+            final upload = await THttpHelper.uploadBackground(_fileBg!);
+            log("Upload Bg: $upload");
+          }
+          if(_fileAvatar!=null){
+              final upload = await THttpHelper.uploadAvatar(_fileAvatar!);
+              log("Upload Img: $upload");
+          }
          if(formKey.currentState!.validate()){
             String fullname = fullnameInputController.text;
             String phone = phoneInputController.text;
@@ -90,7 +97,7 @@ class _SettingGeneralState extends State<SettingGeneral> {
                         bool result= await submitData();
                         if(result){
                           Provider.of<UserProvider>(context, listen: false).fetchProfile(true);
-                          Get.toNamed('/');
+                          Navigator.popAndPushNamed(context, "/");
                         }else{
                           log(result.toString());
                         }
@@ -117,8 +124,6 @@ class _SettingGeneralState extends State<SettingGeneral> {
                                   setState(() {
                                     _fileBg = File(image.path);
                                   });
-                                  bool upload = await THttpHelper.uploadAvatar(_fileBg!);
-                                  log(upload.toString());
                                 }
                             },
                           child: Container(
@@ -144,8 +149,7 @@ class _SettingGeneralState extends State<SettingGeneral> {
                                   setState(() {
                                     _fileAvatar = File(image.path);
                                   });
-                                  dynamic upload = await THttpHelper.uploadAvatar(_fileAvatar!);
-                                  log(upload.toString());
+                                  
                                 }
                               },
                             child: Container(
