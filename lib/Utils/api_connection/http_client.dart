@@ -29,6 +29,7 @@ class THttpHelper {
      if(status == 200){
       log("Connect database successful: $status");
       String json = response.body;
+      // log(json);
       List<dynamic> listPost = jsonDecode(json);
       try {
         return List.from(listPost.map((e) => Post.fromJson(e)));
@@ -228,6 +229,7 @@ class THttpHelper {
     int status = response.statusCode;
     if(status == 200){
       String json = response.body;
+      log(json);
       dynamic group= jsonDecode(json);
       try {
         return Group.fromJson(group);
@@ -497,5 +499,52 @@ class THttpHelper {
     }
     log("Error Netword connect");
     return false;
+  }
+  static Future<Map<String, int>> updateSettingPost(String type)async{
+    DatabaseProvider db= DatabaseProvider();
+    int userId = await db.getUserId();
+    String token = await db.getToken();
+    Response response = await post(Uri.parse("$BaseUrl/update/setting/$userId"),
+      headers: {
+        'Content-Type': 'text/plain',
+        HttpHeaders.authorizationHeader: 'Bearer $token'
+      },
+      body: type
+    );
+    int status = response.statusCode;
+    if(status==200){
+      log(response.body);
+      dynamic res = jsonDecode(response.body);
+      return Map<String,int>.from(res);
+    }
+    log("Error Netword connect");
+    return <String,int>{"result":0};
+  }
+  static Future<dynamic> updateSetting(Map<String, String> data)async{
+    DatabaseProvider db= DatabaseProvider();
+    int userId = await db.getUserId();
+    String token = await db.getToken();
+    log(json.encode(data).toString());
+    try {
+      Response response = await post(Uri.parse("$BaseUrl/setting/add/$userId"),
+        headers: {
+          'Content-Type': "application/json",
+          HttpHeaders.authorizationHeader: 'Bearer $token'
+        },
+        body: json.encode(data)
+      );
+      int status = response.statusCode;
+      if(status==200){
+        log(response.body);
+        dynamic res = jsonDecode(response.body);
+        return res;
+      }
+      return false;
+    } catch (e) {
+      log("Error Netword connect");
+      log(e.toString());
+      return false;
+      
+    }
   }
 }

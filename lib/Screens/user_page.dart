@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:beehub_flutter_app/Constants/color.dart';
 import 'package:beehub_flutter_app/Models/profile.dart';
+import 'package:beehub_flutter_app/Provider/db_provider.dart';
 import 'package:beehub_flutter_app/Provider/user_provider.dart';
 import 'package:beehub_flutter_app/Screens/Profile/profile_about.dart';
 import 'package:beehub_flutter_app/Screens/Profile/profile_gallery.dart';
@@ -73,6 +76,7 @@ class _UserPageState extends State<UserPage> {
   @override
   Widget build(BuildContext context) {
     Profile? profile = Provider.of<UserProvider>(context, listen: false).profile;
+    int idUser = Provider.of<DatabaseProvider>(context).userId;
     var size = MediaQuery.of(context).size;
     bool isLoading = Provider.of<UserProvider>(context).isLoading;
     if(isLoading || profile==null){
@@ -101,7 +105,8 @@ class _UserPageState extends State<UserPage> {
         case "NOT_ACCEPT":
           return BeehubButton.AcceptFriend(profile.id, (profile.isBanned || !profile.isActive),'/userpage/${Get.parameters["user"]}',null);
         default:
-          return Row(
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               BeehubButton.AddFriend(profile.id,'/userpage/${Get.parameters["user"]}',null),
               const SizedBox(width: 10,),
@@ -111,10 +116,28 @@ class _UserPageState extends State<UserPage> {
 
       }
     }
-   
+    
+   bool checkSetting(){
+      if(idUser==profile.id ){
+        return true;
+      }
+      bool notSetting = true;
+      if(profile.userSettings!.isNotEmpty){
+        for (var element in profile.userSettings!) {
+          if (element.settingItem=="list_friend" &&( element.settingType == "PUBLIC" || (idUser!=profile.id && profile.relationshipWithUser == "FRIEND" && element.settingType=="FOR_FRIEND")) ) {
+            notSetting = true;
+            break;
+          }else if(element.settingItem=="list_friend" && (profile.relationshipWithUser==null || profile.relationshipWithUser!.isEmpty ||element.settingType == "HIDDEN" )){
+            notSetting =  false;
+          }
+          notSetting = false;
+        }
+      }
+      return notSetting ;
+    }
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(onPressed: (){Get.toNamed("/");},icon: const Icon(Icons.chevron_left),),
+        // leading: IconButton(onPressed: (){Get.toNamed("/");},icon: const Icon(Icons.chevron_left),),
         title: const Text("User Profile"),
       ),
       body: CustomScrollView(
@@ -206,7 +229,13 @@ class _UserPageState extends State<UserPage> {
                           Expanded(
                             flex: 1,
                             child: TextButton(
-                              onPressed: ()=>  Get.toNamed("/userpage/friend_group/${profile.username}"),
+                              onPressed: (){
+                                log("Check Setting: ${checkSetting()}");
+                                  if(checkSetting()){
+                                   Get.toNamed("/userpage/friend_group/${profile.username}");
+
+                                  }
+                              },
                               child: RichText(
                                 text: TextSpan(
                                 style: GoogleFonts.ubuntu(color: TColors.black,fontSize: 14),

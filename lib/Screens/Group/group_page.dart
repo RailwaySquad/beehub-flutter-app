@@ -214,7 +214,7 @@ class _GroupPageState extends State<GroupPage> {
                       getButton()
                     ],
                   ),
-                  
+                  const SizedBox(height: 10,),
                    Padding(
                     padding: const EdgeInsets.only(left: 10),
                     child: Text(group.description!)

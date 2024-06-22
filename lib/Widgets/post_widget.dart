@@ -1,20 +1,16 @@
-import 'dart:developer';
-
-
 import 'package:beehub_flutter_app/Models/comment.dart';
 import 'package:beehub_flutter_app/Models/post.dart';
 import 'package:beehub_flutter_app/Constants/color.dart';
 import 'package:beehub_flutter_app/Models/like.dart';
 import 'package:beehub_flutter_app/Provider/db_provider.dart';
-import 'package:beehub_flutter_app/Provider/user_provider.dart';
 import 'package:beehub_flutter_app/Utils/api_connection/http_post.dart';
 import 'package:beehub_flutter_app/Utils/helper/helper_functions.dart';
 import 'package:beehub_flutter_app/Utils/shadow/shadows.dart';
 import 'package:beehub_flutter_app/Widgets/addpostShare_widget.dart';
 import 'package:beehub_flutter_app/Widgets/editpost_widget.dart';
-import 'package:beehub_flutter_app/Widgets/expanded/expanded_widget.dart';
 import 'package:beehub_flutter_app/Widgets/postShare_widget.dart';
 import 'package:beehub_flutter_app/Widgets/showcommentpost.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -100,6 +96,22 @@ class _PostWidgetState extends State<PostWidget> {
     }else{
       return 'Now' ;
     }
+  }
+  Widget getStatus(String? status){
+    if(status==null){
+      return const SizedBox();
+    }
+    switch (status) {
+      case "PUBLIC":
+        return const Icon(CupertinoIcons.globe);
+      case "HIDDEN":
+        return const Icon(CupertinoIcons.lock);
+      case "FOR_FRIEND":
+        return const Icon(Icons.people_alt);
+      default:
+      return const Icon(CupertinoIcons.globe);
+    }
+
   }
   Widget getMedia(height, width) {
     if (widget.post.medias != null) {
@@ -230,14 +242,6 @@ class _PostWidgetState extends State<PostWidget> {
                               width: 40,
                               height: 40,
                           ),
-                          // CircleAvatar(
-                          //   child: widget.post.userImage != null &&
-                          //           widget.post.userImage!.isNotEmpty
-                          //       ? Image.network(widget.post.userImage!)
-                          //       : Image.asset(widget.post.userGender == "female"
-                          //           ? "assets/avatar/user_female.png"
-                          //           : "assets/avatar/user_male.png"),
-                          // ),
                           const SizedBox(
                             width: 10,
                           ),
@@ -282,6 +286,11 @@ class _PostWidgetState extends State<PostWidget> {
                                               ),
                                           )
                                         ]),
+                                        // Expanded(child: Row(
+                                        //   children: [
+                                        //     getStatus(widget.post.settingType)
+                                        //   ],
+                                        // ))
                                         Text(formatDate(widget.post.createdAt))
                                     ],
                                   )

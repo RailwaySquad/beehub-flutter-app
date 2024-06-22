@@ -48,7 +48,7 @@ class Group{
     final postCount = json["post_count"] ;
     final List<Requirement> requirements = json["requirements"]!=null? List.from( json["requirements"].map((e)=> Requirement.fromJson(e)) ):[];
     final List<GroupMember> groupMem = json["group_members"]!=null? List.from(json["group_members"].map((e)=> GroupMember.fromJson(e))) :[];
-    // final List<Report> reports= json["reports_of_group"]!=null? List.from(json["reports_of_group"].map((e) =>  Report.fromJson(e))):[]; 
+    final List<Report> reports= json["reports_of_group"]!=null? List.from(json["reports_of_group"].map((e) =>  Report.fromJson(e))):[]; 
     final List<GroupMedia> medias = json["group_medias"]!=null? List.from(json["group_medias"].map((e)=> GroupMedia.fromJson(e))):[];
     
     return Group(
@@ -66,7 +66,7 @@ class Group{
           postCount: postCount,
           groupMedias: medias,
           groupMembers: groupMem,
-          reportsOfGroup: [],
+          reportsOfGroup: reports,
           requirements: requirements
           );
   }

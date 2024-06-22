@@ -3,7 +3,7 @@ import 'dart:core';
 class Post {
   final int id;
   final String text;
-  final int userId;
+  final int? userId;
   final String userFullname;
   final String userUsername;
   final String? userImage;
@@ -26,7 +26,7 @@ class Post {
   final DateTime? usershareCreatedAt;
   final DateTime? createdAt;
 
-  Post({ required this.id, required this.text, required this.userId,required this.userFullname, required this.userUsername, this.userImage, required this.userGender, this.groupId, required this.groupName, required this.publicGroup, this.groupImage, required this.settingType, this.color, this.background,this.medias,this.share, this.usershareFullname, this.usershareGender, this.usershareImage,this.usershareUserName,this.usershareGroupName,this.usershareGroupId, this.usershareCreatedAt,this.createdAt});
+  Post({ required this.id, required this.text, this.userId,required this.userFullname, required this.userUsername, this.userImage, required this.userGender, this.groupId, required this.groupName, required this.publicGroup, this.groupImage, required this.settingType, this.color, this.background,this.medias,this.share, this.usershareFullname, this.usershareGender, this.usershareImage,this.usershareUserName,this.usershareGroupName,this.usershareGroupId, this.usershareCreatedAt,this.createdAt});
 
   Map<String, dynamic> toJson() {
     return {
@@ -67,7 +67,7 @@ class Post {
     final groupName = json['group_name'];
     final public = json['public_group'] ==1 ? true:false;
     final groupImage = json['group_image'] ;
-    final settingType = json['setting_type'] ?? '';
+    final settingType = json['setting_type'] ?? 'PUBLIC';
     final color= json['color'] ?? '';
     final background= json['background'] ?? '' ;
     final medias =json["medias"] ?? json["mediaUrl"];
