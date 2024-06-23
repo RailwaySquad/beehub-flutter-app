@@ -427,11 +427,11 @@ class THttpHelper {
     }
   }
 
-  static Future<dynamic> uploadBackgroudGr(File file)async {
+  static Future<dynamic> uploadBackgroudGr(File file,int idGr)async {
     DatabaseProvider db= DatabaseProvider();
     int userId = await db.getUserId();
     String token = await db.getToken();
-    var request =  MultipartRequest("POST",Uri.parse("$BaseUrl/upload/group/background/$userId"));
+    var request =  MultipartRequest("POST",Uri.parse("$BaseUrl/upload/group/$idGr/background/$userId"));
     var myFile = await MultipartFile.fromPath("media",file.path);
     request.headers.addAll({HttpHeaders.authorizationHeader: 'Bearer $token'});
     request.files.add(myFile);
@@ -444,11 +444,11 @@ class THttpHelper {
     }
   }
 
-  static Future<dynamic> uploadImgGr(File file) async {
+  static Future<dynamic> uploadImgGr(File file,int idGr) async {
     DatabaseProvider db= DatabaseProvider();
     int userId = await db.getUserId();
     String token = await db.getToken();
-    var request =  MultipartRequest("POST",Uri.parse("$BaseUrl/upload/group/image/$userId"));
+    var request =  MultipartRequest("POST",Uri.parse("$BaseUrl/upload/group/$idGr/image/$userId"));
     var myFile = await MultipartFile.fromPath("media",file.path);
     request.headers.addAll({HttpHeaders.authorizationHeader: 'Bearer $token'});
     request.files.add(myFile);

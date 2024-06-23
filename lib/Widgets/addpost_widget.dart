@@ -75,7 +75,8 @@ class _CreatePostPageState extends State<CreatePostPage> {
                     CircleAvatar(radius: 25,
                       child: widget.user.image != null &&
                               widget.user.image!.isNotEmpty
-                          ? Image.network(widget.user.image!)
+                          ? ClipOval(
+                            child: Image.network(widget.user.image!))
                           : Image.asset(widget.user.gender == "female"
                               ? "assets/avatar/user_female.png"
                               : "assets/avatar/user_male.png"),

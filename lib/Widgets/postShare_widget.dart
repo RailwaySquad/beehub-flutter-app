@@ -33,13 +33,20 @@ class _PostShareState extends State<PostShare> {
                       child: Row(
                         children: <Widget>[
                           //Avatar
-                          CircleAvatar(
-                            child: widget.post.usershareImage != null &&
-                                    widget.post.usershareImage!.isNotEmpty
-                                ? Image.network(widget.post.usershareImage!)
-                                : Image.asset(widget.post.usershareGender == "female"
-                                    ? "assets/avatar/user_female.png"
-                                    : "assets/avatar/user_male.png"),
+                          Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border.all(color: Colors.black,width: 0.5),
+                                borderRadius: BorderRadius.circular(45.0),
+                                image: DecorationImage(
+                                  fit: BoxFit.fill,
+                                  image: (widget.post.usershareImage != null) ? NetworkImage(widget.post.usershareImage!)
+                                  :(widget.post.usershareGender == 'female'?
+                                const AssetImage("assets/avatar/user_female.png")  as ImageProvider: const AssetImage("assets/avatar/user_male.png") as ImageProvider
+                                ))
+                              ),
+                              width: 40,
+                              height: 40,
                           ),
                           const SizedBox(
                             width: 10,

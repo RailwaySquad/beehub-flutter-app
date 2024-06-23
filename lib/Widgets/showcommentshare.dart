@@ -22,14 +22,21 @@ class _ShowCommentShareState extends State<ShowCommentShare> {
           child:Row(
             children: [
               Padding(padding: EdgeInsets.only(right: 1.0)),
-              CircleAvatar(radius: 22,
-                child: widget.post.userImage != null &&
-                        widget.post.userImage!.isNotEmpty
-                    ? Image.network(widget.post.userImage!)
-                    : Image.asset(widget.post.userGender == "female"
-                        ? "assets/avatar/user_female.png"
-                        : "assets/avatar/user_male.png"),
-              ),
+              Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border.all(color: Colors.black,width: 0.5),
+                                borderRadius: BorderRadius.circular(45.0),
+                                image: DecorationImage(
+                                  fit: BoxFit.fill,
+                                  image: (widget.post.usershareImage != null) ? NetworkImage(widget.post.usershareImage!)
+                                  :(widget.post.usershareGender == 'female'?
+                                const AssetImage("assets/avatar/user_female.png")  as ImageProvider: const AssetImage("assets/avatar/user_male.png") as ImageProvider
+                                ))
+                              ),
+                              width: 40,
+                              height: 40,
+                          ),
               SizedBox(
                 width: 10.0,
               ),

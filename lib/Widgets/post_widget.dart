@@ -5,6 +5,7 @@ import 'package:beehub_flutter_app/Models/like.dart';
 import 'package:beehub_flutter_app/Provider/db_provider.dart';
 import 'package:beehub_flutter_app/Utils/api_connection/http_post.dart';
 import 'package:beehub_flutter_app/Utils/helper/helper_functions.dart';
+import 'package:beehub_flutter_app/Utils/page_navigator.dart';
 import 'package:beehub_flutter_app/Utils/shadow/shadows.dart';
 import 'package:beehub_flutter_app/Widgets/addpostShare_widget.dart';
 import 'package:beehub_flutter_app/Widgets/editpost_widget.dart';
@@ -462,13 +463,7 @@ class _PostWidgetState extends State<PostWidget> {
                           ElevatedButton(
                             onPressed: () {
                               ApiService.getPostById(widget.post.id).then((post) {
-                                showModalBottomSheet(
-                                  isScrollControlled: true,
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return ShowComment(post: post,fetchCountComment:_fetchCountComment,fetchCheckLike:_fetchCheckLike,fetchCountLike:_fetchCountLike,countLike:_countLike,checkLike:_checkLike,addLike:_addLike,removeLike:_removeLike,parseComment:parseComment,parseColor:parseColor,onUpdatePostList: widget.onUpdatePostList); // Gọi StatefulWidget mới
-                                  },
-                                );
+                                PageNavigator(ctx: context).nextPage(page: ShowComment(post: post,fetchCountComment:_fetchCountComment,fetchCheckLike:_fetchCheckLike,fetchCountLike:_fetchCountLike,countLike:_countLike,checkLike:_checkLike,addLike:_addLike,removeLike:_removeLike,parseComment:parseComment,parseColor:parseColor,onUpdatePostList: widget.onUpdatePostList));
                               });
                             },
                             

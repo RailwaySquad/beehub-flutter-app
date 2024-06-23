@@ -32,7 +32,6 @@ class ShowComment extends StatefulWidget {
 
 class _ShowCommentState extends State<ShowComment> {
   var _userNameController1 = TextEditingController();
-  var _userNameController2 = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   bool _isButtonDisabled = true;
   bool _isKeyboardVisible = false;
@@ -43,19 +42,6 @@ class _ShowCommentState extends State<ShowComment> {
   int _countLike = 0;
   final Map<int, int> _reCommentsCountMap = {};
   late Future<List<Comment>> _commentsFuture;
-  final List<Map<String, dynamic>> _allUsers = [
-    {"id": 1, "name": "Andy", "age": 29},
-    {"id": 2, "name": "Aragon", "age": 40},
-    {"id": 3, "name": "Bob", "age": 5},
-    {"id": 4, "name": "Barbara", "age": 35},
-    {"id": 5, "name": "Candy", "age": 21},
-    {"id": 6, "name": "Colin", "age": 55},
-    {"id": 7, "name": "Audra", "age": 30},
-    {"id": 8, "name": "Banana", "age": 14},
-    {"id": 9, "name": "Caversky", "age": 100},
-    {"id": 10, "name": "Becky", "age": 32},
-  ];
-  List<Map<String, dynamic>> _foundUsers = [];
   String? _activeTextField;
   String formatDate(DateTime? date){
     if(date == null) return '';
@@ -80,12 +66,7 @@ class _ShowCommentState extends State<ShowComment> {
   @override
   void initState() {
     super.initState();
-    _foundUsers = _allUsers;
-    _userNameController2.addListener(() {
-      if (_activeTextField == 'comment2') {
-        _userNameController1.text = _userNameController2.text;
-      }
-    });
+
     _userNameController1.addListener(_onTextChanged);
     _commentsFuture = ApiService.getComment(widget.post.id);
     _fetchCheckLike();
@@ -233,32 +214,6 @@ class _ShowCommentState extends State<ShowComment> {
     _focusNode.dispose();
     super.dispose();
   }
-  bool _showList = false;
-  void _runFilter(String enteredKeyword) {
-    List<Map<String, dynamic>> results = [];
-    if (enteredKeyword.isEmpty) {
-      results = _allUsers;
-      _showList = false;
-    } else {
-      final List<String> keyWords = enteredKeyword.split(' ');
-      final String lastKey = keyWords.last;
-      if (lastKey.startsWith('@')) {
-        final String filterKeyword = lastKey.substring(1);
-        results = _allUsers
-            .where((user) => user["name"]
-                .toLowerCase()
-                .contains(filterKeyword.toLowerCase()))
-            .toList();
-        _showList = true;
-      } else {
-        results = _allUsers;
-        _showList = false;
-      }
-    }
-    setState(() {
-      _foundUsers = results;
-    });
-  }
   void _refreshComments() {
     setState(() {
       _commentsFuture = ApiService.getComment(widget.post.id);
@@ -266,11 +221,9 @@ class _ShowCommentState extends State<ShowComment> {
   }
   @override
   Widget build(BuildContext context) {
+   
     return Scaffold(
-      appBar: AppBar(
-          title: Padding(
-        padding: EdgeInsets.only(top: 1.0),
-      )),
+      appBar: AppBar(),
       body: SingleChildScrollView(
         reverse: true, // Cuộn nội dung ngược lại
         child: Column(
@@ -278,14 +231,21 @@ class _ShowCommentState extends State<ShowComment> {
             Row(
               children: [
                 Padding(padding: EdgeInsets.only(right: 1.0)),
-                CircleAvatar(radius: 25,
-                  child: widget.post.userImage != null &&
-                          widget.post.userImage!.isNotEmpty
-                      ? Image.network(widget.post.userImage!)
-                      : Image.asset(widget.post.userGender == "female"
-                          ? "assets/avatar/user_female.png"
-                          : "assets/avatar/user_male.png"),
-                ),
+                Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border.all(color: Colors.black,width: 0.5),
+                                borderRadius: BorderRadius.circular(45.0),
+                                image: DecorationImage(
+                                  fit: BoxFit.fill,
+                                  image: (widget.post.userImage != null) ? NetworkImage(widget.post.userImage!)
+                                  :(widget.post.userGender == 'female'?
+                                const AssetImage("assets/avatar/user_female.png")  as ImageProvider: const AssetImage("assets/avatar/user_male.png") as ImageProvider
+                                ))
+                              ),
+                              width: 40,
+                              height: 40,
+                          ),
                 SizedBox(
                   width: 10.0,
                 ),
@@ -400,54 +360,61 @@ class _ShowCommentState extends State<ShowComment> {
                     ),
                   ),
                   Container(
+                    padding: EdgeInsets.only(left: 20),
                     child:  Row(
                       children: <Widget>[
-                        Center(
-                          child: Row(
-                            children: <Widget>[
-                              _checkLike == true?
-                              IconButton(
-                                onPressed: _removeLike,
-                                icon: const Text('👍'))
-                                :IconButton(
-                                onPressed: _addLike,
-                                icon: const Icon(
-                                Icons.thumb_up_alt_outlined),color:Colors.deepPurpleAccent ,) ,
-                              const Text("Like")
-                            ],
+                        Expanded(
+                          child: Center(
+                            child: Row(
+                              children: <Widget>[
+                                _checkLike == true?
+                                IconButton(
+                                  onPressed: _removeLike,
+                                  icon: const Text('👍'))
+                                  :IconButton(
+                                  onPressed: _addLike,
+                                  icon: const Icon(
+                                  Icons.thumb_up_alt_outlined),color:Colors.deepPurpleAccent ,) ,
+                                const Text("Like")
+                              ],
+                            ),
                           ),
                         ),
-                        SizedBox(width: 85.0),
-                        const Center(
-                          child: Row(
-                            children: <Widget>[
-                              Icon(Icons.messenger_outline_rounded,
-                                  size: 25.0, color: Colors.deepPurpleAccent),
-                              Text('Comment')
-                            ],
+                        //SizedBox(width: 85.0),
+                        Expanded(
+                          child: const Center(
+                            child: Row(
+                              children: <Widget>[
+                                Icon(Icons.messenger_outline_rounded,
+                                    size: 25.0, color: Colors.deepPurpleAccent),
+                                Text('Comment')
+                              ],
+                            ),
                           ),
                         ),
-                        SizedBox(width: 65.0),
-                        Center(
-                          child: Row(
-                            children: <Widget>[
-                              IconButton(
-                                onPressed: (){
-                                  ApiService.getPostById(widget.post.id).then((post){
-                                    showModalBottomSheet(
-                                      isScrollControlled: true,
-                                      context: context, 
-                                      builder: (BuildContext context){
-                                        return AddPostShare(post: post,onUpdatePostList: widget.onUpdatePostList,parseComment:widget.parseComment);
-                                      },
-                                    );
-                                  });
-                                },
-                                icon: const Icon(Icons.share,
-                                  size: 25.0, color: Colors.deepPurpleAccent),
-                              ),
-                              Text('Share')
-                            ],
+                        //SizedBox(width: 65.0),
+                        Expanded(
+                          child: Center(
+                            child: Row(
+                              children: <Widget>[
+                                IconButton(
+                                  onPressed: (){
+                                    ApiService.getPostById(widget.post.id).then((post){
+                                      showModalBottomSheet(
+                                        isScrollControlled: true,
+                                        context: context, 
+                                        builder: (BuildContext context){
+                                          return AddPostShare(post: post,onUpdatePostList: widget.onUpdatePostList,parseComment:widget.parseComment);
+                                        },
+                                      );
+                                    });
+                                  },
+                                  icon: const Icon(Icons.share,
+                                    size: 25.0, color: Colors.deepPurpleAccent),
+                                ),
+                                Text('Share')
+                              ],
+                            ),
                           ),
                         ),
                       ],
@@ -472,12 +439,7 @@ class _ShowCommentState extends State<ShowComment> {
                         ),
                       ),
                     ),
-                  ),
-                  if (_showList) // Hiển thị danh sách chỉ khi _showList là true
-                    Container(
-                      child: _buildListUser(),
-                    ),
-                  
+                  ),               
                 ],
               ),
             ),
@@ -558,71 +520,6 @@ class _ShowCommentState extends State<ShowComment> {
       ),    
     );
   }
-  Widget _buildListUser() {
-    return SizedBox(
-      height: 200.0,
-      child: _foundUsers.isNotEmpty
-          ? ListView.builder(
-              itemCount: _foundUsers.length,
-              itemBuilder: (context, index) {
-                if (index < _foundUsers.length) {
-                  return Card(
-                    key: ValueKey(_foundUsers[index]["id"]),
-                    child: ListTile(
-                      title: Text(
-                        _foundUsers[index]['name'],
-                        style: const TextStyle(color: Colors.black),
-                      ),
-                      onTap: () {
-                        _pasteUserName(_foundUsers[index]['name'],
-                            _foundUsers[index]['id']);
-                        setState(() {
-                          _showList =
-                              false; // Ẩn danh sách khi người dùng được chọn
-                        });
-                      },
-                    ),
-                  );
-                } else {
-                  return SizedBox
-                      .shrink(); // Trả về widget rỗng nếu chỉ mục không hợp lệ
-                }
-              },
-            )
-          : const Center(
-              child: Text('No results found'),
-            ),
-    );
-  }
-  void _setActiveTextField(String textFiel) {
-    setState(() {
-      _activeTextField = textFiel;
-    });
-  }
-  void _pasteUserName(String userName, int userId) {
-    if (_activeTextField == 'comment1') {
-      String currentText = _userNameController1.text;
-      List<String> parts = currentText.split(' ');
-      if (parts.isNotEmpty && parts.last.startsWith('@')) {
-        parts.removeLast();
-      }
-      String newText = parts.join(' ').trim() + "tag=$userName&link=$userId";
-      setState(() {
-        _userNameController1.text = newText;
-        _userNameController1.selection = TextSelection.fromPosition(
-            TextPosition(offset: _userNameController1.text.length));
-      });
-    } else if (_activeTextField == 'comment2') {
-      String currentText = _userNameController2.text;
-      List<String> parts = currentText.split(' ');
-      String newText = currentText + ' ' + userName;
-      setState(() {
-        _userNameController2.text = newText;
-        _userNameController2.selection = TextSelection.fromPosition(
-            TextPosition(offset: _userNameController2.text.length));
-        String newText1 = parts.join(' ').trim() + "tag=$userName&link=$userId";
-        _userNameController1.text = newText1;
-      });
-    }
-  }
+
+
 }
