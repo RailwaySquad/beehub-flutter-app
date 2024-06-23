@@ -2,6 +2,8 @@ import 'package:beehub_flutter_app/Constants/color.dart';
 import 'package:beehub_flutter_app/Provider/db_provider.dart';
 import 'package:beehub_flutter_app/Provider/user_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import 'list_friend.dart';
@@ -46,17 +48,25 @@ class _FollowingScreenState extends State<FollowingScreen> with SingleTickerProv
           mainAxisSize: MainAxisSize.max,
           children: [
             AppBar(
-              title: const Text('Beehub'),
+              leading: const Icon(Icons.favorite_border, color: Colors.white,),
+              backgroundColor:const Color(0xff383a45),
+              title: Text('Following', style: GoogleFonts.ubuntu(color: Colors.white),),
                 actions: [
-                  IconButton(onPressed: (){
-
-                  }, icon:const Icon(Icons.add_circle_outline_outlined,color: TColors.buttonPrimary,)),
-                  IconButton(
-                      icon: const Icon(Icons.exit_to_app),
-                      onPressed: () {
-                        ///logout
-                        DatabaseProvider().logOut(context);
-                      }),
+                  ElevatedButton(
+                    onPressed: ()=> Get.toNamed("/group_create"),
+                    style: ButtonStyle(
+                      foregroundColor:  WidgetStateProperty.all<Color>(const Color(0xff383a45)),
+                      backgroundColor:  WidgetStateProperty.all<Color>(Colors.white),
+                    ),
+                    child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      const Icon(Icons.add),
+                      Text("Group", style: GoogleFonts.ubuntu(fontSize: 16),)
+                    ]
+                    )
+                  )
                 ],
             ),
             Expanded(

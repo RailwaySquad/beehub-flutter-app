@@ -4,7 +4,7 @@ class GroupForm{
   final bool publicGroup;
   final String? description;
 
-  GroupForm({required this.id, required this.groupname, required this.publicGroup, required this.description});
+  GroupForm({this.id, required this.groupname, required this.publicGroup, required this.description});
    Map<String, dynamic> toJson() {
       return {
         'id': id,  

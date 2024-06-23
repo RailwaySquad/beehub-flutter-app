@@ -1,4 +1,4 @@
-
+import 'dart:developer';
 
 import 'package:beehub_flutter_app/Models/profile.dart';
 import 'package:beehub_flutter_app/Models/user_setting.dart';
@@ -20,18 +20,20 @@ class ProfileAbout extends StatelessWidget {
     }
     List<UserSetting> settings = profile.userSettings!;
     bool checkSetting(String type){
-      if(idUser==profile.id ||profile.relationshipWithUser==null || profile.relationshipWithUser!.isEmpty){
+      if(idUser==profile.id ){
         return true;
       }
+      bool notSetting = true;
       if(settings.isNotEmpty){
-        UserSetting se = settings.firstWhere((el)=> el.settingItem==type );
-        if(se.settingType == "PUBLIC "){
-          return true;
-        }else if(idUser!=profile.id && profile.relationshipWithUser == "FRIEND" && se.settingType=="FOR_FRIEND"){
-          return true;
+        for (var element in settings) {
+          if (element.settingItem==type &&( element.settingType == "PUBLIC" || (idUser!=profile.id && profile.relationshipWithUser == "FRIEND" && element.settingType=="FOR_FRIEND")) ) {
+            return true;
+          }else if(element.settingItem==type && (profile.relationshipWithUser==null || profile.relationshipWithUser!.isEmpty ||element.settingType == "HIDDEN" )){
+            return false;
+          } 
         }
       }
-      return false;
+      return notSetting ;
     }
     
     return SliverToBoxAdapter(

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:beehub_flutter_app/Constants/color.dart';
 import 'package:beehub_flutter_app/Models/profile_form.dart';
 import 'package:beehub_flutter_app/Models/profile.dart';
@@ -23,7 +25,7 @@ class _UsernameUpdateState extends State<UsernameUpdate> {
   void initState() {
     super.initState();
     _userInputController.addListener(() {
-      final String text = _userInputController.text.toLowerCase();
+      final String text = _userInputController.text.trim();
       _userInputController.value = _userInputController.value.copyWith(
         text: text,
         selection:
@@ -63,7 +65,7 @@ class _UsernameUpdateState extends State<UsernameUpdate> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Require Login again after update username"),
+              const Text("Require Login again after update username"),
               const SizedBox(height: 15,),
               TextFormField(
                 controller: _userInputController,
@@ -72,7 +74,7 @@ class _UsernameUpdateState extends State<UsernameUpdate> {
                   labelStyle: TextStyle(fontSize: 16)
                 ),
                 validator: (val) {
-                  if(val!=null&& val.isEmpty){
+                  if(val!=null&& val.trim().isEmpty){
                     return "Username is required";
                   }
                   return null;
@@ -83,19 +85,21 @@ class _UsernameUpdateState extends State<UsernameUpdate> {
               Center(
                 child: ElevatedButton(
                   onPressed: ()async{
-                    bool checkUser = await THttpHelper.checkUsername(_userInputController.text);
-                    if(checkUser && _userInputController.text!=profile.username){
-                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                                          content: Text("Username already taken"),
-                                      ));
-                    }
-                    if(!checkUser&& _userInputController.text!=profile.username){ 
-                     Profileform data = Profileform(id: profile.id,gender: profile.gender, bio: profile.bio,fullname: profile.fullname,phone: profile.phone, username: _userInputController.text );
-                      bool resp= await THttpHelper.updateProfile(data); 
-                      if(resp){
-                        DatabaseProvider().logOut(context);
-                      }
-                    }
+                     if(formKey.currentState!.validate()){
+                        bool checkUser = await THttpHelper.checkUsername(_userInputController.text);
+                        if(checkUser && _userInputController.text!=profile.username){
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                              content: Text("Username already taken"),
+                                          ));
+                        }
+                        if(!checkUser&& _userInputController.text!=profile.username){ 
+                        Profileform data = Profileform(id: profile.id,gender: profile.gender, bio: profile.bio,fullname: profile.fullname,phone: profile.phone, username: _userInputController.text );
+                          bool resp= await THttpHelper.updateProfile(data); 
+                          if(resp){
+                            DatabaseProvider().logOut(context);
+                          }
+                        }
+                     }
                   }, 
                   style:  ButtonStyle(
                   foregroundColor: WidgetStateProperty.all<Color>(Colors.white),

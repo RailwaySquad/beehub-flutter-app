@@ -7,6 +7,7 @@ import 'package:beehub_flutter_app/Screens/AccountSetting/setting_general.dart';
 import 'package:beehub_flutter_app/Screens/AccountSetting/setting_option.dart';
 import 'package:beehub_flutter_app/Screens/AccountSetting/setting_security.dart';
 import 'package:beehub_flutter_app/Screens/Group/group_page.dart';
+import 'package:beehub_flutter_app/Screens/GroupManager/group_create_screen.dart';
 import 'package:beehub_flutter_app/Screens/GroupManager/group_management_screen.dart';
 import 'package:beehub_flutter_app/Screens/GroupManager/group_setting_screen.dart';
 import 'package:beehub_flutter_app/Screens/Profile/profile_friend_group.dart';
@@ -56,6 +57,7 @@ class MyApp extends StatelessWidget {
         GetPage(name: "/group/:idGroup", page: ()=> const GroupPage()),
         GetPage(name: "/group/manager/:idGoup", page: ()=> const GroupManagementScreen()),
         GetPage(name: "/group/setting/:idGoup", page: ()=> const GroupSettingScreen()),
+        GetPage(name: "/group_create", page:()=> const GroupCreateSreen())
       ]
     );
   }

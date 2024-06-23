@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:beehub_flutter_app/Constants/color.dart';
 import 'package:beehub_flutter_app/Models/requirementForm.dart';
 import 'package:beehub_flutter_app/Provider/db_provider.dart';
@@ -257,7 +255,7 @@ class BeehubButton{
         }
       }, 
       style: ButtonStyle(
-              foregroundColor: WidgetStateProperty.all<Color>(Colors.red),
+              foregroundColor: WidgetStateProperty.all<Color>(Colors.green),
               backgroundColor: WidgetStateProperty.all<Color>(Colors.white),
             ),
       child: const Icon(Icons.add_moderator_outlined));
@@ -289,7 +287,7 @@ class BeehubButton{
         }
       }, 
       style: ButtonStyle(
-              foregroundColor: WidgetStateProperty.all<Color>(Colors.red),
+              foregroundColor: WidgetStateProperty.all<Color>(Colors.orange),
               backgroundColor: WidgetStateProperty.all<Color>(Colors.white),
             ),
       child: const Icon(Icons.person_remove));
@@ -310,5 +308,28 @@ class BeehubButton{
             ),
       child: const Icon(Icons.input_outlined));
   }
-  
+   static Widget AcceptReport(int groupId, int idReport) {
+    return ElevatedButton(
+      onPressed: ()async{
+        int idUser = await DatabaseProvider().getUserId();
+        Requirementform req = Requirementform(senderId: idUser, reportId: idReport, groupId: groupId, type: "ACCEPT_REPORT");
+        var response = await THttpHelper.createRequirement(req);
+        if(response?["response"]!="unsuccess" && response?["response"]!="error"){
+          Get.toNamed("/");
+        }
+      }, 
+      child: const Text("Accept"));
+  } 
+  static Widget RemoveReport(int groupId, int idReport) {
+    return ElevatedButton(
+      onPressed: ()async{
+        int idUser = await DatabaseProvider().getUserId();
+        Requirementform req = Requirementform(senderId: idUser, reportId: idReport, groupId: groupId, type: "CANCEL_REPORT");
+        var response = await THttpHelper.createRequirement(req);
+        if(response?["response"]!="unsuccess" && response?["response"]!="error"){
+          Get.toNamed("/");
+        }
+      }, 
+      child: const Text("Remove only Report"));
+  }
 }

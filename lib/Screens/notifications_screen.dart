@@ -5,6 +5,7 @@ import 'package:beehub_flutter_app/Provider/db_provider.dart';
 import 'package:beehub_flutter_app/Utils/api_connection/http_client.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 class NotificationsScreen extends StatefulWidget {
@@ -47,8 +48,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     return Column(
       children: [
         AppBar(
+          leading: const Icon(Icons.notifications, color: Colors.white,),
            elevation: 10,
-          title: Text("Notifications: ${list.length}"),
+           backgroundColor:const Color(0xff383a45),
+          title: Text("Notifications: ${list.length}",style: GoogleFonts.ubuntu(color: Colors.white)),
         ),
         ListView.builder(
           shrinkWrap: true,

@@ -8,7 +8,6 @@ import 'package:beehub_flutter_app/Provider/user_provider.dart';
 import 'package:beehub_flutter_app/Utils/api_connection/http_client.dart';
 import 'package:beehub_flutter_app/Utils/helper/helper_functions.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -65,16 +64,28 @@ class _SettingGeneralState extends State<SettingGeneral> {
     final TextEditingController bioController = TextEditingController(text: profile.bio);
     
     Future<bool> submitData () async{
-        String fullname = fullnameInputController.text;
-        String phone = phoneInputController.text;
-        String gender = genderController.text;
-        String biography = bioController.text;
+          if(_fileBg!=null){
+            final upload = await THttpHelper.uploadBackground(_fileBg!);
+            log("Upload Bg: $upload");
+          }
+          if(_fileAvatar!=null){
+              final upload = await THttpHelper.uploadAvatar(_fileAvatar!);
+              log("Upload Img: $upload");
+          }
+         if(formKey.currentState!.validate()){
+            String fullname = fullnameInputController.text;
+            String phone = phoneInputController.text;
+            String gender = genderController.text;
+            String biography = bioController.text;
 
-        int id = int.parse(idInputController.text);
-        DateFormat formatD = DateFormat('yyyy-MM-dd');
-        String update= selectedDate!=null? formatD.format(selectedDate!):formatD.format(DateTime.now()); 
-        Profileform data = Profileform(id: id,gender: gender, bio: biography, birthday: update,fullname: fullname,phone: phone );
-        return await THttpHelper.updateProfile(data);
+            int id = int.parse(idInputController.text);
+            DateFormat formatD = DateFormat('yyyy-MM-dd');
+            String update= selectedDate!=null? formatD.format(selectedDate!):formatD.format(DateTime.now()); 
+            Profileform data = Profileform(id: id,gender: gender, bio: biography, birthday: update,fullname: fullname,phone: phone );
+            return await THttpHelper.updateProfile(data);
+         }else{
+          return false;
+         }
       }
     return Scaffold(
       appBar: AppBar(
@@ -86,7 +97,7 @@ class _SettingGeneralState extends State<SettingGeneral> {
                         bool result= await submitData();
                         if(result){
                           Provider.of<UserProvider>(context, listen: false).fetchProfile(true);
-                          Get.toNamed('/');
+                          Navigator.popAndPushNamed(context, "/");
                         }else{
                           log(result.toString());
                         }
@@ -113,8 +124,6 @@ class _SettingGeneralState extends State<SettingGeneral> {
                                   setState(() {
                                     _fileBg = File(image.path);
                                   });
-                                  bool upload = await THttpHelper.uploadAvatar(_fileBg!);
-                                  log(upload.toString());
                                 }
                             },
                           child: Container(
@@ -140,8 +149,7 @@ class _SettingGeneralState extends State<SettingGeneral> {
                                   setState(() {
                                     _fileAvatar = File(image.path);
                                   });
-                                  dynamic upload = await THttpHelper.uploadAvatar(_fileAvatar!);
-                                  log(upload.toString());
+                                  
                                 }
                               },
                             child: Container(
@@ -172,7 +180,7 @@ class _SettingGeneralState extends State<SettingGeneral> {
                           labelText: "Full name",
                         ),
                         validator: (value){
-                          if(value!.isEmpty){
+                          if(value!=null &&value.trim().isEmpty){
                             return "Enter Fullname";
                           }else{
                             return null;
@@ -190,9 +198,9 @@ class _SettingGeneralState extends State<SettingGeneral> {
                         validator: (value){
                           String pattern = r'(^(84|0[35789])+([0-9]{8})$)';
                           RegExp regExp =  RegExp(pattern);
-                          if(value!.isEmpty){
+                          if(value!=null && value.trim().isEmpty){
                             return "Enter Phone number";
-                          }else if(!regExp.hasMatch(value)){
+                          }else if(!regExp.hasMatch(value!)){
                             return "Invalid Phone number \n(example: 8412345678 or 0912345678)";
                           }
                           return null;

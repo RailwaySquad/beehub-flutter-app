@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:beehub_flutter_app/Constants/color.dart';
 import 'package:beehub_flutter_app/Models/group.dart';
 import 'package:beehub_flutter_app/Models/profile.dart';
@@ -7,6 +5,7 @@ import 'package:beehub_flutter_app/Models/user.dart';
 import 'package:beehub_flutter_app/Provider/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 class ProfileFriendGroup extends StatefulWidget {
@@ -44,6 +43,7 @@ class _ProfileFriendGroupState extends State<ProfileFriendGroup> with SingleTick
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(icon: const Icon(Icons.chevron_left) ,onPressed: ()=> Navigator.pop(context),),
+        title: Text("Following", style: GoogleFonts.ubuntu(fontSize: 22),),
       ),
       body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

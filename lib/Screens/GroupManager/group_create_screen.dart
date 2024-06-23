@@ -1,29 +1,21 @@
-import 'dart:developer';
-import 'dart:io';
-
-import 'package:beehub_flutter_app/Models/group.dart';
 import 'package:beehub_flutter_app/Models/group_form.dart';
-import 'package:beehub_flutter_app/Provider/user_provider.dart';
 import 'package:beehub_flutter_app/Utils/api_connection/http_client.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:provider/provider.dart';
 
-class GroupSettingScreen extends StatefulWidget {
-  const GroupSettingScreen({super.key});
+class GroupCreateSreen extends StatefulWidget {
+  const GroupCreateSreen({super.key});
 
   @override
-  State<GroupSettingScreen> createState() => _GroupSettingScreenState();
+  State<GroupCreateSreen> createState() => _GroupCreateSreenState();
 }
 
-class _GroupSettingScreenState extends State<GroupSettingScreen> {
-    final formKey = GlobalKey<FormState>();
+class _GroupCreateSreenState extends State<GroupCreateSreen> {
+  final formKey = GlobalKey<FormState>();
     TextEditingController _nameInputController = TextEditingController();
-    File? _fileImg;
-    File? _fileBg;
-  
+    TextEditingController _descriptionInputController = TextEditingController();
+    bool groupStatus = true;
     @override
     void initState() {
       super.initState();
@@ -52,47 +44,25 @@ class _GroupSettingScreenState extends State<GroupSettingScreen> {
       _descriptionInputController.dispose();
       super.dispose();
     }
-    TextEditingController _descriptionInputController = TextEditingController();
-    bool? groupStatus;
+
     
   @override
   Widget build(BuildContext context) {
-    Group? group = Provider.of<UserProvider>(context).group;
-    if(group==null){
-      return Scaffold(
-        appBar: AppBar(
-          leading: IconButton(icon:const Icon(Icons.chevron_left),onPressed: ()=> Get.toNamed("/"),),
-        ),
-        body: Center(child: Text("Not found group", style: Theme.of(context).textTheme.bodyLarge,),),
-      );
-    }
-    _nameInputController.text = group.groupname;
-    _descriptionInputController.text = group.description??"";
     Future<void> submitData () async{
-      if(_fileBg!=null){
-        final uploadBg = await THttpHelper.uploadBackgroudGr(_fileBg!);
-          log(uploadBg.toString());
-      }
-      if(_fileImg!=null){
-        final uploadImg = await THttpHelper.uploadImgGr(_fileImg!);
-        log(uploadImg.toString());
-      }
-        if(formKey.currentState!.validate()){
-          String groupName = _nameInputController.text;
-          String description = _descriptionInputController.text;
-          int id = group.id!;
-          GroupForm groupUpdate = GroupForm(id: id,groupname:groupName,description: description,publicGroup:  groupStatus??group.publicGroup);
-          final res=  await THttpHelper.updateGroup(groupUpdate);
-          if(res["result"]){
-            Navigator.popAndPushNamed(context, "/group/$id");
-          }
-
+      if(formKey.currentState!.validate()){
+        String groupName = _nameInputController.text;
+        String description = _descriptionInputController.text;
+        GroupForm groupCreate = GroupForm(groupname:groupName,description: description,publicGroup:  groupStatus);
+        final res=  await THttpHelper.createGroup(groupCreate);
+        if(res!=0){
+          Get.toNamed("/group/$res");
         }
+      }
       }
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(icon: const Icon(Icons.chevron_left), onPressed: ()=> Navigator.pop(context),),
-        title: const Text("Group Setting"),
+        title: const Text("Create Group"),
         actions: [
           TextButton(onPressed: ()async  {
                       if(formKey.currentState!.validate()){
@@ -108,38 +78,7 @@ class _GroupSettingScreenState extends State<GroupSettingScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text("Change background", style: TextStyle(fontSize: 18),),
-              const SizedBox(height: 8,),
-              GestureDetector(
-                onTap: ()async{
-                    final ImagePicker picker = ImagePicker();
-                    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-                    if(image!=null){
-                      setState(() {
-                        _fileBg = File(image.path);
-                      });
-                    }
-                },
-                child: group.backgroundGroup!=null? Image.network( group.backgroundGroup!,height: 160, fit: BoxFit.fill,)
-                                                : _fileBg!=null? Image.file(_fileBg!,height: 160, fit: BoxFit.fill,) :Container(color: Colors.grey,height: 160,),
-              ),
-              const SizedBox(height: 10,),
-              const Text("Change group image", style: TextStyle(fontSize: 18),),
-              const SizedBox(height: 8,),
-              GestureDetector(
-                 onTap: ()async{
-                    final ImagePicker picker = ImagePicker();
-                    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-                    if(image!=null){
-                      setState(() {
-                        _fileImg = File(image.path);
-                      });
-                      
-                    }
-                },
-                child: group.imageGroup!=null? Image.network( group.imageGroup!,height: 160, width: 160, fit: BoxFit.fill)
-                                               :_fileImg!=null?Image.file(_fileImg!, height: 160,width: 160, fit: BoxFit.fill): Container(color: Colors.grey,height: 160, width: 160,),
-              ),
+              
               Form(
                 key: formKey,
                 child: Padding(
@@ -172,11 +111,10 @@ class _GroupSettingScreenState extends State<GroupSettingScreen> {
                                   labelText: "Status Group",
                                 ),
                           items:<bool>[true,false].map((status)=> DropdownMenuItem(value:status,child: Text(status ? "Public": "Private"),)).toList(), 
-                          value: group.publicGroup,
+                          value: groupStatus,
                           onChanged: (value){
                           setState(() {
-                            groupStatus = value;
-                            log(groupStatus.toString());
+                            groupStatus = value!;
                           });
                   }),
                 
