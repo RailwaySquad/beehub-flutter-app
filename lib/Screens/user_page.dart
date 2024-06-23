@@ -76,7 +76,11 @@ class _UserPageState extends State<UserPage> {
   @override
   Widget build(BuildContext context) {
     Profile? profile = Provider.of<UserProvider>(context, listen: false).profile;
+    Provider.of<DatabaseProvider>(context).getUserId();
     int idUser = Provider.of<DatabaseProvider>(context).userId;
+    // if(idUser<0){
+    //   idUser = Provider.of<DatabaseProvider>(context).userId;
+    // }
     var size = MediaQuery.of(context).size;
     bool isLoading = Provider.of<UserProvider>(context).isLoading;
     if(isLoading || profile==null){
@@ -118,6 +122,7 @@ class _UserPageState extends State<UserPage> {
     }
     
    bool checkSetting(){
+      log("$idUser And ${profile.id}");
       if(idUser==profile.id ){
         return true;
       }
@@ -137,7 +142,6 @@ class _UserPageState extends State<UserPage> {
     }
     return Scaffold(
       appBar: AppBar(
-        // leading: IconButton(onPressed: (){Get.toNamed("/");},icon: const Icon(Icons.chevron_left),),
         title: const Text("User Profile"),
       ),
       body: CustomScrollView(
@@ -163,18 +167,17 @@ class _UserPageState extends State<UserPage> {
                   child: Container(
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.black,width: 2.0),
-                      borderRadius: BorderRadius.circular(45.0)
+                      borderRadius: BorderRadius.circular(45.0),
+                      image:  DecorationImage(
+                        fit: BoxFit.fill,
+                        image: profile.image!.isNotEmpty? NetworkImage(profile.image!):
+                      (profile.gender == 'female'?
+                      const AssetImage("assets/avatar/user_female.png") as ImageProvider: const AssetImage("assets/avatar/user_male.png") as ImageProvider
+                      ))
                     ),
                     width: 90,
                     height: 90,
-                    child: CircleAvatar(
-                      backgroundColor:  Colors.white,
-                      child: 
-                      profile.image!.isNotEmpty? Image.network(profile.image!,height: 75, width: 75,fit: BoxFit.fill):
-                      (profile.gender == 'female'?
-                      Image.asset("assets/avatar/user_female.png",height: 75, width: 75,fit: BoxFit.fill):Image.asset("assets/avatar/user_male.png",height: 75, width: 75,fit: BoxFit.fill)
-                      )
-                    ),
+                    child: const SizedBox(),
                   ),
                 ),
                 Container(
@@ -230,10 +233,8 @@ class _UserPageState extends State<UserPage> {
                             flex: 1,
                             child: TextButton(
                               onPressed: (){
-                                log("Check Setting: ${checkSetting()}");
                                   if(checkSetting()){
                                    Get.toNamed("/userpage/friend_group/${profile.username}");
-
                                   }
                               },
                               child: RichText(
@@ -250,7 +251,7 @@ class _UserPageState extends State<UserPage> {
                           Expanded(
                             flex: 1,
                             child: TextButton(
-                              onPressed: ()=> Get.toNamed("/userpage/friend_group/${profile.username}"),
+                              onPressed: ()=>Get.toNamed("/userpage/friend_group/${profile.username}"),
                               child: RichText(text: TextSpan(
                                 style:  GoogleFonts.ubuntu(color: TColors.black,fontSize: 14),
                                 children: [

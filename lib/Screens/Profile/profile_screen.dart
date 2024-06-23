@@ -64,6 +64,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     Profile? profile = Provider.of<UserProvider>(context, listen: false).ownprofile;
+    
     var size = MediaQuery.of(context).size;
     bool isLoading = Provider.of<UserProvider>(context).isLoading;
     if(isLoading || profile==null){
@@ -71,6 +72,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: CircularProgressIndicator(),
       );
     }
+    Provider.of<UserProvider>(context, listen: false).profile = profile;
     return CustomScrollView(
         slivers: [
           SliverToBoxAdapter(
@@ -166,7 +168,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           children: [
                             Expanded(
                               child: TextButton(
-                                onPressed: (){},
+                                onPressed: ()=>Get.toNamed("/userpage/friend_group/${profile.username}"),
                                 child: RichText(text: TextSpan(
                                   style: DefaultTextStyle.of(context).style,
                                   children: [
@@ -179,7 +181,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             const SizedBox(width: 10,),
                             Expanded(
                               child: TextButton(
-                                onPressed: (){},
+                                onPressed: ()=>Get.toNamed("/userpage/friend_group/${profile.username}"),
                                 child: RichText(text: TextSpan(
                                   style: DefaultTextStyle.of(context).style,
                                   children: [
