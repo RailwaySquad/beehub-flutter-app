@@ -87,7 +87,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   width: size.width,
                   child: Container(
                     color:TColors.darkerGrey,
-                    child: profile.background!.isNotEmpty? Image.network(profile.background!): const SizedBox(),
+                    child: profile.background!.isNotEmpty? Image.network(profile.background!,fit: BoxFit.cover,): const SizedBox(),
                     ),
                 ),
                 Positioned(

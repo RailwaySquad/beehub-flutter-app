@@ -106,13 +106,28 @@ class BeehubDrawer extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      CircleAvatar(
-                        backgroundColor: Colors.white,
-                        radius: 35,
-                        child: profile.image!.isNotEmpty? 
-                        Image.network(profile.image!,height: 70,width: 70,fit: BoxFit.fill)
-                        : profile.gender=='female'? Image.asset("assets/avatar/user_female.png",height: 70,width: 70,fit: BoxFit.fill):Image.asset("assets/avatar/user_male.png",height: 70,width: 70,fit: BoxFit.fill),
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black,width: 2.0),
+                          borderRadius: BorderRadius.circular(35.0),
+                          image:  DecorationImage(
+                            fit: BoxFit.fill,
+                            image: profile.image!.isNotEmpty? NetworkImage(profile.image!):
+                          (profile.gender == 'female'?
+                          const AssetImage("assets/avatar/user_female.png") as ImageProvider: const AssetImage("assets/avatar/user_male.png") as ImageProvider
+                          ))
+                        ),
+                        width: 70,
+                        height: 70,
+                        child: const SizedBox(),
                       ),
+                      // CircleAvatar(
+                      //   backgroundColor: Colors.white,
+                      //   radius: 35,
+                      //   child: profile.image!.isNotEmpty? 
+                      //   Image.network(profile.image!,height: 70,width: 70,fit: BoxFit.fill)
+                      //   : profile.gender=='female'? Image.asset("assets/avatar/user_female.png",height: 70,width: 70,fit: BoxFit.fill):Image.asset("assets/avatar/user_male.png",height: 70,width: 70,fit: BoxFit.fill),
+                      // ),
                       const SizedBox(height: 4,),
                       Text(profile.fullname, style: GoogleFonts.ubuntu(fontSize: 18, color: Colors.white, fontWeight: FontWeight.w600),),
                       Text("@${profile.username}",style: GoogleFonts.ubuntu(fontSize: 15, color: Colors.white, fontWeight: FontWeight.w400))

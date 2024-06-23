@@ -7,6 +7,7 @@ import 'package:beehub_flutter_app/Screens/Group/group_about.dart';
 import 'package:beehub_flutter_app/Screens/Group/group_discussion.dart';
 import 'package:beehub_flutter_app/Screens/Group/group_media.dart';
 import 'package:beehub_flutter_app/Screens/Group/group_people.dart';
+import 'package:beehub_flutter_app/Utils/api_connection/http_client.dart';
 import 'package:beehub_flutter_app/Utils/beehub_button.dart';
 import 'package:beehub_flutter_app/Utils/helper/helper_functions.dart';
 import 'package:flutter/material.dart';

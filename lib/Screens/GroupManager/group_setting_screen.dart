@@ -70,11 +70,11 @@ class _GroupSettingScreenState extends State<GroupSettingScreen> {
     _descriptionInputController.text = group.description??"";
     Future<void> submitData () async{
       if(_fileBg!=null){
-        final uploadBg = await THttpHelper.uploadBackgroudGr(_fileBg!);
+        final uploadBg = await THttpHelper.uploadBackgroudGr(_fileBg!,group.id!);
           log(uploadBg.toString());
       }
       if(_fileImg!=null){
-        final uploadImg = await THttpHelper.uploadImgGr(_fileImg!);
+        final uploadImg = await THttpHelper.uploadImgGr(_fileImg!,group.id!);
         log(uploadImg.toString());
       }
         if(formKey.currentState!.validate()){

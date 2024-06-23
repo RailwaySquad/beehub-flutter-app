@@ -79,13 +79,20 @@ class _BuildReCommentState extends State<BuildReComment> {
                         Padding(padding: EdgeInsets.only(left: 10.0)),
                           Container(
                           margin: EdgeInsets.only(bottom: isEditReComment ? 45 : 20),
-                          child: CircleAvatar( radius: 22,
-                            child: recomment.userimage != null &&
-                                    recomment.userimage!.isNotEmpty
-                                ? Image.network(recomment.userimage!)
-                                : Image.asset(recomment.usergender == "female"
-                                    ? "assets/avatar/user_female.png"
-                                    : "assets/avatar/user_male.png"),
+                          child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border.all(color: Colors.black,width: 0.5),
+                                borderRadius: BorderRadius.circular(45.0),
+                                image: DecorationImage(
+                                  fit: BoxFit.fill,
+                                  image: (recomment.userimage != null) ? NetworkImage(recomment.userimage!)
+                                  :(recomment.usergender == 'female'?
+                                const AssetImage("assets/avatar/user_female.png")  as ImageProvider: const AssetImage("assets/avatar/user_male.png") as ImageProvider
+                                ))
+                              ),
+                              width: 40,
+                              height: 40,
                           ),
                         ),
                         SizedBox(

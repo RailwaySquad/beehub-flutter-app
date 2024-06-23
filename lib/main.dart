@@ -55,9 +55,9 @@ class MyApp extends StatelessWidget {
         GetPage(name: '/account_setting/security', page: ()=> const SettingSecurity()),
         GetPage(name: "/account_setting/block", page: ()=> const BlockListSceen()),
         GetPage(name: "/group/:idGroup", page: ()=> const GroupPage()),
+        GetPage(name: "/group_create", page:()=> const GroupCreateSreen()),
         GetPage(name: "/group/manager/:idGoup", page: ()=> const GroupManagementScreen()),
         GetPage(name: "/group/setting/:idGoup", page: ()=> const GroupSettingScreen()),
-        GetPage(name: "/group_create", page:()=> const GroupCreateSreen())
       ]
     );
   }

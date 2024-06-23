@@ -116,7 +116,8 @@ class _EditPostPageState extends State<EditPostPage> {
                     CircleAvatar(radius: 25,
                       child: widget.post.userImage != null &&
                               widget.post.userImage!.isNotEmpty
-                          ? Image.network(widget.post.userImage!)
+                          ? ClipOval(
+                             child: Image.network(widget.post.userImage!))
                           : Image.asset(widget.post.userGender == "female"
                               ? "assets/avatar/user_female.png"
                               : "assets/avatar/user_male.png")

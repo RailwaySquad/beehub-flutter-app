@@ -1,4 +1,5 @@
 import 'package:beehub_flutter_app/Models/post.dart';
+import 'package:beehub_flutter_app/Models/user.dart';
 import 'package:beehub_flutter_app/Provider/db_provider.dart';
 import 'package:beehub_flutter_app/Utils/api_connection/http_client.dart';
 import 'package:beehub_flutter_app/Utils/api_connection/http_post.dart';
@@ -19,6 +20,7 @@ class PopularPosts extends StatefulWidget {
 class _PopularPostsState extends State<PopularPosts> {
   final controller = ScrollController();
   List<Post> list = [];
+  User? user;
   bool hasMore = true;
   int page = 0;
   bool isLoading=false;
@@ -43,7 +45,18 @@ class _PopularPostsState extends State<PopularPosts> {
       });
     }
   }
-  
+  Future<void> _fetchUser() async{
+    DatabaseProvider db = DatabaseProvider();
+    int userid = await db.getUserId();
+    try{
+      User? fetchedUser = await ApiService.getUserById(userid);
+      setState(() {
+        user = fetchedUser;
+      });
+    }catch(e){
+      print('Failed to fetch user: $e');
+    }
+  }
   void updatePostList(){
     setState(() {
       page = 0;
@@ -71,6 +84,7 @@ class _PopularPostsState extends State<PopularPosts> {
         fetchPost();
       }
     });
+     _fetchUser();
   }
 
   @override
@@ -83,6 +97,11 @@ class _PopularPostsState extends State<PopularPosts> {
   Widget build(BuildContext context) {
     if(errorConnect){
       return const Text("Error connect Server");
+    }
+    if (user==null || isLoading) {
+      return const Center(
+        child: CircularProgressIndicator.adaptive(),
+      );
     }
     return RefreshIndicator(
       onRefresh: refresh,
@@ -110,7 +129,22 @@ class _PopularPostsState extends State<PopularPosts> {
               padding: const EdgeInsets.all(8.0),
               child: Row(
                 children: <Widget>[
-                  Icon(Icons.account_circle, size: 40.0),
+                  Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border.all(color: Colors.black,width: 0.5),
+                                borderRadius: BorderRadius.circular(45.0),
+                                image: DecorationImage(
+                                  fit: BoxFit.fill,
+                                  image: (user?.image != null) ? NetworkImage(user!.image!)
+                                  :(user!.gender! == 'female'?
+                                const AssetImage("assets/avatar/user_female.png")  as ImageProvider: const AssetImage("assets/avatar/user_male.png") as ImageProvider
+                                ))
+                              ),
+                              width: 40,
+                              height: 40,
+                          ),
+                    SizedBox(width: 10.0),
                   SizedBox(
                     width: 300.0,
                     height: 40.0,
@@ -118,7 +152,7 @@ class _PopularPostsState extends State<PopularPosts> {
                       child: const Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          'Bạn đang nghĩ gì ?',
+                          'What do you think ?',
                           textAlign: TextAlign.left,
                         ),
                       ),
