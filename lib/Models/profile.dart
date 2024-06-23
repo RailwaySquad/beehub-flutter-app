@@ -60,7 +60,7 @@ class Profile {
     final phone = json['phone'] ??"";
     final ownProfile =json["own"];
     final List<Group> groups = json['group_joined']!=null? List.from(json['group_joined'].map((e) => Group.fromJson(e))):[];
-    final List<UserSetting> userSetting = json['user_settings']!=null?List.from(json['user_settings'].map((e)=> UserSetting.fromJson(e))):[];
+    final List<UserSetting> userSetting = json['user_settings']!=null?List.from(json['user_settings'].map((e)=> UserSetting.fromJson(e))):[];    
     final List<User> relationships = json['relationships']!=null? List.from(json['relationships'].map((e)=> User.fromJson(e))):[];
     final List<Gallery> galliries = json["galleries"]!=null? List.from(json["galleries"].map((e)=> Gallery.fromJson(e))):[]; 
     return Profile(

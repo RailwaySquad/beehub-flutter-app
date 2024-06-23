@@ -60,16 +60,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
           return const Placeholder();
       }
   }
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      Provider.of<UserProvider>(context, listen: false).fetchProfile(true);
-    }); 
-  }
+  
   @override
   Widget build(BuildContext context) {
     Profile? profile = Provider.of<UserProvider>(context, listen: false).ownprofile;
+    
     var size = MediaQuery.of(context).size;
     bool isLoading = Provider.of<UserProvider>(context).isLoading;
     if(isLoading || profile==null){
@@ -77,6 +72,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: CircularProgressIndicator(),
       );
     }
+    Provider.of<UserProvider>(context, listen: false).profile = profile;
     return CustomScrollView(
         slivers: [
           SliverToBoxAdapter(
@@ -99,19 +95,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   left: 20,
                   child: Container(
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black,width: 2.0),
-                      borderRadius: BorderRadius.circular(45.0)
+                      color: Colors.white,
+                      border: Border.all(color: Colors.black,width: 1.0),
+                      borderRadius: BorderRadius.circular(45.0),
+                      image: DecorationImage(
+                        fit: BoxFit.fill,
+                        image: profile.image!.isNotEmpty? NetworkImage(profile.image!)
+                        :(profile.gender == 'female'?
+                      const AssetImage("assets/avatar/user_female.png") as ImageProvider: const AssetImage("assets/avatar/user_male.png") as ImageProvider
+                      ))
                     ),
                     width: 90,
                     height: 90,
-                    child: CircleAvatar(
-                      backgroundColor:  Colors.white,
-                      child: 
-                      profile.image!.isNotEmpty? Image.network(profile.image!,height: 75, width: 75,fit: BoxFit.fill):
-                      (profile.gender == 'female'?
-                      Image.asset("assets/avatar/user_female.png",height: 75, width: 75,fit: BoxFit.fill):Image.asset("assets/avatar/user_male.png",height: 75, width: 75,fit: BoxFit.fill)
-                      )
-                    ),
+                    child: const SizedBox()
                   ),
                 ),
                 Container(
@@ -146,11 +142,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                             ],
                           ),
-                          OutlinedButton(
+                          IconButton.outlined( 
                               onPressed: (){
                                 Get.toNamed("/account_setting");
                               },
-                              child: const Text("Profile Setting", style: TextStyle(color: TColors.buttonPrimary),),
+                              icon: const Icon(Icons.settings),
                             ),
                         ],
                       ),
@@ -172,7 +168,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           children: [
                             Expanded(
                               child: TextButton(
-                                onPressed: (){},
+                                onPressed: ()=>Get.toNamed("/userpage/friend_group/${profile.username}"),
                                 child: RichText(text: TextSpan(
                                   style: DefaultTextStyle.of(context).style,
                                   children: [
@@ -185,7 +181,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             const SizedBox(width: 10,),
                             Expanded(
                               child: TextButton(
-                                onPressed: (){},
+                                onPressed: ()=>Get.toNamed("/userpage/friend_group/${profile.username}"),
                                 child: RichText(text: TextSpan(
                                   style: DefaultTextStyle.of(context).style,
                                   children: [

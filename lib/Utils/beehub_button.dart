@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:beehub_flutter_app/Constants/color.dart';
 import 'package:beehub_flutter_app/Models/requirementForm.dart';
 import 'package:beehub_flutter_app/Provider/db_provider.dart';
@@ -18,27 +16,31 @@ class BeehubButton{
                   Get.toNamed(routeName,arguments: search,preventDuplicates: false);
                 }
               },
-              // style:  ButtonStyle(
-              //   foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
-              //   backgroundColor: WidgetStateProperty.all<Color>(TColors.buttonPrimary),
-              // ),
+              style:  ButtonStyle(
+                foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
+                backgroundColor: WidgetStateProperty.all<Color>(TColors.buttonPrimary),
+              ),
               child: const Text("Add Friend", style: TextStyle(fontWeight: FontWeight.w600),),
             );
   }
-  static Widget UnBlock(int receiverId, String routeName,String? search ){
+  static Widget UnBlock(int receiverId, String routeName,String? search,Function refetch ){
     return ElevatedButton(
               onPressed: () async{
                 int idUser = await DatabaseProvider().getUserId();
                 Requirementform req = Requirementform(senderId: idUser, receiverId: receiverId, type: "UN_BLOCK");
                 var response = await THttpHelper.createRequirement(req);
                 if(response?["response"]!="unsuccess" && response?["response"]!="error"){
-                  Get.toNamed(routeName,arguments: search,preventDuplicates: false);
+                  if(search!=null || routeName.contains("/userpage/")){
+                    Get.toNamed(routeName,arguments: search,preventDuplicates: false);
+                  }else{
+                    await refetch();
+                  }
                 }
               },
-              // style: ButtonStyle(
-              //   foregroundColor:  WidgetStateProperty.all<Color>(Colors.red),
-              //   backgroundColor:  WidgetStateProperty.all<Color>(Colors.white),
-              // ),
+              style: ButtonStyle(
+                foregroundColor:  WidgetStateProperty.all<Color>(Colors.red),
+                backgroundColor:  WidgetStateProperty.all<Color>(Colors.white),
+              ),
               child: const Text("Unblock", style: TextStyle(fontWeight: FontWeight.w600),),
             );
   }
@@ -52,10 +54,10 @@ class BeehubButton{
                   Get.toNamed(routeName,arguments: search,preventDuplicates: false);
                 }
               },
-              // style: ButtonStyle(
-              //   foregroundColor:  WidgetStateProperty.all<Color>(TColors.borderPrimary),
-              //   backgroundColor:  WidgetStateProperty.all<Color>(Colors.white),
-              // ),
+              style: ButtonStyle(
+                foregroundColor:  WidgetStateProperty.all<Color>(TColors.borderPrimary),
+                backgroundColor:  WidgetStateProperty.all<Color>(Colors.white),
+              ),
               child: const Text("Unfriend", style: TextStyle(fontWeight: FontWeight.w600),),
             );
   }
@@ -69,10 +71,10 @@ class BeehubButton{
                   Get.toNamed(routeName,arguments: search,preventDuplicates: false);
                 }
               },
-              // style: ButtonStyle(
-              //   foregroundColor:  WidgetStateProperty.all<Color>(Colors.deepOrange),
-              //   backgroundColor:  WidgetStateProperty.all<Color>(Colors.white),
-              // ),
+              style: ButtonStyle(
+                foregroundColor:  WidgetStateProperty.all<Color>(Colors.deepOrange),
+                backgroundColor:  WidgetStateProperty.all<Color>(Colors.white),
+              ),
               child: const Text("Cancel", style: TextStyle(fontWeight: FontWeight.w600),),
             );
   }
@@ -88,10 +90,10 @@ class BeehubButton{
                 }
                 }
               },
-              // style: ButtonStyle(
-              //   foregroundColor:  WidgetStateProperty.all<Color>(Colors.white),
-              //   backgroundColor:  WidgetStateProperty.all<Color>(Colors.green),
-              // ),
+              style: ButtonStyle(
+                foregroundColor:  WidgetStateProperty.all<Color>(Colors.white),
+                backgroundColor:  WidgetStateProperty.all<Color>(Colors.green),
+              ),
               child: const Text("Accept", style: TextStyle(fontWeight: FontWeight.w600),),
             );
   }
@@ -107,10 +109,10 @@ class BeehubButton{
                 }
                 }
               },
-              // style: ButtonStyle(
-              //   foregroundColor:  WidgetStateProperty.all<Color>(Colors.green),
-              //   backgroundColor:  WidgetStateProperty.all<Color>(Colors.white),
-              // ),
+              style: ButtonStyle(
+                foregroundColor:  WidgetStateProperty.all<Color>(Colors.green),
+                backgroundColor:  WidgetStateProperty.all<Color>(Colors.white),
+              ),
               child: const Text("Cancel", style: TextStyle(fontWeight: FontWeight.w600),),
             );
   }
@@ -124,27 +126,28 @@ class BeehubButton{
                   Get.toNamed(routeName,arguments: search,preventDuplicates: false);
                 }
               },
-              // style: ButtonStyle(
-              //   foregroundColor:  WidgetStateProperty.all<Color>(Colors.white),
-              //   backgroundColor:  WidgetStateProperty.all<Color>(Colors.red),
-              // ),
+              style: ButtonStyle(
+                foregroundColor:  WidgetStateProperty.all<Color>(Colors.white),
+                backgroundColor:  WidgetStateProperty.all<Color>(Colors.red),
+              ),
               child: const Text("Block", style: TextStyle(fontWeight: FontWeight.w600),),
             );
   }
-  static Widget JoinGroup(int groupId,String routeName,String? search ){
+  static Widget JoinGroup(int groupId,String routeName,String? search){
     return ElevatedButton(
               onPressed: () async{
                 int idUser = await DatabaseProvider().getUserId();
                 Requirementform req = Requirementform(senderId: idUser, groupId: groupId, type: "JOIN");
                 var response = await THttpHelper.createRequirement(req);
                 if(response?["response"]!="unsuccess" && response?["response"]!="error"){
+                  
                   Get.toNamed(routeName,arguments: search,preventDuplicates: false);
                 }
               },
-              // style: ButtonStyle(
-              //   foregroundColor:  WidgetStateProperty.all<Color>(Colors.white),
-              //   backgroundColor:  WidgetStateProperty.all<Color>(TColors.buttonPrimary),
-              // ),
+              style: ButtonStyle(
+                foregroundColor:  WidgetStateProperty.all<Color>(Colors.white),
+                backgroundColor:  WidgetStateProperty.all<Color>(TColors.buttonPrimary),
+              ),
               child: const Text("Join", style: TextStyle(fontWeight: FontWeight.w600),),
             );
   }
@@ -158,10 +161,10 @@ class BeehubButton{
                   Get.toNamed(routeName,arguments: search,preventDuplicates: false);
                 }
               },
-              // style: ButtonStyle(
-              //   foregroundColor: WidgetStateProperty.all<Color>(Colors.black),
-              //   backgroundColor: WidgetStateProperty.all<Color>(Colors.white),
-              // ),
+              style: ButtonStyle(
+                foregroundColor: WidgetStateProperty.all<Color>(Colors.black),
+                backgroundColor: WidgetStateProperty.all<Color>(Colors.white),
+              ),
               child: const Text("Undo", style: TextStyle(fontWeight: FontWeight.w600),),
             );
   }
@@ -170,10 +173,10 @@ class BeehubButton{
               onPressed: () async{
                 Get.toNamed("/group/$groupId");
               },
-              // style: ButtonStyle(
-              //   foregroundColor: WidgetStateProperty.all<Color>(TColors.buttonPrimary),
-              //   backgroundColor: WidgetStateProperty.all<Color>(Colors.white),
-              // ),
+              style: ButtonStyle(
+                foregroundColor: WidgetStateProperty.all<Color>(TColors.buttonPrimary),
+                backgroundColor: WidgetStateProperty.all<Color>(Colors.white),
+              ),
               child: const Text("Vist", style: TextStyle(fontWeight: FontWeight.w600),),
             );
   }
@@ -182,10 +185,10 @@ class BeehubButton{
               onPressed: () async{
                 Get.toNamed("/group/manager/$groupId");
               },
-              // style: ButtonStyle(
-              //   foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
-              //   backgroundColor: WidgetStateProperty.all<Color>(Colors.blue),
-              // ),
+              style: ButtonStyle(
+                foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
+                backgroundColor: WidgetStateProperty.all<Color>(Colors.blue),
+              ),
               child: const Text("Manage", style: TextStyle(fontWeight: FontWeight.w600),),
             );
   }
@@ -199,30 +202,14 @@ class BeehubButton{
                   Get.toNamed(routeName,arguments: search,preventDuplicates: false);
                 }
               },
-              // style: ButtonStyle(
-              //   foregroundColor: WidgetStateProperty.all<Color>(Colors.red),
-              //   backgroundColor: WidgetStateProperty.all<Color>(Colors.white),
-              // ),
+              style: ButtonStyle(
+                foregroundColor: WidgetStateProperty.all<Color>(Colors.red),
+                backgroundColor: WidgetStateProperty.all<Color>(Colors.white),
+              ),
               child: const Text("Leave", style: TextStyle(fontWeight: FontWeight.w600),),
             );
   }
-  static Widget RetireManage(int groupId, String routeName,String? search ){
-    return ElevatedButton(
-              onPressed: () async{
-                int idUser = await DatabaseProvider().getUserId();
-                Requirementform req = Requirementform(senderId: idUser, groupId: groupId, type: "RETIRE");
-                var response = await THttpHelper.createRequirement(req);
-                if(response?["response"]!="unsuccess" && response?["response"]!="error"){
-                  Get.toNamed("/group/$groupId",arguments: search,preventDuplicates: false);
-                }
-              },
-              // style: ButtonStyle(
-              //   foregroundColor: WidgetStateProperty.all<Color>(Colors.red),
-              //   backgroundColor: WidgetStateProperty.all<Color>(Colors.white),
-              // ),
-              child: const Text("Retire", style: TextStyle(fontWeight: FontWeight.w600),),
-            );
-  }
+
   static Widget AcceptJoinGroup(int groupId, int receiverId, String routeName,String? search ){
     return ElevatedButton(
               onPressed: () async{
@@ -233,10 +220,10 @@ class BeehubButton{
                   Get.toNamed(routeName,arguments: search,preventDuplicates: false);
                 }
               },
-              // style: ButtonStyle(
-              //   foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
-              //   backgroundColor: WidgetStateProperty.all<Color>(Colors.green),
-              // ),
+              style: ButtonStyle(
+                foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
+                backgroundColor: WidgetStateProperty.all<Color>(Colors.green),
+              ),
               child: const Text("Accept"),
             );
   }
@@ -250,11 +237,99 @@ class BeehubButton{
                   Get.toNamed(routeName,arguments: search,preventDuplicates: false);
                 }
               },
-              //  style: ButtonStyle(
-              //   foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
-              //   backgroundColor: WidgetStateProperty.all<Color>(Colors.red),
-              // ),
+              style: ButtonStyle(
+                foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
+                backgroundColor: WidgetStateProperty.all<Color>(Colors.red),
+              ),
               child: const Text("Reject"),
             );
+  }
+
+  static Widget SetManager(int groupId, int receiverId,Function refetch) {
+    return ElevatedButton(
+      onPressed: ()async{
+        Requirementform req = Requirementform(senderId: receiverId, receiverId: receiverId, groupId: groupId,type: "SET_MANAGER");
+        var response = await THttpHelper.createRequirement(req);
+        if(response?["response"]!="unsuccess" && response?["response"]!="error"){
+          await refetch();
+        }
+      }, 
+      style: ButtonStyle(
+              foregroundColor: WidgetStateProperty.all<Color>(Colors.green),
+              backgroundColor: WidgetStateProperty.all<Color>(Colors.white),
+            ),
+      child: const Icon(Icons.add_moderator_outlined));
+  }
+  static Widget RetireManager(int groupId, Function refetch) {
+    return ElevatedButton(
+      onPressed: ()async{
+        int idUser = await DatabaseProvider().getUserId();
+        Requirementform req = Requirementform(senderId: idUser, receiverId: idUser, groupId: groupId, type: "RETIRE");
+        var response = await THttpHelper.createRequirement(req);
+        if(response?["response"]!="unsuccess" && response?["response"]!="error"){
+          await refetch();
+        }
+      }, 
+      style: ButtonStyle(
+              foregroundColor: WidgetStateProperty.all<Color>(Colors.red),
+              backgroundColor: WidgetStateProperty.all<Color>(Colors.white),
+            ),
+      child: const Icon(Icons.remove_moderator_outlined));
+  }
+  static Widget RemoveManager(int groupId, int idReceiver,Function refetch) {
+    return ElevatedButton(
+      onPressed: ()async{
+        int idUser = await DatabaseProvider().getUserId();
+        Requirementform req = Requirementform(senderId: idUser, receiverId: idReceiver, groupId: groupId, type: "REMOVE_MANAGER");
+        var response = await THttpHelper.createRequirement(req);
+        if(response?["response"]!="unsuccess" && response?["response"]!="error"){
+          await refetch();
+        }
+      }, 
+      style: ButtonStyle(
+              foregroundColor: WidgetStateProperty.all<Color>(Colors.orange),
+              backgroundColor: WidgetStateProperty.all<Color>(Colors.white),
+            ),
+      child: const Icon(Icons.person_remove));
+  }
+  static Widget RemoveMember(int groupId, int idReceiver,Function refetch) {
+    return ElevatedButton(
+      onPressed: ()async{
+        int idUser = await DatabaseProvider().getUserId();
+        Requirementform req = Requirementform(senderId: idUser, receiverId: idReceiver, groupId: groupId, type: "KICK");
+        var response = await THttpHelper.createRequirement(req);
+        if(response?["response"]!="unsuccess" && response?["response"]!="error"){
+          await refetch();
+        }
+      }, 
+      style: ButtonStyle(
+              foregroundColor: WidgetStateProperty.all<Color>(Colors.red),
+              backgroundColor: WidgetStateProperty.all<Color>(Colors.white),
+            ),
+      child: const Icon(Icons.input_outlined));
+  }
+   static Widget AcceptReport(int groupId, int idReport) {
+    return ElevatedButton(
+      onPressed: ()async{
+        int idUser = await DatabaseProvider().getUserId();
+        Requirementform req = Requirementform(senderId: idUser, reportId: idReport, groupId: groupId, type: "ACCEPT_REPORT");
+        var response = await THttpHelper.createRequirement(req);
+        if(response?["response"]!="unsuccess" && response?["response"]!="error"){
+          Get.toNamed("/");
+        }
+      }, 
+      child: const Text("Accept"));
+  } 
+  static Widget RemoveReport(int groupId, int idReport) {
+    return ElevatedButton(
+      onPressed: ()async{
+        int idUser = await DatabaseProvider().getUserId();
+        Requirementform req = Requirementform(senderId: idUser, reportId: idReport, groupId: groupId, type: "CANCEL_REPORT");
+        var response = await THttpHelper.createRequirement(req);
+        if(response?["response"]!="unsuccess" && response?["response"]!="error"){
+          Get.toNamed("/");
+        }
+      }, 
+      child: const Text("Remove only Report"));
   }
 }

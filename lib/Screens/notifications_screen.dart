@@ -5,6 +5,7 @@ import 'package:beehub_flutter_app/Provider/db_provider.dart';
 import 'package:beehub_flutter_app/Utils/api_connection/http_client.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 class NotificationsScreen extends StatefulWidget {
@@ -23,8 +24,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     List<Requirement>? listReq = await THttpHelper.getNotification();
     setState(() {
       isLoading = false;
-      list.addAll(listReq!);
-
+      list = listReq ?? [];
     });
   }
   @override
@@ -48,8 +48,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     return Column(
       children: [
         AppBar(
+          leading: const Icon(Icons.notifications, color: Colors.white,),
            elevation: 10,
-          title: Text("Notifications: ${list.length}"),
+           backgroundColor:const Color(0xff383a45),
+          title: Text("Notifications: ${list.length}",style: GoogleFonts.ubuntu(color: Colors.white)),
         ),
         ListView.builder(
           shrinkWrap: true,
@@ -61,7 +63,21 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   onTap: (){
                     Get.toNamed("/userpage/${list[index].sender!.username}");
                   },
-                  child: list[index].sender!.image!=null? Image.network(list[index].sender!.image!): (list[index].sender!.gender=='female'? Image.asset("assets/avatar/user_female.png"):Image.asset("assets/avatar/user_male.png")),
+                  child:
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: Colors.black,width: 1.0),
+                      borderRadius: BorderRadius.circular(45.0),
+                      image: DecorationImage(
+                        fit: BoxFit.fill,
+                        image: list[index].sender!.image!=null? NetworkImage(list[index].sender!.image!)
+                                  : (list[index].sender!.gender=='female'? const AssetImage("assets/avatar/user_female.png") as ImageProvider:const AssetImage("assets/avatar/user_male.png") as ImageProvider),)
+                    ),
+                    width: 60,
+                    height: 60,
+                  ),
+                  
                 ),
                 title: RichText(
                                 text: TextSpan(
@@ -80,7 +96,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                       Requirementform req = Requirementform(senderId: list[index].sender!.id, receiverId: idUser, type: "ACCEPT");
                       var response = await THttpHelper.createRequirement(req);
                       if(response?["response"]!="unsuccess" && response?["response"]!="error"){
-                        Get.toNamed("/",preventDuplicates: false);
+                        await fetchNotification();
                       }
                     }, icon: const Icon(Icons.check, size: 20,color: Colors.green,)),
                     IconButton(onPressed: () async{
@@ -88,7 +104,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                       Requirementform req = Requirementform(senderId: list[index].sender!.id, receiverId: idUser, type: "CANCEL_ADDFRIEND");
                       var response = await THttpHelper.createRequirement(req);
                       if(response?["response"]!="unsuccess" && response?["response"]!="error"){
-                        Get.toNamed("/",preventDuplicates: false);
+                        await fetchNotification();
                       }
                     }, icon: const Icon(Icons.close, size: 20, color:  Colors.red,))
                   ],),
@@ -100,8 +116,19 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   Get.toNamed("/userpage/${list[index].sender!.username}");
                 },
                 child: ListTile(
-                  leading: list[index].sender!.image!=null? Image.network(list[index].sender!.image!)
-                                : (list[index].sender!.gender=='female'? Image.asset("assets/avatar/user_female.png"):Image.asset("assets/avatar/user_male.png")),
+                  leading: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: Colors.black,width: 1.0),
+                      borderRadius: BorderRadius.circular(45.0),
+                      image: DecorationImage(
+                        fit: BoxFit.fill,
+                        image: list[index].sender!.image!=null? NetworkImage(list[index].sender!.image!)
+                                  : (list[index].sender!.gender=='female'? const AssetImage("assets/avatar/user_female.png") as ImageProvider:const AssetImage("assets/avatar/user_male.png") as ImageProvider),)
+                    ),
+                    width: 60,
+                    height: 60,
+                  ),
                   title: RichText(
                         text: TextSpan(
                           style: DefaultTextStyle.of(context).style,
@@ -114,7 +141,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     Requirementform req = Requirementform(senderId: list[index].sender!.id,id: list[index].id, type: "REMOVE_NOTIFICATION");
                     var response = await THttpHelper.createRequirement(req);
                     if(response?["response"]!="unsuccess" && response?["response"]!="error"){
-                      Get.toNamed("/",preventDuplicates: false);
+                      await fetchNotification();
                     }
                   }, icon: const Icon(Icons.remove)),
                 ),
@@ -126,7 +153,20 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     Get.toNamed("/group/${list[index].group!.id}");
                   },
                 child: ListTile(
-                  leading: list[index].group!.imageGroup!=null? Image.network(list[index].group!.imageGroup!): Image.asset("assets/avatar/group_image.png"),
+                  leading: 
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: Colors.black,width: 1.0),
+                      borderRadius: BorderRadius.circular(45.0),
+                      image: DecorationImage(
+                        fit: BoxFit.fill,
+                        image: list[index].group!.imageGroup!=null? NetworkImage(list[index].group!.imageGroup!)
+                                  : const AssetImage("assets/avatar/group_image.png") as ImageProvider,)
+                    ),
+                    width: 60,
+                    height: 60,
+                  ),
                   title: RichText(
                                   text: TextSpan(
                                     style: DefaultTextStyle.of(context).style,
@@ -141,7 +181,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     Requirementform req = Requirementform(senderId: idUser,id: list[index].id, type: "REMOVE_NOTIFICATION");
                     var response = await THttpHelper.createRequirement(req);
                     if(response?["response"]!="unsuccess" && response?["response"]!="error"){
-                      Get.toNamed("/",preventDuplicates: false);
+                      await fetchNotification();
                     }
                   }, icon: const Icon(Icons.remove)),
                 ),

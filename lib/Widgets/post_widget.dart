@@ -1,20 +1,16 @@
-import 'dart:developer';
-
-
 import 'package:beehub_flutter_app/Models/comment.dart';
 import 'package:beehub_flutter_app/Models/post.dart';
 import 'package:beehub_flutter_app/Constants/color.dart';
 import 'package:beehub_flutter_app/Models/like.dart';
 import 'package:beehub_flutter_app/Provider/db_provider.dart';
-import 'package:beehub_flutter_app/Provider/user_provider.dart';
 import 'package:beehub_flutter_app/Utils/api_connection/http_post.dart';
 import 'package:beehub_flutter_app/Utils/helper/helper_functions.dart';
 import 'package:beehub_flutter_app/Utils/shadow/shadows.dart';
 import 'package:beehub_flutter_app/Widgets/addpostShare_widget.dart';
 import 'package:beehub_flutter_app/Widgets/editpost_widget.dart';
-import 'package:beehub_flutter_app/Widgets/expanded/expanded_widget.dart';
 import 'package:beehub_flutter_app/Widgets/postShare_widget.dart';
 import 'package:beehub_flutter_app/Widgets/showcommentpost.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -100,6 +96,22 @@ class _PostWidgetState extends State<PostWidget> {
     }else{
       return 'Now' ;
     }
+  }
+  Widget getStatus(String? status){
+    if(status==null){
+      return const SizedBox();
+    }
+    switch (status) {
+      case "PUBLIC":
+        return const Icon(CupertinoIcons.globe);
+      case "HIDDEN":
+        return const Icon(CupertinoIcons.lock);
+      case "FOR_FRIEND":
+        return const Icon(Icons.people_alt);
+      default:
+      return const Icon(CupertinoIcons.globe);
+    }
+
   }
   Widget getMedia(height, width) {
     if (widget.post.medias != null) {
@@ -193,6 +205,7 @@ class _PostWidgetState extends State<PostWidget> {
   Widget build(BuildContext context) {
     final dark = THelperFunction.isDarkMode(context);
     return Container(
+      margin: const EdgeInsets.symmetric(vertical: 2.5),
       decoration: BoxDecoration(
         color: dark ? TColors.darkerGrey : Colors.white,
         boxShadow: [
@@ -213,47 +226,74 @@ class _PostWidgetState extends State<PostWidget> {
                       child: Row(
                         children: <Widget>[
                           //Avatar
-                          CircleAvatar(
-                            child: widget.post.userImage != null &&
-                                    widget.post.userImage!.isNotEmpty
-                                ? Image.network(widget.post.userImage!)
-                                : Image.asset(widget.post.userGender == "female"
-                                    ? "assets/avatar/user_female.png"
-                                    : "assets/avatar/user_male.png"),
+                          Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border.all(color: Colors.black,width: 0.5),
+                                borderRadius: BorderRadius.circular(45.0),
+                                image: DecorationImage(
+                                  fit: BoxFit.fill,
+                                  image: widget.post.userImage != null &&
+                                        widget.post.userImage!.isNotEmpty? NetworkImage(widget.post.userImage!)
+                                  :(widget.post.userGender == 'female'?
+                                const AssetImage("assets/avatar/user_female.png")  as ImageProvider: const AssetImage("assets/avatar/user_male.png") as ImageProvider
+                                ))
+                              ),
+                              width: 40,
+                              height: 40,
                           ),
                           const SizedBox(
                             width: 10,
                           ),
                           //Fullname
                           SizedBox(
+                            width: 250,
                               child: widget.post.groupName != null &&
                                       widget.post.groupName!.isNotEmpty
                                   ? Column(
+                                     mainAxisSize: MainAxisSize.max,
                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
-                                      Row(children: [
-                                          Text(
-                                            widget.post.userFullname,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .titleMedium!
-                                                .copyWith(
-                                                    fontWeight: FontWeight.bold),
-                                            overflow: TextOverflow.ellipsis,
-                                            maxLines: 1,
-                                            textAlign: TextAlign.left,
+                                      Row(
+                                        mainAxisSize: MainAxisSize.max,
+                                        children: [
+                                          InkWell(
+                                            onTap: ()=> Get.toNamed("/userpage/${widget.post.userUsername}"),
+                                            child: Text(
+                                              widget.post.userFullname,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .titleMedium!
+                                                  .copyWith(
+                                                      fontWeight: FontWeight.bold),
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 1,
+                                              textAlign: TextAlign.left,
+                                            ),
                                           ),
-                                          Text.rich(TextSpan(
-                                              text: " in ",
-                                              children: <InlineSpan>[
-                                                TextSpan(
-                                                  text: widget.post.groupName!,
-                                                  style: const TextStyle(
-                                                      fontWeight: FontWeight.bold),recognizer: TapGestureRecognizer()..onTap = () => Get.toNamed("/group/${widget.post.groupId!}")
-                                                )
-                                              ]))
+                                          Flexible(
+                                            fit: FlexFit.loose,
+                                            child: Text.rich(TextSpan(
+                                                text: " in ",
+                                                children: <InlineSpan>[
+                                                  TextSpan(
+                                                    text: widget.post.groupName!,
+                                                    style: const TextStyle(
+                                                        fontWeight: FontWeight.bold),recognizer: TapGestureRecognizer()..onTap = () => Get.toNamed("/group/${widget.post.groupId!}")
+                                                  )
+                                                ]),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              softWrap: false  
+                                              ),
+                                          )
                                         ]),
+                                        // Expanded(child: Row(
+                                        //   children: [
+                                        //     getStatus(widget.post.settingType)
+                                        //   ],
+                                        // ))
                                         Text(formatDate(widget.post.createdAt))
                                     ],
                                   )

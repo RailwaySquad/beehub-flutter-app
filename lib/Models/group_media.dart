@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 class GroupMedia{
   final int? id;
   final String media;
@@ -20,7 +18,6 @@ class GroupMedia{
     final fullname = json["fullname"]??'';
     final groupId = json["group_id"];
     final postId = json["post_id"];
-    log("id: $id\tmedia: $media\tmediaT: $mediaType\tcreate: $createAt\tusername: $username\tfullname: $fullname\tgroupId: $groupId\tPostId: $postId");
     return GroupMedia(
       id: id, 
       media: media, 

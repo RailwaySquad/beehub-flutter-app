@@ -1,10 +1,12 @@
 import 'package:beehub_flutter_app/Constants/color.dart';
 import 'package:beehub_flutter_app/Models/group.dart';
 import 'package:beehub_flutter_app/Models/post.dart';
+import 'package:beehub_flutter_app/Provider/user_provider.dart';
 import 'package:beehub_flutter_app/Utils/api_connection/http_client.dart';
 import 'package:beehub_flutter_app/Widgets/post_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 
 class GroupPosts extends StatefulWidget {
   const GroupPosts({
@@ -95,15 +97,22 @@ class _GroupPostsState extends State<GroupPosts> {
   }
   @override
   Widget build(BuildContext context) {
+    bool isLoading = Provider.of<UserProvider>(context).isLoading;
     var size = MediaQuery.of(context).size;
     if(errorConnect){
       return const Text("Error connect Server");
+    }
+    if(isLoading){
+      return const Center(
+        heightFactor: 100,
+        child: CircularProgressIndicator(color: TColors.buttonPrimary,),
+      );
     }
     return Column(
           children: [
             SizedBox(
               width: size.width,
-              height: size.height*0.12,
+              height: 80,
               //List Group
               child: ListView.separated(
                       scrollDirection: Axis.horizontal,
@@ -146,7 +155,17 @@ class _GroupPostsState extends State<GroupPosts> {
                                                       : Image.asset("assets/avatar/group_image.png"),
                                                 ),
                                             ),
-                                              Text(groups[index].groupname, textAlign:TextAlign.center, style: TextStyle(fontWeight: selectGroup==index? FontWeight.bold: FontWeight.normal),),
+                                            SizedBox(
+                                              width: 60,
+                                              child: Text(
+                                                  groups[index].groupname,
+                                                  overflow: TextOverflow.fade,
+                                                  softWrap: false,
+                                                  maxLines: 1,
+                                                  style: TextStyle(fontWeight: selectGroup==index? FontWeight.bold: FontWeight.normal)
+                                                ),
+                                            ),
+                                              // Text(groups[index].groupname, textAlign:TextAlign.center, style: TextStyle(fontWeight: selectGroup==index? FontWeight.bold: FontWeight.normal),),
                                         ],
                                       ),
                                 ),

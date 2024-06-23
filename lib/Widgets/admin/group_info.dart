@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:beehub_flutter_app/Constants/url.dart';
+import 'package:beehub_flutter_app/Models/admin/admin_group.dart';
 import 'package:beehub_flutter_app/Provider/db_provider.dart';
+import 'package:beehub_flutter_app/Utils/admin_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -27,13 +29,18 @@ class _UserInfoState extends State<GroupInfo> {
     var url = '${AppUrl.adminPath}/groups/${widget.id}';
     Group result = Group(
         id: widget.id,
-        groupImage: '',
-        groupName: '',
+        name: '',
+        avatar: '',
+        createdAt: '',
+        creatorId: 0,
+        creatorImage: '',
+        creatorUsername: '',
         noOfMembers: 0,
         noOfPosts: 0,
-        isActive: false,
         isPublic: false,
-        gallery: []);
+        isActive: false,
+        gallery: [],
+        reportTitleList: []);
     try {
       http.Response response = await http.get(Uri.parse(url), headers: {
         'Content-Type': 'application/json; charset=UTF-8',
@@ -66,7 +73,7 @@ class _UserInfoState extends State<GroupInfo> {
                           CircleAvatar(
                             radius: 72,
                             backgroundImage: NetworkImage(
-                              snapshot.data!.groupImage,
+                              getAvatar(snapshot.data!.avatar),
                             ),
                           ),
                           const SizedBox(
@@ -75,10 +82,12 @@ class _UserInfoState extends State<GroupInfo> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              _infoList('Group Name: ', snapshot.data!.groupName),
-                              _infoList('Visibility: ', snapshot.data!.isPublic ? 'Public' : 'Private'),
-                              _infoList('Members: ', snapshot.data!.noOfMembers.toString()),
-                              _infoList('Posts: ', snapshot.data!.noOfPosts.toString()),
+                              infoList('Group Name: ', [Text(snapshot.data!.name)]),
+                              infoList('Creator: ', [Text(snapshot.data!.creatorUsername)]),
+                              infoList('Visibility: ', [Text(snapshot.data!.isPublic ? 'Public' : 'Private')]),
+                              infoList('Members: ', [Text(snapshot.data!.noOfMembers.toString())]),
+                              infoList('Posts: ', [Text(snapshot.data!.noOfPosts.toString())]),
+                              infoList('Status: ', [getStatus(snapshot.data!.isActive ? 'active' : 'inactive')]),
                             ],
                           )
                         ],
@@ -118,50 +127,5 @@ class _UserInfoState extends State<GroupInfo> {
                   child: CircularProgressIndicator.adaptive(),
                 ),
               ));
-  }
-
-  _infoList(String title, String content) {
-    return RichText(
-        text: TextSpan(children: [
-      TextSpan(
-          text: title,
-          style: const TextStyle(
-              fontWeight: FontWeight.bold, color: Colors.black)),
-      TextSpan(text: content, style: const TextStyle(color: Colors.black))
-    ]));
-  }
-}
-
-class Group {
-  final int id;
-  final String groupName;
-  final String groupImage;
-  final int noOfMembers;
-  final int noOfPosts;
-  final bool isActive;
-  final bool isPublic;
-  final List<dynamic> gallery;
-
-  Group({
-    required this.id,
-    required this.groupName,
-    required this.groupImage,
-    required this.noOfMembers,
-    required this.noOfPosts,
-    required this.isActive,
-    required this.isPublic,
-    required this.gallery,
-  });
-  factory Group.fromJson(Map<String, dynamic> json) {
-    return Group(
-      id: json['id'],
-      groupName: json['groupname'],
-      groupImage: json['image_group'],
-      noOfMembers: json['member_count'],
-      noOfPosts: json['post_count'],
-      isActive: json['active'],
-      isPublic: json['public_group'],
-      gallery: (json['group_medias'] as List).map((e) => e['media'] as String).toList(),
-    );
   }
 }

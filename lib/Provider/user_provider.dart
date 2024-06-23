@@ -44,6 +44,9 @@ class UserProvider extends ChangeNotifier{
     _username = await THttpHelper.getUsername();
     notifyListeners();
   }
+  void  setUsername(String username){
+    _username =username;
+  }
   String? get username {
     return _username;
   }
@@ -55,9 +58,7 @@ class UserProvider extends ChangeNotifier{
       isLoading = false;
       notifyListeners();
     }else{
-      if(username==null) {
-        await getUsername();
-      }
+      await getUsername();
       profile = await THttpHelper.getProfile(username!);
       ownprofile = await THttpHelper.getProfile(username!);
       isLoading = false;
@@ -67,7 +68,7 @@ class UserProvider extends ChangeNotifier{
   Group? get group{
     return _group;    
   }
-  Future fetchGroup(num idGroup)async{
+  Future fetchGroup(int idGroup)async{
     isLoading = true;
     notifyListeners();
     Group? findGroup = await THttpHelper.getGroup(idGroup);

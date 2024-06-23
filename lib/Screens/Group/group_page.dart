@@ -8,7 +8,7 @@ import 'package:beehub_flutter_app/Screens/Group/group_discussion.dart';
 import 'package:beehub_flutter_app/Screens/Group/group_media.dart';
 import 'package:beehub_flutter_app/Screens/Group/group_people.dart';
 import 'package:beehub_flutter_app/Utils/beehub_button.dart';
-import 'package:beehub_flutter_app/Widgets/expanded/expanded_widget.dart';
+import 'package:beehub_flutter_app/Utils/helper/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -22,7 +22,7 @@ class GroupPage extends StatefulWidget {
 }
 
 class _GroupPageState extends State<GroupPage> {
-  num? _idGroup;
+  int? _idGroup;
   List<String> tabs = [
     "Discussion",
     "About",
@@ -85,10 +85,8 @@ class _GroupPageState extends State<GroupPage> {
   }
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
     bool isLoading = Provider.of<UserProvider>(context).isLoading;
     Group? group = Provider.of<UserProvider>(context).group;
- 
     if(isLoading || group==null ||_idGroup==null){
       return const Scaffold(
         body: Center(
@@ -101,8 +99,9 @@ class _GroupPageState extends State<GroupPage> {
       );
     }
     Widget getButton(){
+    
       if(group.joined==null){
-        return BeehubButton.JoinGroup(group.id!, "/group/${group.id}", null);
+        return BeehubButton.JoinGroup(group.id!, "/", null);
       }else if(group.joined=="send request"){
         return BeehubButton.CancelJoinGroup(group.id!, "/group/${group.id}", null);
       }else{
@@ -112,7 +111,8 @@ class _GroupPageState extends State<GroupPage> {
           case "GROUP_CREATOR":
             return BeehubButton.ManagerGroup(group.id!);
           case "GROUP_MANAGER":
-            return Row(
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 BeehubButton.ManagerGroup(group.id!),
                 const SizedBox(width: 8,),
@@ -120,7 +120,7 @@ class _GroupPageState extends State<GroupPage> {
               ],
             );
           default:
-            return BeehubButton.JoinGroup(group.id!, "/group/${group.id}", null);
+            return BeehubButton.JoinGroup(group.id!, "/",null);
         }
       }
     }
@@ -168,7 +168,7 @@ class _GroupPageState extends State<GroupPage> {
           ),
           SliverToBoxAdapter(
             child: Container(
-              width: size.width,
+              width: THelperFunction.screenWidth(),
               padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
               child: Column(
                 mainAxisSize: MainAxisSize.max,
@@ -186,54 +186,54 @@ class _GroupPageState extends State<GroupPage> {
                             decoration: BoxDecoration(
                               color: Colors.white,
                               border: Border.all(color: Colors.black,width: 1.0),
-                              borderRadius: BorderRadius.circular(35.0)
+                              borderRadius: BorderRadius.circular(35.0),
+                              image: DecorationImage(
+                                fit: BoxFit.fill,
+                                image: group.imageGroup !=null&&group.imageGroup!.isNotEmpty? NetworkImage(group.imageGroup!):
+                              const AssetImage("assets/avatar/group_image.png") as ImageProvider)
                             ),
                             width: 70,
                             height: 70,
-                            child: 
-                              group.imageGroup !=null&&group.imageGroup!.isNotEmpty? Image.network(group.imageGroup!,height: 35, width: 35,fit: BoxFit.contain):
-                              Image.asset("assets/avatar/group_image.png",height: 35, width: 35,fit: BoxFit.contain)
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 20.0),
-                            child: Column(
-                              children: [
+                            child: const SizedBox()
+                              
+                          ), 
+                          Container(
+                            width: 160,
+                            padding: const EdgeInsets.only(left: 10),
+                              child:Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
                                 Text(group.groupname, style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold)),
+                                const SizedBox(height: 6,),
                                 Text(group.publicGroup? "Public Group":"Private Group", style: Theme.of(context).textTheme.labelMedium!)
-                              ],
+                              ],)
                             ),
-                          ),
+                          
                         ],
                       ),
                       getButton()
                     ],
                   ),
-                  
-                   SizedBox(
-                    child: Row(
-                      children: [
-                        Expanded(
-                                  child: SingleChildScrollView(
-                                    child: ExpandedWidget(text: group.description!))
-                                ),
-                      ],
-                    )
+                  const SizedBox(height: 10,),
+                   Padding(
+                    padding: const EdgeInsets.only(left: 10),
+                    child: Text(group.description!)
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 8),
                     child: Text("Created at ${DateFormat.yMMMMd('en_US').format(group.createdAt!)}"),
                   ),
                   SizedBox(
-                    width: size.width,
-                    height: size.height*0.05,
+                    width: THelperFunction.screenWidth(),
+                    height: THelperFunction.screenHeight()*0.05,
                     child: Stack(children: [
                       Positioned(
                         top: 0,
                         left: 0,
                         right: 0,
                         child: SizedBox(
-                          width: size.width,
-                          height: size.height * 0.04,
+                          width: THelperFunction.screenWidth(),
+                          height: THelperFunction.screenHeight() * 0.04,
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
                             physics: const BouncingScrollPhysics(),
@@ -267,7 +267,7 @@ class _GroupPageState extends State<GroupPage> {
                           margin: const EdgeInsets.only(left: 10),
                           duration:const Duration(milliseconds: 500),
                           width: changeContainerWidth(),
-                          height: size.height*0.008,
+                          height: THelperFunction.screenHeight()*0.008,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
                             color: TColors.primary),

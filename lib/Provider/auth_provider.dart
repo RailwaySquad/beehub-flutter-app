@@ -83,8 +83,9 @@ class AuthenticationProvider extends ChangeNotifier {
     try {
       http.Response req = await http.post(Uri.parse(url),
           body: json.encode(body),
-          headers: {'Content-Type': 'application/json; charset=UTF-8'});
-
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8'
+          }).timeout(const Duration(seconds: 3));
       if (req.statusCode == 200 || req.statusCode == 201) {
         final res = json.decode(req.body);
 
@@ -106,9 +107,12 @@ class AuthenticationProvider extends ChangeNotifier {
           PageNavigator(ctx: context).nextPageOnly(page: const HomePage());
         }
       } else {
-        final res = json.decode(req.body);
-
-        _resMessage = res['message'];
+        if (req.statusCode == 403) {
+          _resMessage = req.body;
+        } else {
+          final res = json.decode(req.body);
+          _resMessage = res['message'];
+        }
 
         _isLoading = false;
         notifyListeners();

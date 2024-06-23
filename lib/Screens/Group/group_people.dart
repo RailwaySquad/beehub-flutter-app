@@ -1,12 +1,9 @@
-import 'dart:developer';
-
 import 'package:beehub_flutter_app/Constants/color.dart';
 import 'package:beehub_flutter_app/Models/group.dart';
 import 'package:beehub_flutter_app/Models/group_member.dart';
 import 'package:beehub_flutter_app/Provider/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:provider/provider.dart';
 
 class GroupPeople extends StatelessWidget {
@@ -26,12 +23,11 @@ class GroupPeople extends StatelessWidget {
       );
     }
     List<GroupMember>? list = group.groupMembers;
-    if(list==null){
-      return const SliverToBoxAdapter (
-        child: Text("There are 0 member in group.")
+    if(list==null || list.isEmpty){
+      return  SliverToBoxAdapter (
+        child: Center(heightFactor: 4.0,child: Text("Not Found People",style: Theme.of(context).textTheme.headlineMedium))
       );
     }
-    log(list.length.toString());
     return SliverList.builder(
       itemCount: list.length,
       itemBuilder: (context, index){
@@ -40,10 +36,21 @@ class GroupPeople extends StatelessWidget {
               Get.toNamed('/userpage/${list[index].username}');
             },
           child: ListTile(
-            leading: list[index].userImage!=null && list[index].userImage!.isNotEmpty
-                    ? Image.network(list[index].userImage!)
-                    : (list[index].userGender=='female'
-                        ? Image.asset("assets/avatar/user_female.png") :Image.asset("assets/avatar/user_male.png")),
+            leading: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(color: Colors.black,width: 1.0),
+                borderRadius: BorderRadius.circular(45.0),
+                image: DecorationImage(
+                  fit: BoxFit.fill,
+                  image: list[index].userImage!=null && list[index].userImage!.isNotEmpty
+                      ? NetworkImage(list[index].userImage!)
+                      : (list[index].userGender=='female'
+                          ? const AssetImage("assets/avatar/user_female.png") as ImageProvider : const AssetImage("assets/avatar/user_male.png") as ImageProvider),)
+              ),
+              height: 60,
+              width: 60,
+            ),
             title:  Text(list[index].userFullname!),
             subtitle: Text(list[index].role!.split("_").join(" ").toLowerCase()),
           ),

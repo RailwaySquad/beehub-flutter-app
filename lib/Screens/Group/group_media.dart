@@ -22,7 +22,7 @@ class GroupMedia extends StatelessWidget {
     if(group.groupMedias!.isEmpty){
       return SliverToBoxAdapter(child: Center(
         heightFactor: 4.0,
-        child: Text("No media found",style: Theme.of(context).textTheme.headlineMedium,),
+        child: Text("Not  Found Media",style: Theme.of(context).textTheme.headlineMedium,),
       ));
     }
     return SliverGrid(

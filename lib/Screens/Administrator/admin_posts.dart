@@ -1,7 +1,12 @@
 import 'dart:convert';
 
 import 'package:beehub_flutter_app/Constants/url.dart';
+import 'package:beehub_flutter_app/Models/admin/admin_post.dart';
 import 'package:beehub_flutter_app/Provider/db_provider.dart';
+import 'package:beehub_flutter_app/Utils/admin_utils.dart';
+import 'package:beehub_flutter_app/Utils/page_navigator.dart';
+import 'package:beehub_flutter_app/Widgets/admin/post_info.dart';
+import 'package:beehub_flutter_app/Widgets/admin/user_info.dart';
 import 'package:beehub_flutter_app/Widgets/scroll_table.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -17,7 +22,7 @@ class AdminPosts extends StatefulWidget {
 }
 
 class _ReportsState extends State<AdminPosts> {
-  late Future<List<Group>> _posts;
+  late Future<List<Post>> _posts;
 
   @override
   initState() {
@@ -25,10 +30,10 @@ class _ReportsState extends State<AdminPosts> {
     super.initState();
   }
 
-  Future<List<Group>> _fetchPosts() async {
+  Future<List<Post>> _fetchPosts() async {
     var token = await DatabaseProvider().getToken();
     var url = '${AppUrl.adminPath}/posts';
-    List<Group> result = [];
+    List<Post> result = [];
     try {
       http.Response response = await http.get(Uri.parse(url), headers: {
         'Content-Type': 'application/json; charset=UTF-8',
@@ -36,11 +41,29 @@ class _ReportsState extends State<AdminPosts> {
       });
       var parsed = jsonDecode(response.body);
       var jsonResponse = parsed as List;
-      result = jsonResponse.map((report) => Group.fromJson(report)).toList();
+      result = jsonResponse.map((report) => Post.fromJson(report)).toList();
     } catch (e) {
       print(e);
     }
     return result;
+  }
+
+  _blockPost(int id) async {
+    var token = await DatabaseProvider().getToken();
+    var url = '${AppUrl.adminPath}/posts/$id/block';
+    try {
+      http.Response response = await http.patch(Uri.parse(url), headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token'
+      });
+      if (response.statusCode == 200) {
+        setState(() {
+          _posts = _fetchPosts();
+        });
+      }
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
@@ -49,6 +72,7 @@ class _ReportsState extends State<AdminPosts> {
       "Id",
       "Creator",
       "Timestamp",
+      "Reports",
       "Status",
       "Action"
     ];
@@ -73,12 +97,28 @@ class _ReportsState extends State<AdminPosts> {
                       rows: snapshot.data!
                           .map((e) => DataRow(cells: [
                                 DataCell(Text(e.id.toString())),
-                                DataCell(Text(e.creator)),
-                                DataCell(Text(DateFormat.yMd()
-                                        .add_jm()
-                                        .format(DateTime.parse(e.timestamp)))),
+                                DataCell(
+                                    Text(e.creatorUsername,
+                                        style: TextStyle(color: Colors.blue)),
+                                    onTap: () => PageNavigator(ctx: context)
+                                        .nextPage(page: UserInfo(id: e.id))),
+                                DataCell(Text(DateFormat("dd/MM/yyyy hh:mm aaa")
+                                    .format(DateTime.parse(e.timestamp)))),
+                                DataCell(Wrap(
+                                  children:
+                                      getMultipleReportType(e.reportTitleList),
+                                )),
                                 DataCell(_getStatus(e.isBlocked)),
-                                const DataCell(Text('delete')),
+                                DataCell(
+                                  Row(children: [
+                                    IconButton(
+                                  icon: const Icon(Icons.remove_red_eye_outlined, color: Colors.blue, size: 20,),
+                                  onPressed: () => PageNavigator(ctx: context)
+                                      .nextPage(page: PostInfo(id: e.id)),
+                                ),
+                                TextButton(onPressed: ()=>_blockPost(e.id), child: Text(e.isBlocked ? 'Unblock' : 'Block', style: const TextStyle(color: Colors.red),)),
+                                  ],)
+                                ),
                               ]))
                           .toList(),
                     )
@@ -103,29 +143,5 @@ class _ReportsState extends State<AdminPosts> {
       default:
         return const Text('');
     }
-  }
-}
-
-class Group {
-  final int id;
-  final String creator;
-  final int creatorId;
-  final String timestamp;
-  final bool isBlocked;
-
-  Group(
-      {required this.id,
-      required this.creator,
-      required this.creatorId,
-      required this.timestamp,
-      required this.isBlocked});
-  factory Group.fromJson(Map<String, dynamic> json) {
-    return Group(
-      id: json['id'],
-      creator: json['creator'],
-      creatorId: json['creatorId'],
-      timestamp: json['timestamp'],
-      isBlocked: json['isBlocked'],
-    );
   }
 }

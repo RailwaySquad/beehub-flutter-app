@@ -1,11 +1,13 @@
+import 'dart:developer';
+
 import 'package:beehub_flutter_app/Constants/color.dart';
 import 'package:beehub_flutter_app/Models/profile.dart';
+import 'package:beehub_flutter_app/Provider/db_provider.dart';
 import 'package:beehub_flutter_app/Provider/user_provider.dart';
 import 'package:beehub_flutter_app/Screens/Profile/profile_about.dart';
 import 'package:beehub_flutter_app/Screens/Profile/profile_gallery.dart';
 import 'package:beehub_flutter_app/Screens/Profile/profile_posts.dart';
 import 'package:beehub_flutter_app/Utils/beehub_button.dart';
-import 'package:beehub_flutter_app/Widgets/expanded/expanded_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -74,6 +76,11 @@ class _UserPageState extends State<UserPage> {
   @override
   Widget build(BuildContext context) {
     Profile? profile = Provider.of<UserProvider>(context, listen: false).profile;
+    Provider.of<DatabaseProvider>(context).getUserId();
+    int idUser = Provider.of<DatabaseProvider>(context).userId;
+    // if(idUser<0){
+    //   idUser = Provider.of<DatabaseProvider>(context).userId;
+    // }
     var size = MediaQuery.of(context).size;
     bool isLoading = Provider.of<UserProvider>(context).isLoading;
     if(isLoading || profile==null){
@@ -85,14 +92,16 @@ class _UserPageState extends State<UserPage> {
     }
     Widget getButton(){
       if (profile.ownProfile) {
-        return OutlinedButton(
-                onPressed: (){},
-                child: const Text("Account Setting", style: TextStyle(color: TColors.buttonPrimary),),
-              );
+        return  IconButton.outlined( 
+                              onPressed: (){
+                                Get.toNamed("/account_setting");
+                              },
+                              icon: const Icon(Icons.settings),
+                            );
       }
       switch (profile.relationshipWithUser) {
         case "BLOCKED":
-          return BeehubButton.UnBlock(profile.id,'/userpage/${Get.parameters["user"]}',null);
+          return BeehubButton.UnBlock(profile.id,'/userpage/${Get.parameters["user"]}',null,(){});
         case "FRIEND":
           return BeehubButton.UnFriend(profile.id,'/userpage/${Get.parameters["user"]}',null);
         case "SENT_REQUEST":
@@ -100,7 +109,8 @@ class _UserPageState extends State<UserPage> {
         case "NOT_ACCEPT":
           return BeehubButton.AcceptFriend(profile.id, (profile.isBanned || !profile.isActive),'/userpage/${Get.parameters["user"]}',null);
         default:
-          return Row(
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               BeehubButton.AddFriend(profile.id,'/userpage/${Get.parameters["user"]}',null),
               const SizedBox(width: 10,),
@@ -111,9 +121,27 @@ class _UserPageState extends State<UserPage> {
       }
     }
     
+   bool checkSetting(){
+      log("$idUser And ${profile.id}");
+      if(idUser==profile.id ){
+        return true;
+      }
+      bool notSetting = true;
+      if(profile.userSettings!.isNotEmpty){
+        for (var element in profile.userSettings!) {
+          if (element.settingItem=="list_friend" &&( element.settingType == "PUBLIC" || (idUser!=profile.id && profile.relationshipWithUser == "FRIEND" && element.settingType=="FOR_FRIEND")) ) {
+            notSetting = true;
+            break;
+          }else if(element.settingItem=="list_friend" && (profile.relationshipWithUser==null || profile.relationshipWithUser!.isEmpty ||element.settingType == "HIDDEN" )){
+            notSetting =  false;
+          }
+          notSetting = false;
+        }
+      }
+      return notSetting ;
+    }
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(onPressed: (){Get.toNamed("/");},icon: const Icon(Icons.chevron_left),),
         title: const Text("User Profile"),
       ),
       body: CustomScrollView(
@@ -126,7 +154,7 @@ class _UserPageState extends State<UserPage> {
                     decoration: const BoxDecoration(
                       border:  Border(bottom: BorderSide(color: TColors.secondary,width: 2.0))
                     ),
-                  height: 220,
+                  height: 170,
                   width: size.width,
                   child: Container(
                     color:TColors.darkerGrey,
@@ -134,23 +162,22 @@ class _UserPageState extends State<UserPage> {
                     ),
                 ),
                 Positioned(
-                  top: 160, 
+                  top: 120, 
                   left: 20,
                   child: Container(
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.black,width: 2.0),
-                      borderRadius: BorderRadius.circular(45.0)
+                      borderRadius: BorderRadius.circular(45.0),
+                      image:  DecorationImage(
+                        fit: BoxFit.fill,
+                        image: profile.image!.isNotEmpty? NetworkImage(profile.image!):
+                      (profile.gender == 'female'?
+                      const AssetImage("assets/avatar/user_female.png") as ImageProvider: const AssetImage("assets/avatar/user_male.png") as ImageProvider
+                      ))
                     ),
                     width: 90,
                     height: 90,
-                    child: CircleAvatar(
-                      backgroundColor:  Colors.white,
-                      child: 
-                      profile.image!.isNotEmpty? Image.network(profile.image!,height: 75, width: 75,fit: BoxFit.fill):
-                      (profile.gender == 'female'?
-                      Image.asset("assets/avatar/user_female.png",height: 75, width: 75,fit: BoxFit.fill):Image.asset("assets/avatar/user_male.png",height: 75, width: 75,fit: BoxFit.fill)
-                      )
-                    ),
+                    child: const SizedBox(),
                   ),
                 ),
                 Container(
@@ -162,7 +189,7 @@ class _UserPageState extends State<UserPage> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
                       const SizedBox(
-                        height: 220,
+                        height: 180,
                       ),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -190,18 +217,14 @@ class _UserPageState extends State<UserPage> {
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 8),
-                        child: Text("Created at ${DateFormat.yMMMMd('en_US').format(profile.createdAt!)}"),
-                      ),
-                       SizedBox(
-                        child: Row(
-                          children: [
-                            Expanded(
-                                      child: SingleChildScrollView(
-                                        child: ExpandedWidget(text: profile.bio!))
-                                    ),
-                          ],
-                        )
-                      ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children:[ 
+                            SizedBox(
+                              child: Text(profile.bio!)
+                            ),
+                            profile.createdAt!=null? Text("Created at ${DateFormat.yMMMMd('en_US').format(profile.createdAt!)}"): const Text(""),
+                      ])),
                       SizedBox(
                         width: size.width/2,
                         child: Row(
@@ -209,7 +232,11 @@ class _UserPageState extends State<UserPage> {
                           Expanded(
                             flex: 1,
                             child: TextButton(
-                              onPressed: (){},
+                              onPressed: (){
+                                  if(checkSetting()){
+                                   Get.toNamed("/userpage/friend_group/${profile.username}");
+                                  }
+                              },
                               child: RichText(
                                 text: TextSpan(
                                 style: GoogleFonts.ubuntu(color: TColors.black,fontSize: 14),
@@ -224,7 +251,7 @@ class _UserPageState extends State<UserPage> {
                           Expanded(
                             flex: 1,
                             child: TextButton(
-                              onPressed: (){},
+                              onPressed: ()=>Get.toNamed("/userpage/friend_group/${profile.username}"),
                               child: RichText(text: TextSpan(
                                 style:  GoogleFonts.ubuntu(color: TColors.black,fontSize: 14),
                                 children: [

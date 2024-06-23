@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:beehub_flutter_app/Constants/color.dart';
 import 'package:beehub_flutter_app/Models/post.dart';
 import 'package:beehub_flutter_app/Provider/user_provider.dart';
@@ -58,15 +56,15 @@ class _ProfilePostsState extends State<ProfilePosts> {
   @override
   void initState() {
     super.initState();
-    log(username.toString());
-    log(Get.currentRoute);
     controller.addListener(() {
       if (controller.position.maxScrollExtent == controller.offset) {
         fetchProfilePost();
       }
     });
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      Provider.of<UserProvider>(context, listen: false).getUsername();
       username ??= Provider.of<UserProvider>(context, listen: false).username;
+      Future.delayed(Duration(seconds: 4));
       fetchProfilePost();
     });
   }

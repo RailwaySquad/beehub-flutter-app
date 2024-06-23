@@ -1,7 +1,8 @@
 
 import 'package:beehub_flutter_app/Constants/color.dart';
-import 'package:beehub_flutter_app/Provider/db_provider.dart';
 import 'package:beehub_flutter_app/Screens/Activity/group_posts.dart';
+import 'package:beehub_flutter_app/Screens/Chat/chat.dart';
+import 'package:beehub_flutter_app/Utils/page_navigator.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -57,18 +58,16 @@ class _ActivityScreenState extends State<ActivityScreen> {
     return Column(
           children: [
             AppBar(
-              title: const Text('Beehub'),
-                actions: [
-                  IconButton(onPressed: (){
-                    showSearch(context:context, delegate: BeehubSearchDelegate());
-                  }, icon:const Icon(Icons.search)),
-                  IconButton(
-                      icon: const Icon(Icons.exit_to_app),
-                      onPressed: () {
-                        ///logout
-                        DatabaseProvider().logOut(context);
-                      }),
-                ],
+              title: Text('Beehub', style: GoogleFonts.lora(fontWeight: FontWeight.w600, fontSize: 28),),
+              actions: [
+                IconButton(onPressed: (){
+                  showSearch(context:context, delegate: BeehubSearchDelegate());
+                }, icon:const Icon(Icons.search)),
+                IconButton(
+                  onPressed: () => 
+                    PageNavigator(ctx: context).nextPage(page: const ChatScreen()), 
+                  icon: const Icon(Icons.message))
+              ],
             ),
             SizedBox(
               width: size.width,

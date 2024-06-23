@@ -1,5 +1,4 @@
 import 'package:beehub_flutter_app/Models/post.dart';
-import 'package:beehub_flutter_app/Models/user.dart';
 import 'package:beehub_flutter_app/Provider/db_provider.dart';
 import 'package:beehub_flutter_app/Utils/api_connection/http_client.dart';
 import 'package:beehub_flutter_app/Utils/api_connection/http_post.dart';
@@ -29,18 +28,20 @@ class _PopularPostsState extends State<PopularPosts> {
     if(isLoading) return;
     isLoading = true;
     List<Post>? addPosts =await THttpHelper.getPopularPosts(page);
-    setState(() {
-      page++;
-      isLoading = false;
-      if(addPosts!=null &&addPosts.length<5){
-        hasMore=false;
-      }
-      if(addPosts==null){
-        errorConnect = true;
-      }else{
-        list.addAll(addPosts);
-      }
-    });
+    if(mounted){
+      setState(() {
+        page++;
+        isLoading = false;
+        if(addPosts!=null &&addPosts.length<5){
+          hasMore=false;
+        }
+        if(addPosts==null){
+          errorConnect = true;
+        }else{
+          list.addAll(addPosts);
+        }
+      });
+    }
   }
   
   void updatePostList(){

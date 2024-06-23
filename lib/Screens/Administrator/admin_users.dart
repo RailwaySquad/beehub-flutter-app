@@ -1,10 +1,17 @@
 import 'dart:convert';
 
+import 'package:beehub_flutter_app/Models/admin/admin_user.dart';
+import 'package:beehub_flutter_app/Provider/auth_provider.dart';
+import 'package:beehub_flutter_app/Utils/admin_utils.dart';
+import 'package:beehub_flutter_app/Utils/page_navigator.dart';
+import 'package:beehub_flutter_app/Widgets/admin/role_dropdown.dart';
+import 'package:beehub_flutter_app/Widgets/admin/user_info.dart';
 import 'package:http/http.dart' as http;
 import 'package:beehub_flutter_app/Constants/url.dart';
 import 'package:beehub_flutter_app/Provider/db_provider.dart';
 import 'package:beehub_flutter_app/Widgets/scroll_table.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class AdminUsers extends StatefulWidget {
   static const TextStyle optionStyle =
@@ -17,11 +24,17 @@ class AdminUsers extends StatefulWidget {
 
 class _ReportsState extends State<AdminUsers> {
   late Future<List<User>> _users;
+  late int sessionId;
 
   @override
   initState() {
     _users = _fetchUsers();
+    _getSessionId();
     super.initState();
+  }
+
+  _getSessionId() async {
+    sessionId = await DatabaseProvider().getUserId();
   }
 
   Future<List<User>> _fetchUsers() async {
@@ -42,16 +55,34 @@ class _ReportsState extends State<AdminUsers> {
     return result;
   }
 
+  _banUser(int id) async {
+    var token = await DatabaseProvider().getToken();
+    var url = '${AppUrl.adminPath}/users/$id/ban';
+    try {
+      http.Response response = await http.patch(Uri.parse(url), headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token'
+      });
+      if (response.statusCode == 200) {
+        setState(() {
+          _users = _fetchUsers();
+        });
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     const columns = [
       "Id",
       "Username",
       "Email",
-      "Full Name",
       "Gender",
       "No Of Posts",
       "No Of Friends",
+      "Reports",
       "Role",
       "Status",
       "Action"
@@ -77,118 +108,47 @@ class _ReportsState extends State<AdminUsers> {
                       rows: snapshot.data!
                           .map((e) => DataRow(cells: [
                                 DataCell(Text(e.id.toString())),
-                                DataCell(InkWell(
-                                    onTap: () {},
-                                    child: Text(
+                                DataCell(
+                                    Text(
                                       e.username,
                                       style:
                                           const TextStyle(color: Colors.blue),
-                                    ))),
+                                    ),
+                                    onTap: () => PageNavigator(ctx: context)
+                                        .nextPage(page: UserInfo(id: e.id))),
                                 DataCell(Text(e.email)),
-                                DataCell(Text(e.fullName)),
-                                DataCell(_getGender(e.gender)),
+                                DataCell(getGender(e.gender)),
                                 DataCell(Text(e.noOfPosts.toString())),
                                 DataCell(Text(e.noOfFriends.toString())),
-                                DataCell(_getRole(e.role)),
-                                DataCell(_getStatus(e.status)),
-                                const DataCell(Text('delete')),
+                                DataCell(Wrap(
+                                  children:
+                                      getMultipleReportType(e.reportTitleList),
+                                )), // role
+                                DataCell(e.id == sessionId
+                                    ? getRole(e.role)
+                                    : RoleDropdown(
+                                        role: e.role,
+                                        userId: e.id,
+                                      )),
+                                DataCell(getStatus(e.status)),
+                                DataCell(e.role == 'ROLE_USER'
+                                    ? TextButton(
+                                        onPressed: () => _banUser(e.id),
+                                        child: Text(
+                                          e.status == 'banned'
+                                              ? 'Unban'
+                                              : 'Ban',
+                                          style: const TextStyle(
+                                              color: Colors.red),
+                                        ),
+                                      )
+                                    : const Text('')),
                               ]))
                           .toList(),
                     )
                   : const Center(child: CircularProgressIndicator.adaptive())),
         ],
       ),
-    );
-  }
-
-  _getGender(String type) {
-    switch (type) {
-      case 'male':
-        return Icon(
-          Icons.male,
-          color: Colors.blue[900],
-        );
-      case 'female':
-        return Icon(
-          Icons.female,
-          color: Colors.red[600],
-        );
-      default:
-        return Text(type);
-    }
-  }
-
-  _getRole(String type) {
-    switch (type) {
-      case 'ROLE_ADMIN':
-        return Badge(
-          label: const Text('Admin'),
-          backgroundColor: Colors.blue[600],
-        );
-      case 'ROLE_USER':
-        return Badge(
-          label: const Text('User'),
-          backgroundColor: Colors.grey[400],
-        );
-      default:
-        return Text(type);
-    }
-  }
-
-  _getStatus(String type) {
-    switch (type) {
-      case 'active':
-        return Badge(
-          label: const Text('Active'),
-          backgroundColor: Colors.green[600],
-        );
-      case 'inactive':
-        return Badge(
-          label: const Text('Inactive'),
-          backgroundColor: Colors.red[400],
-        );
-      case 'banned':
-        return Badge(
-          label: const Text('Banned'),
-          backgroundColor: Colors.grey[400],
-        );
-      default:
-        return Text(type);
-    }
-  }
-}
-
-class User {
-  final int id;
-  final String username;
-  final String email;
-  final String fullName;
-  final String gender;
-  final int noOfPosts;
-  final int noOfFriends;
-  final String role;
-  final String status;
-  User(
-      {required this.id,
-      required this.username,
-      required this.email,
-      required this.fullName,
-      required this.gender,
-      required this.noOfPosts,
-      required this.noOfFriends,
-      required this.role,
-      required this.status});
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-      id: json['id'],
-      username: json['username'],
-      email: json['email'],
-      fullName: json['fullName'] ?? '',
-      gender: json['gender'] ?? '',
-      noOfPosts: json['noOfPosts'],
-      noOfFriends: json['noOfFriends'],
-      role: json['role'],
-      status: json['status'],
     );
   }
 }
