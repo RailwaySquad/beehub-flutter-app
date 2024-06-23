@@ -2,6 +2,7 @@ import 'package:beehub_flutter_app/Constants/color.dart';
 import 'package:beehub_flutter_app/Models/group.dart';
 import 'package:beehub_flutter_app/Models/profile.dart';
 import 'package:beehub_flutter_app/Models/user.dart';
+import 'package:beehub_flutter_app/Provider/db_provider.dart';
 import 'package:beehub_flutter_app/Provider/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -135,19 +136,46 @@ class ListFriendProfile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     bool isLoading = Provider.of<UserProvider>(context).isLoading;
+    Profile? profile = Provider.of<UserProvider>(context, listen: false).profile;
+    
     if(isLoading){
       return const Center(
         child: CircularProgressIndicator(color: TColors.buttonPrimary,),
       );
     }
-    Profile? profile = Provider.of<UserProvider>(context).profile;
-    if(profile==null){
-      return const Center(
-        child: Text("Not Found"),
+    if(profile==null||profile.relationships ==null){
+      return  Center(
+        heightFactor: 100,
+        child: Text("Not Found", style: Theme.of(context).textTheme.titleMedium,),
       );
     }
-    List<User>? list = profile.relationships;
-    if(list !=null){
+    int idUser = Provider.of<DatabaseProvider>(context).userId;
+    bool checkSetting(){
+      if(idUser==profile.id ){
+        return true;
+      }
+      bool notSetting = true;
+      if(profile.userSettings!.isNotEmpty){
+        for (var element in profile.userSettings!) {
+          if (element.settingItem=="list_friend" &&( element.settingType == "PUBLIC" || (idUser!=profile.id && profile.relationshipWithUser == "FRIEND" && element.settingType=="FOR_FRIEND")) ) {
+            notSetting = true;
+            break;
+          }else if(element.settingItem=="list_friend" && (profile.relationshipWithUser==null || profile.relationshipWithUser!.isEmpty ||element.settingType == "HIDDEN" )){
+            notSetting =  false;
+          }
+          notSetting = false;
+        }
+      }
+      return notSetting ;
+    }
+    List<User>? listRel = profile.relationships;
+    List<User> list=  listRel!=null && listRel.length>0? listRel.where((e)=> e.typeRelationship!="BLOCKED" && e.typeRelationship!="BE_BLOCKED").toList() :[];
+    if(!checkSetting()){
+      return Center(
+        heightFactor: 50,
+        child: Text("You have no permission to see list friend", style: Theme.of(context).textTheme.titleMedium,),
+      );
+    }
       return ListView.builder(
       itemCount: list.length,
       shrinkWrap: true,
@@ -180,8 +208,6 @@ class ListFriendProfile extends StatelessWidget {
         );
       },
     );
-    }
-    return const SizedBox();
-  
+    
   }
 }

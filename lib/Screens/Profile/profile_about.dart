@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:beehub_flutter_app/Models/profile.dart';
 import 'package:beehub_flutter_app/Models/user_setting.dart';
 import 'package:beehub_flutter_app/Provider/db_provider.dart';
@@ -15,6 +13,10 @@ class ProfileAbout extends StatelessWidget {
   Widget build(BuildContext context) {
     Profile? profile = Provider.of<UserProvider>(context).profile;
     int idUser = Provider.of<DatabaseProvider>(context).userId;
+    if(idUser<0){
+      Provider.of<DatabaseProvider>(context).getUserId();
+      idUser = Provider.of<DatabaseProvider>(context).userId;
+    }
     if(profile ==null){
       return const SliverToBoxAdapter(child: Center(child: Text("Not Found")));
     }

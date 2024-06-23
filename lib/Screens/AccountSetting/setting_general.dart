@@ -156,18 +156,18 @@ class _SettingGeneralState extends State<SettingGeneral> {
                               decoration: BoxDecoration(
                                 border: Border.all(color: Colors.black,width: 2.0),
                                 borderRadius: BorderRadius.circular(45.0),
+                                image: DecorationImage(
+                                  fit: BoxFit.fill,
+                                  image: _fileAvatar!=null? 
+                                FileImage(_fileAvatar!) as ImageProvider
+                                :prof.image!.isNotEmpty? NetworkImage(prof.image!):
+                                (profile.gender == 'female'?
+                                const AssetImage("assets/avatar/user_female.png") as ImageProvider: const AssetImage("assets/avatar/user_male.png") as ImageProvider
+                                ),)
                               ),
                               width: 90,
                               height: 90,
-                              child: CircleAvatar(
-                                radius: 45.0,
-                                child: _fileAvatar!=null? 
-                                Image.file(_fileAvatar!,fit: BoxFit.fill)
-                                :prof.image!.isNotEmpty? Image.network(prof.image!,height: 75, width: 75,fit: BoxFit.fill):
-                                (profile.gender == 'female'?
-                                Image.asset("assets/avatar/user_female.png",height: 75, width: 75,fit: BoxFit.fill):Image.asset("assets/avatar/user_male.png",height: 75, width: 75,fit: BoxFit.fill)
-                                ),
-                              )
+                              child: const SizedBox()
                             ),
                           ),
                         ),

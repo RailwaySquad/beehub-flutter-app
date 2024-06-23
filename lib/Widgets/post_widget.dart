@@ -258,16 +258,19 @@ class _PostWidgetState extends State<PostWidget> {
                                       Row(
                                         mainAxisSize: MainAxisSize.max,
                                         children: [
-                                          Text(
-                                            widget.post.userFullname,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .titleMedium!
-                                                .copyWith(
-                                                    fontWeight: FontWeight.bold),
-                                            overflow: TextOverflow.ellipsis,
-                                            maxLines: 1,
-                                            textAlign: TextAlign.left,
+                                          InkWell(
+                                            onTap: ()=> Get.toNamed("/userpage/${widget.post.userUsername}"),
+                                            child: Text(
+                                              widget.post.userFullname,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .titleMedium!
+                                                  .copyWith(
+                                                      fontWeight: FontWeight.bold),
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 1,
+                                              textAlign: TextAlign.left,
+                                            ),
                                           ),
                                           Flexible(
                                             fit: FlexFit.loose,
