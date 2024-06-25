@@ -21,6 +21,15 @@ class _RegisterPageState extends State<RegisterPage> {
   final _password = TextEditingController();
   final _confirm = TextEditingController();
 
+  String? _fullNameValidator(String? value) {
+    final validator = Validator(validators: [
+      const RequiredValidator(),
+      const MinLengthValidator(length: 6),
+      const MaxLengthValidator(length: 20)
+    ]);
+    return validator.validate(label: 'Full name', value: value);
+  }
+
   String? _usernameValidator(String? value) {
     final validator = Validator(validators: [
       const RequiredValidator(),
@@ -54,8 +63,9 @@ class _RegisterPageState extends State<RegisterPage> {
 
   String? _confirmValidator(String? value) {
     final validator = Validator(validators: [const RequiredValidator()]);
-    if (_password.text != _confirm.text)
+    if (_password.text != _confirm.text) {
       return "Password confirm does not match";
+    }
     return validator.validate(label: 'Confirm', value: value);
   }
 
@@ -113,9 +123,9 @@ class _RegisterPageState extends State<RegisterPage> {
       child: Column(
         children: [
           const SizedBox(height: 50),
-          _inputField('Username', _username, validator: _usernameValidator),
+          _inputField('Full name', _fullName, validator: _fullNameValidator),
           const SizedBox(height: 20),
-          _inputField('Full name', _fullName, validator: _usernameValidator),
+          _inputField('Username', _username, validator: _usernameValidator),
           const SizedBox(height: 20),
           _inputField('Email', _email, validator: _emailValidator),
           const SizedBox(height: 20),
@@ -139,8 +149,8 @@ class _RegisterPageState extends State<RegisterPage> {
                   tap: () {
                     if (_formKey.currentState!.validate()) {
                       auth.registerUser(
-                          username: _username.text,
                           fullName: _fullName.text,
+                          username: _username.text,
                           email: _email.text,
                           password: _password.text,
                           context: context);
