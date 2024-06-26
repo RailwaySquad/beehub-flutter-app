@@ -37,7 +37,7 @@ class _GroupSettingScreenState extends State<GroupSettingScreen> {
         );
       });
       _descriptionInputController.addListener(() {
-        final String text = _descriptionInputController.text.trim();
+        final String text = _descriptionInputController.text;
         _descriptionInputController.value = _descriptionInputController.value.copyWith(
           text: text,
           selection:
@@ -101,7 +101,7 @@ class _GroupSettingScreenState extends State<GroupSettingScreen> {
                     }, child:  Text("Save", style: GoogleFonts.ubuntu(fontSize: 18),))
         ],
       ),
-      resizeToAvoidBottomInset: false,
+      // resizeToAvoidBottomInset: false,
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(10),

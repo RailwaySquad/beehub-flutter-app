@@ -123,8 +123,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                       borderRadius: BorderRadius.circular(45.0),
                       image: DecorationImage(
                         fit: BoxFit.fill,
-                        image: list[index].sender!.image!=null? NetworkImage(list[index].sender!.image!)
-                                  : (list[index].sender!.gender=='female'? const AssetImage("assets/avatar/user_female.png") as ImageProvider:const AssetImage("assets/avatar/user_male.png") as ImageProvider),)
+                        image: list[index].receiver!.image!=null? NetworkImage(list[index].receiver!.image!)
+                                  : (list[index].receiver!.gender=='female'? const AssetImage("assets/avatar/user_female.png") as ImageProvider:const AssetImage("assets/avatar/user_male.png") as ImageProvider),)
                     ),
                     width: 60,
                     height: 60,
@@ -133,7 +133,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         text: TextSpan(
                           style: DefaultTextStyle.of(context).style,
                         children: [
-                          TextSpan(text: list[index].sender!.fullname, style: const TextStyle(fontWeight: FontWeight.bold)),
+                          TextSpan(text: list[index].receiver!.fullname, style: const TextStyle(fontWeight: FontWeight.bold)),
                           const TextSpan(text: " now become your friend"),
                           ]
                         )),

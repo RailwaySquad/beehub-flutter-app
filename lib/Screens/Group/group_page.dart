@@ -160,7 +160,7 @@ class _GroupPageState extends State<GroupPage> {
                       color: Colors.white.withOpacity(0.20)
                     ),
                     child: IconButton(
-                      onPressed: ()=> Navigator.pop(context), 
+                      onPressed: ()=>Get.toNamed("/"), 
                       icon:const Icon(Icons.chevron_left)),
                   ),
                 ),

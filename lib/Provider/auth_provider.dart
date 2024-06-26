@@ -118,6 +118,7 @@ class AuthenticationProvider extends ChangeNotifier {
         notifyListeners();
       }
     } on SocketException catch (_) {
+      print(_);
       _isLoading = false;
       _resMessage = "Internet connection is not available`";
       notifyListeners();
